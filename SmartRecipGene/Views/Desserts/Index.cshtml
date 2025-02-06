@@ -1,0 +1,25 @@
+﻿@model JArray
+<h2>Delicious Desserts</h2>
+
+@if (!Model.Any())
+{
+    <p>No desserts found.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var recipe in Model)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="@recipe["image"]" class="card-img-top" alt="@recipe["title"]">
+                    <div class="card-body">
+                        <h5 class="card-title">@recipe["title"]</h5>
+                        <a href="/Home/RecipeDetails?id=@recipe["id"]" class="btn btn-primary">View Recipe</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+

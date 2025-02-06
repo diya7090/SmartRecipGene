@@ -1,0 +1,82 @@
+﻿ @* @model JArray
+
+@{
+    ViewData["Title"] = "Recipe Results";
+}
+
+
+
+<h2>Recipe Results</h2>
+
+@if (Model.Count == 0)
+{
+    <p>No recipes found. Try different ingredients.</p>
+}
+else
+{
+    <ul>
+        @foreach (var recipe in Model)
+        {
+            <li>
+                <h3><a href="/Home/RecipeDetails?id=@recipe["id"]">@recipe["title"]</a></h3>
+                <img src="@recipe["image"]" alt="@recipe["title"]" width="200" />
+                <p>Used Ingredients: @recipe["usedIngredientCount"], Missing: @recipe["missedIngredientCount"]</p>
+            </li>
+        }
+    </ul>
+} *@
+ 
+
+
+@model Newtonsoft.Json.Linq.JArray
+
+<h2>Recipe Results</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var recipe in Model)
+    {
+        <div class="recipe">
+            <h3>@recipe["title"]</h3>
+            <img src="@recipe["image"]" alt="@recipe["title"]" width="200" />
+
+            <h4>Ingredients:</h4>
+
+            @if (recipe["usedIngredients"] != null && recipe["usedIngredients"].HasValues)
+            {
+                <p><strong>Used Ingredients:</strong></p>
+                <ul>
+                    @foreach (var ingredient in recipe["usedIngredients"])
+                    {
+                        <li>@ingredient["name"] (@ingredient["amount"] @ingredient["unit"])</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p><em>No used ingredients available.</em></p>
+            }
+
+            @if (recipe["missedIngredients"] != null && recipe["missedIngredients"].HasValues)
+            {
+                <p><strong>Missed Ingredients:</strong></p>
+                <ul>
+                    @foreach (var ingredient in recipe["missedIngredients"])
+                    {
+                        <li>@ingredient["name"] (@ingredient["amount"] @ingredient["unit"])</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p><em>No missed ingredients available.</em></p>
+            }
+
+            <a href="@Url.Action("RecipeDetails", "Home", new { id = recipe["id"] })">View Details</a>
+        </div>
+    }
+}
+else
+{
+    <p>No recipes found.</p>
+}

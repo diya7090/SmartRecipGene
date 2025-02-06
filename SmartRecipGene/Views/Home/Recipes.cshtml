@@ -1,0 +1,31 @@
+﻿@model JArray
+
+@{
+    ViewData["Title"] = "Recipe Suggestions";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+        <ul>
+        @foreach (var recipe in Model)
+        {
+            <li>
+                <h3>@recipe["title"]</h3>
+                <a href="@Url.Action("RecipeDetails", "Home", new { id = recipe["id"] })">
+                    <img src="@recipe["image"]" alt="@recipe["title"]" width="200">
+                </a>
+                <p>Ingredients: @recipe["usedIngredientCount"] used / @recipe["missedIngredientCount"] missing</p>
+                <a class="btn btn-primary" href="@Url.Action("RecipeDetails", "Home", new { id = recipe["id"] })">View Details</a>
+            </li>
+        }
+
+
+       
+        </ul>
+}
+else
+{
+        <p>No recipes found based on your ingredients.</p>
+}

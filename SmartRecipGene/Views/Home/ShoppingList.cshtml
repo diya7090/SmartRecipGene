@@ -1,0 +1,35 @@
+﻿@model List<SmartRecipGene.Models.ShoppingListItem>
+
+<h2>Shopping List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ingredient</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Ingredient</td>
+                <td>@(item.Purchased ? "Purchased" : "Pending")</td>
+                <td>
+                    @if (!item.Purchased)
+                    {
+                        <form asp-action="MarkAsPurchased" method="post">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-success">Mark as Purchased</button>
+                        </form>
+                    }
+                    <form asp-action="RemoveFromShoppingList" method="post">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

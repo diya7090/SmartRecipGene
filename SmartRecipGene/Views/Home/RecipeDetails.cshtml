@@ -1,0 +1,79 @@
+﻿@model JObject
+
+@{
+    ViewData["Title"] = Model["title"];
+}
+
+<h2>@Model["title"]</h2>
+<img src="@Model["image"]" alt="@Model["title"]" width="300">
+
+<h4>Ingredients:</h4>
+<ul>
+    @foreach (var ingredient in Model["extendedIngredients"])
+    {
+        @if(ingredient["original"] != null)
+        {
+            <li>@ingredient["original"]</li>
+        }
+    }
+</ul>
+
+<h4>Instructions:</h4>
+<p>@Html.Raw(Model["instructions"])</p>
+
+<p><strong>Cooking Time:</strong> @Model["readyInMinutes"] minutes</p>
+<p><strong>Servings:</strong> @Model["servings"]</p>
+
+
+<h4>Rate this Recipe:</h4>
+<form method="post" asp-action="SubmitReview">
+    <input type="hidden" name="RecipeId" value="@Model["id"]" />
+    <div class="form-group">
+        <label for="rating">Rating (1-5):</label>
+        <input type="number" class="form-control" name="Rating" min="1" max="5" required />
+    </div>
+    <div class="form-group">
+        <label for="comment">Comment:</label>
+        <textarea class="form-control" name="Comment" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Submit Review</button>
+</form>
+
+
+<h4>User Reviews:</h4>
+<ul>
+    @foreach (var review in ViewBag.Reviews)
+    {
+        <li>
+            <strong>Rating:</strong> @review.Rating / 5
+            <p>@review.Comment</p>
+        </li>
+    }
+</ul>
+
+
+<h4>Missing Ingredients:</h4>
+<ul>
+    @foreach (var ingredient in Model["extendedIngredients"])
+    {
+        <li>
+            @ingredient["original"]
+            <form method="post" asp-action="AddToShoppingList">
+                <input type="hidden" name="ingredient" value="@ingredient["original"]" />
+                <button type="submit" class="btn btn-sm btn-success">Add to Shopping List</button>
+            </form>
+            <form asp-action="AddToShoppingList" method="post">
+                <input type="hidden" name="ingredient" value="Ingredient Name Here" />
+                <button type="submit" class="btn btn-primary">Add to Shopping List</button>
+            </form>
+
+        </li>
+    }
+</ul>
+
+<form method="post" asp-controller="FavoriteRecipes" asp-action="AddToFavorites">
+    <input type="hidden" name="recipeId" value="@Model["id"]" />
+    <input type="hidden" name="title" value="@Model["title"]" />
+    <input type="hidden" name="imageUrl" value="@Model["image"]" />
+    <button type="submit" class="btn btn-warning">⭐ Save to Favorites</button>
+</form>
