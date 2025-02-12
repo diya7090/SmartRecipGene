@@ -13,7 +13,7 @@
     {
         @if(ingredient["original"] != null)
         {
-            <li>@ingredient["original"]</li>
+        <li>@ingredient["original"]</li>
         }
     }
 </ul>
@@ -39,7 +39,6 @@
     <button type="submit" class="btn btn-success">Submit Review</button>
 </form>
 
-
 <h4>User Reviews:</h4>
 <ul>
     @foreach (var review in ViewBag.Reviews)
@@ -50,6 +49,7 @@
         </li>
     }
 </ul>
+
 
 
 <h4>Missing Ingredients:</h4>

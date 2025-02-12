@@ -1,6 +1,5 @@
-﻿@* 
-@{
-    ViewData["Title"] = "Enter Ingredients";
+﻿@{
+    ViewData["Title"] = "Input Ingredients";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -12,48 +11,3 @@
     </div>
     <button type="submit" class="btn btn-primary">Find Recipes</button>
 </form>
-
- *@
-@{
-    ViewData["Title"] = "Find Recipes by Ingredients";
-}
-
-<h2 class="mb-4">@ViewData["Title"]</h2>
-
-<form method="post" asp-action="GetRecipes">
-    <div class="form-group mb-3">
-        <label for="ingredients" class="form-label">Enter Ingredients (comma-separated):</label>
-        <input type="text" class="form-control" id="ingredients" name="ingredients" placeholder="e.g., strawberries, sugar, milk" required />
-    </div>
-
-    <!-- Meal Type Filter -->
-    <div class="form-group mb-3">
-        <label for="mealType" class="form-label">Select Meal Type:</label>
-        <select class="form-select" id="mealType" name="mealType">
-            <option value="">All</option>
-            <option value="Vegetarian">Vegetarian</option>
-            <option value="Vegan">Vegan</option>
-            <option value="Eggless">Eggless</option>
-            <option value="Gluten-Free">Gluten-Free</option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Find Recipes</button>
-</form>
-@* 
-@{
-    ViewData["Title"] = "Enter Ingredients";
-}
-
-<h2>Enter Ingredients for Recipe Search</h2>
-
-<form method="post" action="/Home/GetRecipes">
-    <label for="ingredients">Ingredients:</label>
-    <input type="text" id="ingredients" name="ingredients" required />
-
-    <label for="isVeg">Vegetarian:</label>
-    <input type="checkbox" id="isVeg" name="isVeg" />
-
-    <button type="submit">Search</button>
-</form>
- *@

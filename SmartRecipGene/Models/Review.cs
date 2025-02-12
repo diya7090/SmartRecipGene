@@ -17,5 +17,7 @@ namespace SmartRecipGene.Models
         [Required]
         [StringLength(500)]
         public string Comment { get; set; } = string.Empty;
+
+       
     }
 }

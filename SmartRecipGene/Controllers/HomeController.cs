@@ -26,126 +26,23 @@ namespace SmartRecipGene.Controllers
             _httpClient = httpClientFactory.CreateClient(); // Correct way to initialize HttpClient
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetRecipes(string ingredients)
+        {
+            // Call the API with the entered ingredients
+            var response = await _spoonacularService.GetRecipesByIngredientsAsync(ingredients);
+
+            // Parse the JSON response
+            var recipes = JArray.Parse(response);
+
+            // Pass the recipes to the view
+            return View("Recipes", recipes);
+        }
 
         public IActionResult Index()
         {
             return View();
         }
-        //[HttpPost]
-        //public async Task<IActionResult> GetRecipes(string ingredients, bool isVeg = false)
-        //{
-        //    // Prepare the API URL with ingredients and number of results
-        //    string apiUrl = $"https://api.spoonacular.com/recipes/findByIngredients?apiKey=4f23d090497a4cc6942f7f6e1f3ffca4&ingredients={ingredients}&number=20";
-
-        //    // Fetch response from Spoonacular API
-        //    var response = await _httpClient.GetStringAsync(apiUrl);
-        //    var recipes = JArray.Parse(response); // Parse JSON response
-
-        //    // If vegetarian filter is applied, exclude non-veg ingredients
-        //    if (isVeg)
-        //    {
-        //        List<string> nonVegIngredients = new List<string>
-        //{
-        //    "egg", "chicken", "meat", "beef", "pork", "fish", "shrimp", "crab", "lamb", "bacon", "ham", "oyster", "prawn", "mutton", "duck"
-        //};
-
-        //        // Filter out recipes containing any non-veg ingredients
-        //        recipes = new JArray(
-        //            recipes.Where(recipe =>
-        //                !recipe["usedIngredients"].Any(ingredient =>
-        //                    nonVegIngredients.Contains(ingredient["name"].ToString().ToLower())) &&
-        //                !recipe["missedIngredients"].Any(ingredient =>
-        //                    nonVegIngredients.Contains(ingredient["name"].ToString().ToLower()))
-        //            )
-        //        );
-        //    }
-
-        //    return View("RecipeResults", recipes);
-        //}
-
-        [HttpPost]
-        public async Task<IActionResult> GetRecipes(string ingredients, bool isVeg)
-        {
-            string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
-            string url = $"https://api.spoonacular.com/recipes/findByIngredients?ingredients={ingredients}&number=10&apiKey={apiKey}";
-
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    JArray recipes = JArray.Parse(jsonResponse);
-
-                    // 🔹 Fetch full recipe details for filtering vegetarian recipes
-                    List<JObject> filteredRecipes = new List<JObject>();
-                    foreach (var recipe in recipes)
-                    {
-                        int recipeId = (int)recipe["id"];
-                        string detailsUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey={apiKey}";
-
-                        HttpResponseMessage detailsResponse = await client.GetAsync(detailsUrl);
-                        if (detailsResponse.IsSuccessStatusCode)
-                        {
-                            var detailsJson = await detailsResponse.Content.ReadAsStringAsync();
-                            JObject recipeDetails = JObject.Parse(detailsJson);
-
-                            // 🔹 Check if the recipe is vegetarian
-                            if (!isVeg || (recipeDetails["vegetarian"]?.ToObject<bool>() == true))
-                            {
-                                filteredRecipes.Add(recipeDetails);
-                            }
-                        }
-                    }
-
-                    return View("RecipeResults", filteredRecipes);
-                }
-            }
-
-            ViewBag.Error = "No recipes found.";
-            return View("Index");
-        }
-
-
-        //[HttpPost]
-        //public async Task<IActionResult> GetRecipes(string ingredients, bool isVeg = false)
-        //{
-        //    // Prepare the API URL with ingredients and number of results
-        //    string apiUrl = $"https://api.spoonacular.com/recipes/findByIngredients?apiKey=4f23d090497a4cc6942f7f6e1f3ffca4&ingredients={ingredients}&number=20";
-
-        //    // Fetch response from Spoonacular API
-        //    var response = await _httpClient.GetStringAsync(apiUrl);
-        //    var recipes = JArray.Parse(response); // Parse JSON response
-
-        //    // If vegetarian filter is applied, exclude non-veg ingredients
-        //    if (isVeg)
-        //    {
-        //        List<string> nonVegIngredients = new List<string>
-        //{
-        //    "egg", "chicken", "meat", "beef", "pork", "fish", "shrimp", "crab", "lamb", "bacon", "ham", "oyster", "prawn", "mutton", "duck"
-        //};
-
-        //        // Filter out recipes containing any non-veg ingredients
-        //        recipes = new JArray(
-        //            recipes.Where(recipe =>
-        //                !recipe["usedIngredients"].Any(ingredient =>
-        //                    nonVegIngredients.Contains(ingredient["name"].ToString().ToLower())) &&
-        //                !recipe["missedIngredients"].Any(ingredient =>
-        //                    nonVegIngredients.Contains(ingredient["name"].ToString().ToLower()))
-        //            )
-        //        );
-        //    }
-
-        //    return View("RecipeResults", recipes);
-        //}
-        //------------------------------
-        //public async Task<IActionResult> GetRecipes(string ingredients)
-        //{
-        //    var response = await _spoonacularService.GetRecipesByIngredientsAsync(ingredients);
-        //    var recipes = JArray.Parse(response); // Parse JSON response
-
-        //    return View("RecipeResults", recipes);
-        //}
         [HttpGet]
         public async Task<IActionResult> RecipeDetails(int id)
         {
@@ -154,6 +51,7 @@ namespace SmartRecipGene.Controllers
 
             var reviews = _context.Reviews.Where(r => r.RecipeId == id).ToList();
             ViewBag.Reviews = reviews;
+
             return View(recipe);
         }
         [HttpPost]
@@ -173,6 +71,7 @@ namespace SmartRecipGene.Controllers
 
             return RedirectToAction("RecipeDetails", new { id = RecipeId });
         }
+
         [HttpGet]
         public async Task<IActionResult> SearchRecipes(string query, string mealType, string diet)
         {
@@ -237,50 +136,6 @@ namespace SmartRecipGene.Controllers
                 return View("RecipeResults", new JArray());
             }
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> SearchRecipes(string query, string mealType, string diet)
-        //{
-        //    string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
-        //    string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&query={query}";
-
-        //    // Append Meal Type (Diet) Filter
-        //    if (!string.IsNullOrEmpty(mealType))
-        //    {
-        //        if (mealType == "Eggless")
-        //        {
-        //            url += "&diet=vegetarian&excludeIngredients=egg";
-        //        }
-        //        else
-        //        {
-        //            url += $"&diet={mealType.ToLower()}";
-        //        }
-        //    }
-
-        //    try
-        //    {
-        //        var response = await _httpClient.GetStringAsync(url);
-        //        var jsonResponse = JObject.Parse(response);
-
-        //        if (!jsonResponse.ContainsKey("results") || !jsonResponse["results"].HasValues)
-        //        {
-        //            ViewBag.Message = "No recipes found based on your filters.";
-        //            return View("RecipeResults", new JArray()); // Return an empty array
-        //        }
-
-        //        var recipes = jsonResponse["results"];
-        //        return View("RecipeResults", recipes);
-        //    }
-        //    catch (HttpRequestException ex)
-        //    {
-        //        Console.WriteLine("API Error: " + ex.Message);
-        //        ViewBag.Message = "Error fetching recipes. Please try again later.";
-        //        return View("RecipeResults", new JArray());
-        //    }
-        //}
-
-
-        // Default page for entering ingredients
         public IActionResult Ingredients()
         {
             return View();
