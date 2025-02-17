@@ -14,6 +14,10 @@ namespace SmartRecipGene.Data
 
         public DbSet<FavoriteRecipe> FavoriteRecipes { get; set; } // Add this line
 
+        public DbSet<BlogPost> BlogPosts { get; set; }
+
+        public DbSet<Recipe> Recipes { get; set; }
+
         //public DbSet<ShoppingListItem> ShoppingList { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

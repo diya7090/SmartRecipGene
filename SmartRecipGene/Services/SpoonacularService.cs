@@ -9,7 +9,9 @@ namespace SmartRecipGene.Services
     {
         private readonly HttpClient _httpClient;
 
-        private const string ApiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+       private const string ApiKey = "b535a4c67f554ae5bb0479ee64a3ac94";
+
+        // private const string ApiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
         private const string BaseUrl = "https://api.spoonacular.com/";
 
         public SpoonacularService(HttpClient httpClient)

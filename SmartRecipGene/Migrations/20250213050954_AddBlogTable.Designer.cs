@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartRecipGene.Data;
 
@@ -11,9 +12,11 @@ using SmartRecipGene.Data;
 namespace SmartRecipGene.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250213050954_AddBlogTable")]
+    partial class AddBlogTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,9 +255,6 @@ namespace SmartRecipGene.Migrations
                     b.Property<bool>("IsPublished")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("RecipeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Tags")
                         .HasColumnType("nvarchar(max)");
 
@@ -267,9 +267,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("BlogPosts", (string)null);
+                    b.ToTable("BlogPosts");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.FavoriteRecipe", b =>
@@ -300,61 +298,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FavoriteRecipes", (string)null);
-                });
-
-            modelBuilder.Entity("SmartRecipGene.Models.Recipe", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Allergens")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CookingTime")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CusineType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DietType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DifficultyLevel")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Equipment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Ingredients")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Instructions")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MealType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PreparationTime")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ServingSize")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Servings")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Recipes", (string)null);
+                    b.ToTable("FavoriteRecipes");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.Review", b =>
@@ -382,7 +326,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.ShoppingListItem", b =>
@@ -406,7 +350,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShoppingList", (string)null);
+                    b.ToTable("ShoppingList");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -458,15 +402,6 @@ namespace SmartRecipGene.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SmartRecipGene.Models.BlogPost", b =>
-                {
-                    b.HasOne("SmartRecipGene.Models.Recipe", "Recipe")
-                        .WithMany()
-                        .HasForeignKey("RecipeId");
-
-                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.FavoriteRecipe", b =>

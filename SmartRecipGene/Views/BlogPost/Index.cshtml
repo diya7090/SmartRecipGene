@@ -1,0 +1,102 @@
+﻿@* @model IEnumerable<SmartRecipGene.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Blog Posts";
+}
+
+<h2>Blog Posts</h2>
+
+<a asp-action="Create" class="btn btn-primary">Create New Blog</a>
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Published</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var blog in Model)
+        {
+            <tr>
+                <td>@blog.Title</td>
+                <td>@blog.Author</td>
+                <td>@blog.Category</td>
+                <td>@(blog.IsPublished ? "Yes" : "No")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@blog.Id" class="btn btn-info btn-sm">View</a>
+                    <a asp-action="Edit" asp-route-id="@blog.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@blog.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+ *@
+
+ @model IEnumerable<SmartRecipGene.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Recipes";
+}
+
+<h2 class="text-center mb-4 text-primary">Explore Delicious Recipes</h2>
+
+<div class="text-center mb-4">
+    <a asp-action="Create" class="btn btn-success">➕ Add New Recipe</a>
+</div>
+
+<div class="container">
+    <div class="row">
+        @foreach (var blog in Model)
+        {
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card shadow-lg border-0 rounded">
+                    <!-- Handle Image URL properly -->
+                    @{
+                        var imageUrl = blog.ImageUrl.StartsWith("http")
+                        ? blog.ImageUrl
+                        : Url.Content("~/images/" + blog.ImageUrl);
+                    }
+
+                    <img src="@imageUrl"
+                         class="card-img-top"
+                         alt="@blog.Title"
+                         onerror="this.onerror=null; this.src='/images/default-recipe.jpg';"
+                         style="height: 200px; object-fit: cover; border-radius: 10px;">
+
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">@blog.Title</h5>
+                        <p class="card-text"><strong>Category:</strong> @blog.Category</p>
+                        <p class="card-text"><small class="text-muted">By @blog.Author</small></p>
+                        @if (blog.RecipeId != null)
+                        {
+                            <a asp-controller="Home" asp-action="RecipeDetails" asp-route-id="@blog.RecipeId" class="btn btn-primary btn-sm">
+                                View Recipe
+                            </a>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+</style>
+
+            

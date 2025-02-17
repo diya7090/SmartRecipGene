@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartRecipGene.Data;
 
@@ -11,9 +12,11 @@ using SmartRecipGene.Data;
 namespace SmartRecipGene.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250213214650_AddFkInBlogPost")]
+    partial class AddFkInBlogPost
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -269,7 +272,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.ToTable("BlogPosts", (string)null);
+                    b.ToTable("BlogPosts");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.FavoriteRecipe", b =>
@@ -300,7 +303,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FavoriteRecipes", (string)null);
+                    b.ToTable("FavoriteRecipes");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.Recipe", b =>
@@ -354,7 +357,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recipes", (string)null);
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.Review", b =>
@@ -382,7 +385,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.ShoppingListItem", b =>
@@ -406,7 +409,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShoppingList", (string)null);
+                    b.ToTable("ShoppingList");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

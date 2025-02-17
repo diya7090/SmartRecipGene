@@ -46,14 +46,37 @@ namespace SmartRecipGene.Controllers
         [HttpGet]
         public async Task<IActionResult> RecipeDetails(int id)
         {
-            var response = await _spoonacularService.GetRecipeDetailsAsync(id);
-            var recipe = JObject.Parse(response);
+            // Check if the recipe exists in the database
+            var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == id);
 
-            var reviews = _context.Reviews.Where(r => r.RecipeId == id).ToList();
+            if (recipe == null)
+            {
+                // Fetch from API if not found in the database
+                var response = await _spoonacularService.GetRecipeDetailsAsync(id);
+                var apiRecipe = JObject.Parse(response);
+
+                // Map API response to Recipe model (without saving)
+                recipe = new Recipe
+                {
+                    Id = id, // Ensure RecipeId is assigned
+                    Title = apiRecipe["title"]?.ToString(),
+                    Ingredients = apiRecipe["ingredients"]?.ToString(),
+                    Instructions = apiRecipe["instructions"]?.ToString(),
+                    CookingTime = apiRecipe["readyInMinutes"]?.ToObject<int>() ?? 0,
+                    Servings = apiRecipe["servings"]?.ToObject<int>() ?? 0,
+                    CusineType = apiRecipe["cuisines"]?.FirstOrDefault()?.ToString(),
+                    DifficultyLevel = "Medium", // Example default value
+                    MealType = apiRecipe["dishTypes"]?.FirstOrDefault()?.ToString()
+                };
+            }
+
+            // Fetch reviews from the database (linked to RecipeId)
+            var reviews = await _context.Reviews.Where(r => r.RecipeId == id).ToListAsync();
             ViewBag.Reviews = reviews;
 
             return View(recipe);
         }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> SubmitReview(int RecipeId, int Rating, string Comment)
@@ -75,7 +98,8 @@ namespace SmartRecipGene.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchRecipes(string query, string mealType, string diet)
         {
-            string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+            // string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+            string apiKey = "b535a4c67f554ae5bb0479ee64a3ac94"; 
             string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&query={query}&number=100";
 
 
