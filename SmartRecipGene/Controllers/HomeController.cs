@@ -46,36 +46,60 @@ namespace SmartRecipGene.Controllers
         [HttpGet]
         public async Task<IActionResult> RecipeDetails(int id)
         {
-            // Check if the recipe exists in the database
+            JObject recipeData;
+            List<Review> reviews = new List<Review>();
+
             var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == id);
 
-            if (recipe == null)
+            if (recipe != null)
             {
-                // Fetch from API if not found in the database
-                var response = await _spoonacularService.GetRecipeDetailsAsync(id);
-                var apiRecipe = JObject.Parse(response);
+                reviews = await _context.Reviews.Where(r => r.RecipeId == id).ToListAsync();
 
-                // Map API response to Recipe model (without saving)
-                recipe = new Recipe
+                recipeData = JObject.FromObject(new
                 {
-                    Id = id, // Ensure RecipeId is assigned
-                    Title = apiRecipe["title"]?.ToString(),
-                    Ingredients = apiRecipe["ingredients"]?.ToString(),
-                    Instructions = apiRecipe["instructions"]?.ToString(),
-                    CookingTime = apiRecipe["readyInMinutes"]?.ToObject<int>() ?? 0,
-                    Servings = apiRecipe["servings"]?.ToObject<int>() ?? 0,
-                    CusineType = apiRecipe["cuisines"]?.FirstOrDefault()?.ToString(),
-                    DifficultyLevel = "Medium", // Example default value
-                    MealType = apiRecipe["dishTypes"]?.FirstOrDefault()?.ToString()
-                };
+                    id = recipe.Id,
+                    title = recipe.Title ?? "No Title Available",
+                    extendedIngredients = !string.IsNullOrEmpty(recipe.Ingredients)
+                        ? new JArray(recipe.Ingredients.Split(',').Select(i => new JObject { ["original"] = i })) // ✅ Fixed
+                        : new JArray(),
+                    instructions = !string.IsNullOrEmpty(recipe.Instructions) ? recipe.Instructions : "No instructions available.",
+                    readyInMinutes = recipe.CookingTime > 0 ? recipe.CookingTime.ToString() : "Unknown",
+                    servings = recipe.Servings > 0 ? recipe.Servings.ToString() : "Unknown",
+                  //  image = string.IsNullOrEmpty(recipe.ImageUrl) ? "/default-image.jpg" : recipe.ImageUrl
+                });
+            }
+            else
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    string apiUrl = $"https://api.spoonacular.com/recipes/{id}/information?apiKey=4f23d090497a4cc6942f7f6e1f3ffca4";
+                    var response = await httpClient.GetAsync(apiUrl);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return NotFound("Recipe not found.");
+                    }
+
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    recipeData = JObject.Parse(jsonResponse);
+
+                    recipeData["id"] = id;
+                    recipeData["title"] = recipeData["title"]?.ToString() ?? "No Title Available";
+                    recipeData["extendedIngredients"] = recipeData["extendedIngredients"]?.ToObject<JArray>() ?? new JArray(); // ✅ Fixed
+                    recipeData["instructions"] = recipeData["instructions"]?.ToString() ?? "No instructions available.";
+                    recipeData["readyInMinutes"] = recipeData["readyInMinutes"]?.ToString() ?? "Unknown";
+                    recipeData["servings"] = recipeData["servings"]?.ToString() ?? "Unknown";
+                   // recipeData["image"] = recipeData["image"]?.ToString() ?? "/default-image.jpg";
+                }
             }
 
-            // Fetch reviews from the database (linked to RecipeId)
-            var reviews = await _context.Reviews.Where(r => r.RecipeId == id).ToListAsync();
             ViewBag.Reviews = reviews;
+            ViewBag.IsFromDatabase = recipe != null;
 
-            return View(recipe);
+            return View(recipeData);
         }
+
+
 
         [HttpPost]
         [Authorize]
@@ -94,12 +118,12 @@ namespace SmartRecipGene.Controllers
 
             return RedirectToAction("RecipeDetails", new { id = RecipeId });
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> SearchRecipes(string query, string mealType, string diet)
         {
-            // string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
-            string apiKey = "b535a4c67f554ae5bb0479ee64a3ac94"; 
+             string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+          //  string apiKey = "b535a4c67f554ae5bb0479ee64a3ac94"; 
             string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&query={query}&number=100";
 
 
