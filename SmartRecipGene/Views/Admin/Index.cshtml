@@ -1,0 +1,31 @@
+﻿@model List<Microsoft.AspNetCore.Identity.IdentityUser>
+
+<h2>User Management</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>
+                    @(user.EmailConfirmed ? "Approved" : "Pending")
+                </td>
+                <td>
+                    @if (!user.EmailConfirmed)
+                    {
+                        <a asp-action="Approve" asp-route-id="@user.Id" class="btn btn-success">Approve</a>
+                    }
+                    <a asp-action="Suspend" asp-route-id="@user.Id" class="btn btn-danger">Suspend</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

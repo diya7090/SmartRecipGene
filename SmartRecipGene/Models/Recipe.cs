@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        //public string? ImageUrl { get; set; } // New Field
+
         public string? Ingredients { get; set; }
         public string? Instructions { get; set; }
         public int CookingTime { get; set; }

@@ -8,6 +8,8 @@ using SmartRecipGene.Services;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http; // Add this for session access
+
 
 namespace SmartRecipGene.Controllers
 {
@@ -26,16 +28,27 @@ namespace SmartRecipGene.Controllers
             _httpClient = httpClientFactory.CreateClient(); // Correct way to initialize HttpClient
         }
 
-        [HttpPost]
         public async Task<IActionResult> GetRecipes(string ingredients)
         {
-            // Call the API with the entered ingredients
             var response = await _spoonacularService.GetRecipesByIngredientsAsync(ingredients);
-
-            // Parse the JSON response
             var recipes = JArray.Parse(response);
 
-            // Pass the recipes to the view
+            // Store data in session instead of TempData
+            HttpContext.Session.SetString("Recipes", recipes.ToString());
+
+            return RedirectToAction("RecipeResults");
+        }
+
+        public IActionResult RecipeResults()
+        {
+            var recipesJson = HttpContext.Session.GetString("Recipes");
+
+            if (string.IsNullOrEmpty(recipesJson))
+            {
+                return RedirectToAction("Index"); // Redirect to home if no data
+            }
+
+            var recipes = JArray.Parse(recipesJson);
             return View("Recipes", recipes);
         }
 

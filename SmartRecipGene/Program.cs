@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartRecipGene.Data;
 using SmartRecipGene.Services;
+using Microsoft.AspNetCore.Http; // Add this for session access
 
 
 
@@ -16,6 +17,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
+builder.Services.AddSession();
 
 //builder.Services.AddHttpClient<SpoonacularService>();
 builder.Services.AddScoped<SpoonacularService>();
@@ -29,6 +31,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseSession();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
