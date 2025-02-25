@@ -1,11 +1,79 @@
 ﻿@model SmartRecipGene.Models.Recipe
 
 <h2>Edit Recipe</h2>
-<form asp-action="Edit">
+
+<form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
+
     <div class="form-group">
         <label>Title</label>
-        <input asp-for="Title" class="form-control" />
+        <input asp-for="Title" class="form-control" required />
     </div>
-    <button type="submit" class="btn btn-warning">Update</button>
+
+    <div class="form-group">
+        <label>Ingredients</label>
+        <textarea asp-for="Ingredients" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Instructions</label>
+        <textarea asp-for="Instructions" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Preparation Time (mins)</label>
+        <input asp-for="PreparationTime" type="number" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Cooking Time (mins)</label>
+        <input asp-for="CookingTime" type="number" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Servings</label>
+        <input asp-for="Servings" type="number" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Serving Size</label>
+        <input asp-for="ServingSize" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Difficulty Level</label>
+        <select asp-for="DifficultyLevel" class="form-control">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Cuisine Type</label>
+        <input asp-for="CusineType" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Diet Type</label>
+        <input asp-for="DietType" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Allergens</label>
+        <input asp-for="Allergens" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Meal Type</label>
+        <input asp-for="MealType" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Equipment</label>
+        <input asp-for="Equipment" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-warning">Update Recipe</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>

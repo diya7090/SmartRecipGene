@@ -1,14 +1,110 @@
 ﻿@model SmartRecipGene.Models.Recipe
 
 <h2>Add New Recipe</h2>
-<form asp-action="Create">
+
+<form asp-action="Create" method="post">
     <div class="form-group">
         <label>Title</label>
-        <input asp-for="Title" class="form-control" />
+        <input asp-for="Title" class="form-control" required />
     </div>
+
+    <div class="form-group">
+        <label>Ingredients</label>
+        <textarea asp-for="Ingredients" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Instructions</label>
+        <textarea asp-for="Instructions" class="form-control" rows="4" required></textarea>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Preparation Time (mins)</label>
+            <input asp-for="PreparationTime" type="number" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Cooking Time (mins)</label>
+            <input asp-for="CookingTime" type="number" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Total Time (mins)</label>
+            <input class="form-control" id="TotalTime" readonly />
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Servings</label>
+            <input asp-for="Servings" type="number" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Serving Size</label>
+            <input asp-for="ServingSize" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Difficulty Level</label>
+            <select asp-for="DifficultyLevel" class="form-control">
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+        </div>
+    </div>
+
     <div class="form-group">
         <label>Cuisine Type</label>
-        <input asp-for="CusineType" class="form-control" />
+        <input asp-for="CusineType" class="form-control" required />
     </div>
-    <button type="submit" class="btn btn-success">Save</button>
+
+    <div class="form-group">
+        <label>Diet Type</label>
+        <select asp-for="DietType" class="form-control">
+            <option value="">Select Diet Type</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Non-Vegetarian">Non-Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Allergens</label>
+        <input asp-for="Allergens" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Meal Type</label>
+        <select asp-for="MealType" class="form-control">
+            <option value="">Select Meal Type</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="Snack">Snack</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Equipment</label>
+        <input asp-for="Equipment" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Recipe</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function updateTotalTime() {
+            let prepTime = parseInt(document.querySelector("[name='PreparationTime']").value) || 0;
+            let cookTime = parseInt(document.querySelector("[name='CookingTime']").value) || 0;
+            document.getElementById("TotalTime").value = prepTime + cookTime;
+        }
+
+        document.querySelector("[name='PreparationTime']").addEventListener("input", updateTotalTime);
+        document.querySelector("[name='CookingTime']").addEventListener("input", updateTotalTime);
+    });
+</script>

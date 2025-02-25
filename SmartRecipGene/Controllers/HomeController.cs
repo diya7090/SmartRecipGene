@@ -184,6 +184,8 @@ namespace SmartRecipGene.Controllers
                 return View("RecipeResults", new JArray());
             }
         }
+        [Authorize]
+
         public IActionResult Ingredients()
         {
             return View();

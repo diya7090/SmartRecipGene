@@ -1,43 +1,9 @@
-﻿@* @model IEnumerable<SmartRecipGene.Models.BlogPost>
+﻿
 
-@{
-    ViewData["Title"] = "Blog Posts";
-}
+ 
 
-<h2>Blog Posts</h2>
-
-<a asp-action="Create" class="btn btn-primary">Create New Blog</a>
-
-<table class="table table-bordered mt-3">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Category</th>
-            <th>Published</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var blog in Model)
-        {
-            <tr>
-                <td>@blog.Title</td>
-                <td>@blog.Author</td>
-                <td>@blog.Category</td>
-                <td>@(blog.IsPublished ? "Yes" : "No")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@blog.Id" class="btn btn-info btn-sm">View</a>
-                    <a asp-action="Edit" asp-route-id="@blog.Id" class="btn btn-warning btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@blog.Id" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
- *@
-
- @model IEnumerable<SmartRecipGene.Models.BlogPost>
+             @*
+                 @model IEnumerable<SmartRecipGene.Models.BlogPost>
 
 @{
     ViewData["Title"] = "Recipes";
@@ -99,4 +65,45 @@
         }
 </style>
 
-            
+             *@
+
+   @model IEnumerable<SmartRecipGene.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Blog Posts";
+}
+
+<h2 class="text-center">📖 Blog Posts</h2>
+
+<!-- Add New Blog Button -->
+<div class="text-right mb-3">
+    <a asp-action="Create" class="btn btn-success">➕ Add New Blog</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var blog in Model)
+        {
+            <tr>
+                <td>@blog.Title</td>
+                <td>@blog.Author</td>
+                <td>@blog.Category</td>
+                <td>@blog.CreatedAt.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@blog.Id" class="btn btn-info">View</a>
+                    <a asp-action="Edit" asp-route-id="@blog.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@blog.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
