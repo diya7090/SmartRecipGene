@@ -16,8 +16,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDistributedMemoryCache(); // Required for Session
+builder.Services.AddSession(); // Add Session services
+builder.Services.AddHttpContextAccessor(); // Required for accessing session in controllers
 builder.Services.AddHttpClient();
-builder.Services.AddSession();
+
 
 //builder.Services.AddHttpClient<SpoonacularService>();
 builder.Services.AddScoped<SpoonacularService>();

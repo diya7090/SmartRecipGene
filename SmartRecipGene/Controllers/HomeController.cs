@@ -8,7 +8,8 @@ using SmartRecipGene.Services;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http; // Add this for session access
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json; // Add this for session access
 
 
 namespace SmartRecipGene.Controllers
@@ -34,7 +35,7 @@ namespace SmartRecipGene.Controllers
             var recipes = JArray.Parse(response);
 
             // Store data in session instead of TempData
-            HttpContext.Session.SetString("Recipes", recipes.ToString());
+            HttpContext.Session.SetString("Recipes", recipes.ToString(Newtonsoft.Json.Formatting.None));
 
             return RedirectToAction("RecipeResults");
         }
@@ -45,10 +46,10 @@ namespace SmartRecipGene.Controllers
 
             if (string.IsNullOrEmpty(recipesJson))
             {
-                return RedirectToAction("Index"); // Redirect to home if no data
+                return RedirectToAction("Index"); // Redirect if session is empty
             }
 
-            var recipes = JArray.Parse(recipesJson);
+            var recipes = JsonConvert.DeserializeObject<JArray>(recipesJson);
             return View("Recipes", recipes);
         }
 
