@@ -1,0 +1,79 @@
+﻿@model SmartRecipGene.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Edit Blog Post";
+}
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+
+<h2 class="text-center text-warning">Edit Blog Post</h2>
+
+<div class="container">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id">
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input asp-for="Title" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Content</label>
+            <div id="editor" style="height: 200px;"></div>
+            <input type="hidden" asp-for="Content" id="contentInput" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Author</label>
+            <input asp-for="Author" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input asp-for="ImageUrl" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <input asp-for="Category" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tags (comma-separated)</label>
+            <input asp-for="Tags" class="form-control">
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" asp-for="IsPublished">
+            <label class="form-check-label">Published</label>
+        </div>
+
+        <div class="mt-4 text-center">
+            <button type="submit" class="btn btn-warning">Update Blog</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+</div>
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Write your blog content here...',
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link', 'image']
+            ]
+        }
+    });
+    var existingContent = @Html.Raw(Json.Serialize(Model.Content));
+    if (existingContent) {
+        quill.root.innerHTML = existingContent;
+    }
+    // Store the Quill editor content in the hidden input before form submission
+    document.querySelector("form").onsubmit = function () {
+        document.getElementById("contentInput").value = quill.root.innerHTML;
+    };
+</script>

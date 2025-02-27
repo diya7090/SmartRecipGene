@@ -73,12 +73,15 @@
     ViewData["Title"] = "Blog Posts";
 }
 
-<h2 class="text-center">📖 Blog Posts</h2>
 
-<!-- Add New Blog Button -->
-<div class="text-right mb-3">
-    <a asp-action="Create" class="btn btn-success">➕ Add New Blog</a>
-</div>
+<h2 class="text-center">📖 Blog Posts</h2>
+@if (User.IsInRole("Admin"))
+{
+    <!-- Add New Blog Button -->
+    <div class="text-right mb-3">
+        <a asp-action="Create" class="btn btn-success">➕ Add New Blog</a>
+    </div>
+}
 
 <table class="table table-striped">
     <thead>
@@ -99,9 +102,13 @@
                 <td>@blog.Category</td>
                 <td>@blog.CreatedAt.ToShortDateString()</td>
                 <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@blog.Id" class="btn btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@blog.Id" class="btn btn-danger">Delete</a>
+                    }
                     <a asp-action="Details" asp-route-id="@blog.Id" class="btn btn-info">View</a>
-                    <a asp-action="Edit" asp-route-id="@blog.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@blog.Id" class="btn btn-danger">Delete</a>
+                   
                 </td>
             </tr>
         }
