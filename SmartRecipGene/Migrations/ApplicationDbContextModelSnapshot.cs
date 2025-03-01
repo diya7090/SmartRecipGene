@@ -269,7 +269,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.ToTable("BlogPosts", (string)null);
+                    b.ToTable("BlogPosts");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.FavoriteRecipe", b =>
@@ -300,7 +300,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FavoriteRecipes", (string)null);
+                    b.ToTable("FavoriteRecipes");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.Recipe", b =>
@@ -330,6 +330,9 @@ namespace SmartRecipGene.Migrations
                     b.Property<string>("Equipment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Ingredients")
                         .HasColumnType("nvarchar(max)");
 
@@ -354,7 +357,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Recipes", (string)null);
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.Review", b =>
@@ -382,7 +385,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.ShoppingListItem", b =>
@@ -406,7 +409,7 @@ namespace SmartRecipGene.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShoppingList", (string)null);
+                    b.ToTable("ShoppingList");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

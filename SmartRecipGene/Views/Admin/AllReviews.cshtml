@@ -1,0 +1,41 @@
+﻿@model IEnumerable<SmartRecipGene.Models.Review>
+
+<div class="container mt-4">
+    <h2>All Recipe Reviews</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Recipe</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var review in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="RecipeDetails" asp-route-id="@review.RecipeId">
+                                @(ViewBag.RecipeDetails[review.RecipeId])
+                            </a>
+                        </td>
+                        <td>
+                            @for (int i = 0; i < review.Rating; i++)
+                            {
+                                <span class="text-warning">⭐</span>
+                            }
+                        </td>
+                        <td>@review.Comment</td>
+                        <td>
+                            <a asp-action="RecipeDetails" asp-route-id="@review.RecipeId"
+                               class="btn btn-primary btn-sm">View Recipe</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

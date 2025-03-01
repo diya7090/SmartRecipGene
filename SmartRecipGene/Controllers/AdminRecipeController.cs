@@ -71,7 +71,7 @@ namespace SmartRecipGene.Controllers
         // 6️⃣ POST: Admin/Recipe/Edit/5 (Update)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Ingredients,Instructions,CookingTime,PreparationTime,Servings,ServingSize,DifficultyLevel,CusineType,DietType,Allergens,MealType,Equipment")] Recipe recipe)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ImageUrl,Title,Ingredients,Instructions,CookingTime,PreparationTime,Servings,ServingSize,DifficultyLevel,CusineType,DietType,Allergens,MealType,Equipment")] Recipe recipe)
         {
             if (id != recipe.Id) return NotFound();
 

@@ -63,5 +63,6 @@ namespace SmartRecipGene.Controllers
             }
             return RedirectToAction("Index");
         }
+
     }
 }
