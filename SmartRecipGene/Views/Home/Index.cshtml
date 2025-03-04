@@ -2,46 +2,60 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <form method="get" asp-action="SearchRecipes">
-        <input type="text" name="query" class="form-control" placeholder="Search recipes..." />
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Discover Your Next Favorite Recipe</h1>
+        <p class="hero-subtitle">Search from thousands of delicious recipes</p>
+    </div>
+</div>
 
-        <label>Cuisine:</label>
-            <select name="cuisine" class="form-control">
-                <option value="">Select Cuisine</option>
-                <option value="african">African</option>
-                <option value="asian">Asian</option>
-                <option value="american">American</option>
-                <option value="british">British</option>
-                <option value="cajun">Cajun</option>
-                <option value="caribbean">Caribbean</option>
-                <option value="chinese">Chinese</option>
-                <option value="eastern european">Eastern European</option>
-                <option value="european">European</option>
-                <option value="french">French</option>
-                <option value="german">German</option>
-                <option value="greek">Greek</option>
-                <option value="indian">Indian</option>
-                <option value="irish">Irish</option>
-                <option value="italian">Italian</option>
-                <option value="japanese">Japanese</option>
-                <option value="jewish">Jewish</option>
-                <option value="korean">Korean</option>
-                <option value="latin american">Latin American</option>
-                <option value="mediterranean">Mediterranean</option>
-                <option value="mexican">Mexican</option>
-                <option value="middle eastern">Middle Eastern</option>
-                <option value="nordic">Nordic</option>
-                <option value="southern">Southern</option>
-                <option value="spanish">Spanish</option>
-                <option value="thai">Thai</option>
-                <option value="vietnamese">Vietnamese</option>
-        </select>
+<div class="search-container">
+    <form method="get" asp-action="SearchRecipes" class="recipe-search-form">
+        <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" name="query" class="search-input" placeholder="What would you like to cook today?" />
+        </div>
 
-        <label>Meal Type:</label>
-        <select name="mealType" class="form-control">
-            <option value="">Select Meal Type</option>
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label><i class="fas fa-globe-americas"></i> Cuisine</label>
+                <select name="cuisine" class="form-control">
+                    <option value="">Select Cuisine</option>
+                    <option value="african">African</option>
+                    <option value="asian">Asian</option>
+                    <option value="american">American</option>
+                    <option value="british">British</option>
+                    <option value="cajun">Cajun</option>
+                    <option value="caribbean">Caribbean</option>
+                    <option value="chinese">Chinese</option>
+                    <option value="eastern european">Eastern European</option>
+                    <option value="european">European</option>
+                    <option value="french">French</option>
+                    <option value="german">German</option>
+                    <option value="greek">Greek</option>
+                    <option value="indian">Indian</option>
+                    <option value="irish">Irish</option>
+                    <option value="italian">Italian</option>
+                    <option value="japanese">Japanese</option>
+                    <option value="jewish">Jewish</option>
+                    <option value="korean">Korean</option>
+                    <option value="latin american">Latin American</option>
+                    <option value="mediterranean">Mediterranean</option>
+                    <option value="mexican">Mexican</option>
+                    <option value="middle eastern">Middle Eastern</option>
+                    <option value="nordic">Nordic</option>
+                    <option value="southern">Southern</option>
+                    <option value="spanish">Spanish</option>
+                    <option value="thai">Thai</option>
+                    <option value="vietnamese">Vietnamese</option>
+                </select>
+
+            </div>
+
+            <div class="filter-group">
+                <label><i class="fas fa-utensils"></i> Meal Type</label>
+                <select name="mealType" class="filter-select">
+                    <option value="">Select Meal Type</option>
                 <option value="main course">Main Course</option>
                 <option value="side dish">Side Dish</option>
                 <option value="dessert">Dessert</option>
@@ -57,18 +71,124 @@
                 <option value="snack">Snack</option>
                 <option value="drink">Drink</option>
         </select>
+            </div>
 
-        <label>Dietary Restrictions:</label>
-        <select name="diet" class="form-control">
-            <option value="">Any</option>
-            <option value="vegetarian">Vegetarian</option>
-            <option value="vegan">Vegan</option>
-            <option value="gluten free">Gluten Free</option>
-            <option value="egg free">Egg Free</option>
-        </select>
+            <div class="filter-group">
+                <label><i class="fas fa-leaf"></i> Dietary Restrictions</label>
+                <select name="diet" class="filter-select">
+                    <option value="">Any</option>
+                    <option value="vegetarian">Vegetarian</option>
+                    <option value="vegan">Vegan</option>
+                    <option value="gluten free">Gluten Free</option>
+                    <option value="egg free">Egg Free</option>
+                </select>
+            </div>
+        </div>
 
-        <button type="submit" class="btn btn-primary mt-2">Search</button>
+        <button type="submit" class="search-button">
+            <i class="fas fa-search"></i> Find Recipes
+        </button>
     </form>
-
-    @* <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p> *@
 </div>
+
+<style>
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                    url('https://images.unsplash.com/photo-1543353071-087092ec393a') center/cover no-repeat;
+        height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+    }
+
+    .hero-content {
+        padding: 2rem;
+        max-width: 800px;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        opacity: 0.9;
+    }
+
+    .search-container {
+        max-width: 1200px;
+        margin: -100px auto 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 1.2rem;
+        border: 2px solid #eee;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+
+    .search-input:focus {
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+        outline: none;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #eee;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+
+    .search-button {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: block;
+        margin: 2rem auto 0;
+    }
+
+    .search-button:hover {
+        background: #ff5252;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    @@media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .search-container {
+            margin: -50px 1rem 2rem;
+            padding: 1.5rem;
+        }
+    }
+</style>

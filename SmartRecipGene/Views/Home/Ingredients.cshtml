@@ -1,4 +1,4 @@
-﻿@{
+﻿@* @{
     ViewData["Title"] = "Input Ingredients";
 }
 
@@ -11,3 +11,222 @@
     </div>
     <button type="submit" class="btn btn-primary">Find Recipes</button>
 </form>
+ *@
+ @{
+    ViewData["Title"] = "Find Recipes by Ingredients";
+}
+
+<div class="ingredients-hero">
+    <div class="hero-content">
+        <h1>What's in Your Kitchen?</h1>
+        <p>Turn your available ingredients into delicious recipes</p>
+    </div>
+</div>
+
+<div class="ingredients-container">
+    <form method="post" asp-action="GetRecipes" class="ingredients-form">
+        <div class="form-group">
+            <div class="input-wrapper">
+                <i class="fas fa-carrot input-icon"></i>
+                <input type="text" 
+                       class="form-control" 
+                       id="ingredients" 
+                       name="ingredients" 
+                       placeholder="Enter ingredients (e.g., chicken, rice, tomatoes)" 
+                       required />
+            </div>
+            <small class="helper-text">Separate ingredients with commas</small>
+        </div>
+        <button type="submit" class="search-button">
+            <i class="fas fa-search"></i> Find Recipes
+        </button>
+    </form>
+@* 
+    <div class="popular-ingredients">
+        <h3>Popular Ingredients</h3>
+        <div class="ingredient-tags">
+            <span class="ingredient-tag">Chicken</span>
+            <span class="ingredient-tag">Rice</span>
+            <span class="ingredient-tag">Tomatoes</span>
+            <span class="ingredient-tag">Pasta</span>
+            <span class="ingredient-tag">Eggs</span>
+            <span class="ingredient-tag">Potatoes</span>
+        </div>
+    </div> *@
+    <div class="ingredient-tags">
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Chicken</span>
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Rice</span>
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Tomatoes</span>
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Pasta</span>
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Eggs</span>
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Potatoes</span>
+        @* <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Cheese</span>
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Onion</span>
+        <span class="ingredient-tag" onclick="addIngredient(this.textContent)">Potatoes</span> *@
+       
+
+
+    </div>
+</div>
+
+<style>
+    .ingredients-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                    url('https://images.unsplash.com/photo-1606787366850-de6330128bfc') center/cover;
+        height: 40vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+    }
+
+    .ingredients-hero h1 {
+        font-family: 'Merriweather', serif;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .ingredients-hero p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .ingredients-container {
+        max-width: 800px;
+        margin: -50px auto 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .ingredients-form {
+        margin-bottom: 2rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #ff6b6b;
+        font-size: 1.2rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid #eee;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #ff6b6b;
+        box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.1);
+        outline: none;
+    }
+
+    .helper-text {
+        display: block;
+        margin-top: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+        margin-left: 1rem;
+    }
+
+    .search-button {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: block;
+        margin: 2rem auto 0;
+        width: 200px;
+    }
+
+    .search-button:hover {
+        background: #ff5252;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .popular-ingredients {
+        text-align: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+    }
+
+    .popular-ingredients h3 {
+        font-family: 'Merriweather', serif;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .ingredient-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        justify-content: center;
+    }
+
+    .ingredient-tag {
+        background: #f8f9fa;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        color: #666;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .ingredient-tag:hover {
+        background: #ff6b6b;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    @@media (max-width: 768px) {
+        .ingredients-hero h1 {
+            font-size: 2rem;
+        }
+
+        .ingredients-container {
+            margin: -30px 1rem 2rem;
+            padding: 1.5rem;
+        }
+
+        .search-button {
+            width: 100%;
+        }
+    }
+</style>
+<script>
+    function addIngredient(ingredient) {
+        const inputField = document.getElementById('ingredients');
+        const currentValue = inputField.value.trim();
+
+        if (currentValue === '') {
+            inputField.value = ingredient;
+        } else {
+            inputField.value = currentValue + ', ' + ingredient;
+        }
+
+        // Focus on the input field
+        inputField.focus();
+    }
+</script>

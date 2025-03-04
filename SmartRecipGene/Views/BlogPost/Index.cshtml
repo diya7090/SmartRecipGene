@@ -1,71 +1,6 @@
-﻿
+﻿@* 
 
  
-
-             @*
-                 @model IEnumerable<SmartRecipGene.Models.BlogPost>
-
-@{
-    ViewData["Title"] = "Recipes";
-}
-
-<h2 class="text-center mb-4 text-primary">Explore Delicious Recipes</h2>
-
-<div class="text-center mb-4">
-    <a asp-action="Create" class="btn btn-success">➕ Add New Recipe</a>
-</div>
-
-<div class="container">
-    <div class="row">
-        @foreach (var blog in Model)
-        {
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="card shadow-lg border-0 rounded">
-                    <!-- Handle Image URL properly -->
-                    @{
-                        var imageUrl = blog.ImageUrl.StartsWith("http")
-                        ? blog.ImageUrl
-                        : Url.Content("~/images/" + blog.ImageUrl);
-                    }
-
-                    <img src="@imageUrl"
-                         class="card-img-top"
-                         alt="@blog.Title"
-                         onerror="this.onerror=null; this.src='/images/default-recipe.jpg';"
-                         style="height: 200px; object-fit: cover; border-radius: 10px;">
-
-                    <div class="card-body">
-                        <h5 class="card-title text-primary">@blog.Title</h5>
-                        <p class="card-text"><strong>Category:</strong> @blog.Category</p>
-                        <p class="card-text"><small class="text-muted">By @blog.Author</small></p>
-                        @if (blog.RecipeId != null)
-                        {
-                            <a asp-controller="Home" asp-action="RecipeDetails" asp-route-id="@blog.RecipeId" class="btn btn-primary btn-sm">
-                                View Recipe
-                            </a>
-                        }
-
-
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-</div>
-
-<!-- Custom Styles -->
-<style>
-    .card {
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    }
-
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-</style>
-
-             *@
 
    @model IEnumerable<SmartRecipGene.Models.BlogPost>
 
@@ -114,3 +49,342 @@
         }
     </tbody>
 </table>
+ *@
+
+                    @model IEnumerable<SmartRecipGene.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Recipe Blog";
+}
+
+<div class="blog-hero">
+    <div class="hero-content">
+        <h1>Culinary Stories</h1>
+        <p>Discover recipes, cooking tips, and food inspiration</p>
+    </div>
+</div>
+
+<div class="blog-container">
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="admin-actions">
+            <a asp-action="Create" class="create-btn">
+                <i class="fas fa-plus"></i> Create New Post
+            </a>
+        </div>
+    }
+
+    <div class="blog-grid">
+        <div class="featured-posts">
+            <h2>Featured Posts</h2>
+            <div class="featured-scroll">
+                @foreach (var blog in Model.Take(3))
+                {
+                    <div class="featured-card">
+                        <div class="featured-image">
+                            @{
+                                var imageUrl = blog.ImageUrl?.StartsWith("http") ?? false
+                                    ? blog.ImageUrl
+                                    : Url.Content("~/images/" + blog.ImageUrl);
+                            }
+                            <img src="@imageUrl" alt="@blog.Title" onerror="this.src='/images/default-recipe.jpg';" />
+                        </div>
+                        <div class="featured-content">
+                            <span class="category">@blog.Category</span>
+                            <h3>@blog.Title</h3>
+                            <div class="meta">
+                                <span><i class="fas fa-user"></i> @blog.Author</span>
+                                <span><i class="far fa-calendar"></i> @blog.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <a asp-action="Details" asp-route-id="@blog.Id" class="read-more">Read More</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="recent-posts">
+            <h2>Recent Posts</h2>
+            <div class="posts-grid">
+                @foreach (var blog in Model.Skip(3))
+                {
+                    <div class="blog-card">
+                        <div class="blog-image">
+                            @{
+                                var imageUrl = blog.ImageUrl?.StartsWith("http") ?? false
+                                    ? blog.ImageUrl
+                                    : Url.Content("~/images/" + blog.ImageUrl);
+                            }
+                            <img src="@imageUrl" alt="@blog.Title" onerror="this.src='/images/default-recipe.jpg';" />
+                            <div class="blog-overlay">
+                                <a asp-action="Details" asp-route-id="@blog.Id" class="view-post-btn">
+                                    Read Article
+                                </a>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <span class="category">@blog.Category</span>
+                            <h3>@blog.Title</h3>
+                            <div class="meta">
+                                <span><i class="fas fa-user"></i> @blog.Author</span>
+                                <span><i class="far fa-calendar"></i> @blog.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="admin-controls">
+                                    <a asp-action="Edit" asp-route-id="@blog.Id" class="edit-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@blog.Id" class="delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .blog-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                    url('https://images.unsplash.com/photo-1495521821757-a1efb6729352') center/cover;
+        height: 45vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-bottom: -50px;
+    }
+
+    .blog-hero h1 {
+        font-family: 'Merriweather', serif;
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .blog-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+        position: relative;
+    }
+
+    .admin-actions {
+        text-align: right;
+        margin-bottom: 2rem;
+    }
+
+    .create-btn {
+        background: #ff6b6b;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 30px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .create-btn:hover {
+        background: #ff5252;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        color: white;
+    }
+
+    .featured-posts {
+        margin-bottom: 4rem;
+    }
+
+    .featured-scroll {
+        display: flex;
+        gap: 2rem;
+        overflow-x: auto;
+        padding: 1rem 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .featured-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .featured-card {
+        flex: 0 0 400px;
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+
+    .featured-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .featured-image {
+        height: 250px;
+    }
+
+    .featured-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .featured-content {
+        padding: 2rem;
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .blog-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .blog-image {
+        position: relative;
+        height: 200px;
+    }
+
+    .blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .blog-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .blog-card:hover .blog-overlay {
+        opacity: 1;
+    }
+
+    .view-post-btn {
+        color: white;
+        text-decoration: none;
+        padding: 0.8rem 1.5rem;
+        border: 2px solid white;
+        border-radius: 30px;
+        transition: all 0.3s;
+    }
+
+    .view-post-btn:hover {
+        background: white;
+        color: #ff6b6b;
+    }
+
+    .blog-content {
+        padding: 1.5rem;
+        position: relative;
+    }
+
+    .category {
+        background: #ff6b6b;
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    h2 {
+        font-family: 'Merriweather', serif;
+        color: #333;
+        margin-bottom: 2rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .meta {
+        display: flex;
+        gap: 1rem;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .admin-controls {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .edit-btn, .delete-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s;
+    }
+
+    .edit-btn {
+        background: #ffd43b;
+    }
+
+    .delete-btn {
+        background: #ff6b6b;
+    }
+
+    .edit-btn:hover, .delete-btn:hover {
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    @@media (max-width: 768px) {
+        .blog-hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .blog-container {
+            padding: 2rem 1rem;
+        }
+
+        .featured-card {
+            flex: 0 0 300px;
+        }
+    }
+</style>

@@ -8,119 +8,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SmartRecipGene.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SmartRecipGene</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>                      
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
-                        </li>
-                       
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Ingredients">Find Recipes</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Desserts" asp-action="Index">🍰 Desserts</a>  <!-- Added Desserts Link -->
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="FavoriteRecipes" asp-action="Index">❤️ My Favorites</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog Posts</a>
-                        </li>
-                        <li class="nav-item">
-                            <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline">
-                                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-                            </form>
-                        </li>
-
-                        
-
-                    </ul>
-                    <ul class="nav flex-column">
-                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Admin" asp-action="Index">Manage Users</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="AdminRecipe" asp-action="Index">Admin Recipes</a>
-                            </li>
-                        }
-                    </ul>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <p>Welcome, @User.Identity.Name!</p>
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a href="/Admin/Dashboard">Admin Panel</a>
-                        }
-                        else
-                        {
-                            <p>You are a regular user.</p>
-                        }
-
-                        <a href="/Account/Logout">Logout</a>
-                    }
-                    else
-                    {
-                        <a href="/Account/Login">Login</a>
-                    }
-
-
-
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-          &copy; 2025 - SmartRecipGene - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
- *@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SmartRecipGene</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/SmartRecipGene.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <header>
@@ -215,3 +103,257 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+ *@
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartRecipGene</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-utensils"></i> SmartRecipGene
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Ingredients">Find Recipes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Desserts" asp-action="Index">🍰 Desserts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="FavoriteRecipes" asp-action="Index">❤️ My Favorites</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog Posts</a>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link">Welcome, @User.Identity.Name!</span>
+                            </li>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link admin-link" asp-controller="Admin" asp-action="Index">Manage Users</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link admin-link" asp-controller="AdminRecipe" asp-action="Index">Recipes Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link admin-link" asp-controller="Admin" asp-action="Dashboard">Admin Panel</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Home" asp-action="AllReviews">View All Reviews</a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline">
+                                    <button type="submit" class="nav-link btn btn-link">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5>SmartRecipGene</h5>
+                    <p>Discover and share delicious recipes from around the world.</p>
+                </div>
+                <div class="footer-section">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Follow Us</h5>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SmartRecipGene. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<style>
+    body {
+        font-family: 'Source Sans Pro', sans-serif;
+        color: #333;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+        background-color: white;
+        padding: 1rem 0;
+    }
+
+    .navbar-brand {
+        font-family: 'Merriweather', serif;
+        font-size: 1.5rem;
+        color: #ff6b6b !important;
+        font-weight: 700;
+    }
+
+    .navbar-brand i {
+        margin-right: 0.5rem;
+    }
+
+    .nav-link {
+        color: #333 !important;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        transition: color 0.3s;
+    }
+
+    .nav-link:hover {
+        color: #ff6b6b !important;
+    }
+
+    .admin-link {
+        color: #dc3545 !important;
+    }
+
+    .admin-link:hover {
+        color: #c82333 !important;
+    }
+
+    .nav-link.btn-link {
+        border: none;
+        background: none;
+        font-weight: 600;
+    }
+
+    /* Main Content */
+    main {
+        flex: 1;
+    }
+
+    /* Footer Styles */
+    .footer {
+        background: #2c3e50;
+        color: white;
+        padding: 4rem 0 2rem;
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .footer-section h5 {
+        font-family: 'Merriweather', serif;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #ff6b6b;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.8rem;
+    }
+
+    .footer-section a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .footer-section a:hover {
+        color: #ff6b6b;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-links a {
+        font-size: 1.5rem;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    @@media (max-width: 768px) {
+        .navbar {
+            padding: 0.5rem 0;
+        }
+
+        .footer {
+            padding: 2rem 0 1rem;
+        }
+
+        .footer-content {
+            gap: 1.5rem;
+        }
+    }
+</style>
