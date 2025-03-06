@@ -18,6 +18,8 @@ namespace SmartRecipGene.Data
 
         public DbSet<Recipe> Recipes { get; set; }
 
+        public DbSet<UserActivity> UserActivities { get; set; }
+
         //public DbSet<ShoppingListItem> ShoppingList { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

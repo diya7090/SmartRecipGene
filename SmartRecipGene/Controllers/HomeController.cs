@@ -16,18 +16,37 @@ namespace SmartRecipGene.Controllers
 {
     public class HomeController : Controller
     {
+        
+            private readonly SpoonacularService _spoonacularService;
+            private readonly ApplicationDbContext _context;
+            private readonly HttpClient _httpClient;
+            private readonly ILogger<HomeController> _logger;
 
-        private readonly SpoonacularService _spoonacularService;
+            public HomeController(
+                ApplicationDbContext context,
+                SpoonacularService spoonacularService,
+                IHttpClientFactory httpClientFactory,
+                ILogger<HomeController> logger)
+            {
+                _context = context;
+                _spoonacularService = spoonacularService;
+                _httpClient = httpClientFactory.CreateClient();
+                _logger = logger;
+            }
 
-        private readonly ApplicationDbContext _context;
-        private readonly HttpClient _httpClient; // Declare as a private readonly field
+            // ... rest of your controller code ...
+        
+        //private readonly SpoonacularService _spoonacularService;
 
-        public HomeController(ApplicationDbContext context, SpoonacularService spoonacularService, IHttpClientFactory httpClientFactory )
-        {
-            _context = context ;
-            _spoonacularService = spoonacularService;
-            _httpClient = httpClientFactory.CreateClient(); // Correct way to initialize HttpClient
-        }
+        //private readonly ApplicationDbContext _context;
+        //private readonly HttpClient _httpClient; // Declare as a private readonly field
+
+        //public HomeController(ApplicationDbContext context, SpoonacularService spoonacularService, IHttpClientFactory httpClientFactory )
+        //{
+        //    _context = context ;
+        //    _spoonacularService = spoonacularService;
+        //    _httpClient = httpClientFactory.CreateClient(); // Correct way to initialize HttpClient
+        //}
 
         public async Task<IActionResult> GetRecipes(string ingredients)
         {
@@ -271,86 +290,8 @@ namespace SmartRecipGene.Controllers
                 return View("RecipeResults", combinedResults);
             }
         }
-        //[HttpGet]
-        //public async Task<IActionResult> SearchRecipes(string query, string cuisine, string mealType, string diet)
-        //{
-        //    string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
-        //    string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&query={query}&number=100";
-
-        //    // Add cuisine filter if specified
-        //    if (!string.IsNullOrEmpty(cuisine))
-        //    {
-        //        url += $"&cuisine={cuisine.ToLower()}";
-        //    }
-
-        //    // Add meal type filter if specified
-        //    if (!string.IsNullOrEmpty(mealType))
-        //    {
-        //        url += $"&type={mealType.ToLower()}";
-        //    }
-
-        //    // Handle dietary restrictions
-        //    if (!string.IsNullOrEmpty(diet))
-        //    {
-        //        switch (diet.ToLower())
-        //        {
-        //            case "vegetarian":
-        //                url += "&diet=vegetarian";
-        //                url += "&excludeIngredients=chicken,beef,pork,fish,mutton,shrimp,crab,duck,meat,bacon,ham,turkey,seafood,prawn,egg,eggs,mayonnaise";
-        //                url += "&instructionsRequired=true";
-        //                break;
-        //            case "vegan":
-        //                url += "&diet=vegan";
-        //                break;
-        //            case "gluten-free":
-        //                url += "&diet=gluten-free";
-        //                break;
-        //        }
-        //    }
-
-        //    // Add additional parameters
-        //    url += "&fillIngredients=true&addRecipeInformation=true";
-
-        //    try
-        //    {
-        //        var response = await _httpClient.GetStringAsync(url);
-        //        var jsonResponse = JObject.Parse(response);
-
-        //        if (!jsonResponse.ContainsKey("results") || !jsonResponse["results"].HasValues)
-        //        {
-        //            ViewBag.Message = "No recipes found based on your filters.";
-        //            return View("RecipeResults", new JArray());
-        //        }
-
-        //        var recipes = jsonResponse["results"].ToObject<JArray>();
-
-        //        // Apply additional filtering for vegetarian recipes if needed
-        //        if (diet?.ToLower() == "vegetarian")
-        //        {
-        //            recipes = new JArray(
-        //                recipes.Where(r =>
-        //                    r["vegetarian"]?.Value<bool>() == true &&
-        //                    !ContainsNonVegetarianIngredients(r) &&
-        //                    !r["title"].ToString().ToLower().Contains("egg")
-        //                )
-        //            );
-        //        }
-
-        //        if (!recipes.HasValues)
-        //        {
-        //            ViewBag.Message = "No recipes found based on your filters.";
-        //            return View("RecipeResults", new JArray());
-        //        }
-
-        //        return View("RecipeResults", recipes);
-        //    }
-        //    catch (HttpRequestException ex)
-        //    {
-        //        Console.WriteLine($"API Error: {ex.Message}");
-        //        ViewBag.Message = "Error fetching recipes. Please try again later.";
-        //        return View("RecipeResults", new JArray());
-        //    }
-        //}
+       
+      
 
         [Authorize]
 
@@ -503,8 +444,200 @@ namespace SmartRecipGene.Controllers
             ViewBag.RecipeDetails = recipeDetails;
             return View("~/Views/Admin/AllReviews.cshtml", reviews);
         }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SubmitReview(int RecipeId, int Rating, string Comment)
+        {
+            try
+            {
+                if (Rating < 1 || Rating > 5)
+                {
+                    TempData["Error"] = "Rating must be between 1 and 5.";
+                    return RedirectToAction(nameof(RecipeDetails), new { id = RecipeId });
+                }
 
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var existingReview = await _context.Reviews
+                    .FirstOrDefaultAsync(r => r.RecipeId == RecipeId && r.UserId == userId);
 
+                if (existingReview != null)
+                {
+                    existingReview.Rating = Rating;
+                    existingReview.Comment = Comment;
+                   // existingReview.DateModified = DateTime.UtcNow;
+                    _context.Reviews.Update(existingReview);
+                }
+                else
+                {
+                    var review = new Review
+                    {
+                        RecipeId = RecipeId,
+                        UserId = userId,
+                        Rating = Rating,
+                        Comment = Comment,
+                       // DateCreated = DateTime.UtcNow
+                    };
+                    _context.Reviews.Add(review);
+                }
+
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Your review has been submitted successfully!";
+                return RedirectToAction(nameof(RecipeDetails), new { id = RecipeId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error submitting review for recipe: {RecipeId}", RecipeId);
+                TempData["Error"] = "An error occurred while submitting your review.";
+                return RedirectToAction(nameof(RecipeDetails), new { id = RecipeId });
+            }
+        }
+        //[HttpPost]
+        //[Authorize]
+        //public async Task<IActionResult> AddReview(int recipeId, string comment, int rating)
+        //{
+        //    if (rating < 1 || rating > 5)
+        //    {
+        //        return Json(new { success = false, message = "Rating must be between 1 and 5" });
+        //    }
+
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    var existingReview = await _context.Reviews
+        //        .FirstOrDefaultAsync(r => r.RecipeId == recipeId && r.UserId == userId);
+
+        //    if (existingReview != null)
+        //    {
+        //        existingReview.Comment = comment;
+        //        existingReview.Rating = rating;
+        //        _context.Reviews.Update(existingReview);
+        //    }
+        //    else
+        //    {
+        //        var review = new Review
+        //        {
+        //            RecipeId = recipeId,
+        //            UserId = userId,
+        //            Comment = comment,
+        //            Rating = rating
+        //        };
+        //        _context.Reviews.Add(review);
+        //    }
+
+        //    await _context.SaveChangesAsync();
+
+        //    var averageRating = await _context.Reviews
+        //        .Where(r => r.RecipeId == recipeId)
+        //        .AverageAsync(r => (double?)r.Rating) ?? 0;
+
+        //    return Json(new
+        //    {
+        //        success = true,
+        //        message = "Review submitted successfully",
+        //        averageRating = Math.Round(averageRating, 1)
+        //    });
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> GetReviews(int recipeId)
+        {
+            var reviews = await _context.Reviews
+                .Where(r => r.RecipeId == recipeId)
+                .Select(r => new
+                {
+                    r.Id,
+                    r.UserId,
+                    r.Comment,
+                    r.Rating,
+                    CanEdit = r.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier)
+                })
+                .ToListAsync();
+
+            var averageRating = reviews.Any() ?
+                Math.Round(reviews.Average(r => r.Rating), 1) : 0;
+
+            return Json(new
+            {
+                reviews = reviews,
+                averageRating = averageRating,
+                totalReviews = reviews.Count
+            });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteReview(int reviewId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var review = await _context.Reviews.FindAsync(reviewId);
+
+            if (review == null)
+            {
+                return Json(new { success = false, message = "Review not found" });
+            }
+
+            if (review.UserId != userId && !User.IsInRole("Admin"))
+            {
+                return Json(new { success = false, message = "Unauthorized" });
+            }
+
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+
+            var averageRating = await _context.Reviews
+                .Where(r => r.RecipeId == review.RecipeId)
+                .Select(r => (double?)r.Rating)
+                .AverageAsync() ?? 0;
+
+            return Json(new
+            {
+                success = true,
+                message = "Review deleted successfully",
+                averageRating = Math.Round(averageRating, 1)
+            });
+        }
+
+        [HttpGet]
+public async Task<IActionResult> GetSpellingSuggestions(string query)
+{
+    if (string.IsNullOrEmpty(query))
+        return Json(new string[] { });
+
+    var suggestions = new HashSet<string>();
+
+    // Get suggestions from database
+    var dbSuggestions = await _context.Recipes
+        .Where(r => r.Title.Contains(query) || 
+                    EF.Functions.Like(r.Title, $"%{query}%"))
+        .Select(r => r.Title)
+        .Take(5)
+        .ToListAsync();
+
+    foreach (var suggestion in dbSuggestions)
+    {
+        suggestions.Add(suggestion);
+    }
+
+    // Get suggestions from API
+    try
+    {
+        string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+        string url = $"https://api.spoonacular.com/recipes/autocomplete?apiKey={apiKey}&query={query}&number=5";
+        
+        var response = await _httpClient.GetStringAsync(url);
+        var apiSuggestions = JArray.Parse(response);
+
+        foreach (var suggestion in apiSuggestions)
+        {
+            suggestions.Add(suggestion["title"].ToString());
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"API Error: {ex.Message}");
+    }
+
+    return Json(suggestions.Take(5));
+}
 
 
         public IActionResult Privacy()

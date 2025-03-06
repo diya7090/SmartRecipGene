@@ -15,7 +15,7 @@ namespace SmartRecipGene.Models
         public int Rating { get; set; }
 
         [Required]
-        [StringLength(500)]
+        [StringLength(1000)]
         public string Comment { get; set; } = string.Empty;
 
        
