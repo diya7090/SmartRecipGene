@@ -11,16 +11,16 @@ namespace SmartRecipGene.Models
         public string Ingredient { get; set; }=string.Empty;
 
         public bool Purchased { get; set; } = false;
-        [DataType(DataType.DateTime)]
-        public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+        //[DataType(DataType.DateTime)]
+        //public DateTime DateAdded { get; set; } = DateTime.UtcNow;
 
-        [DataType(DataType.DateTime)]
-        public DateTime? PurchaseDate { get; set; }
+        //[DataType(DataType.DateTime)]
+        //public DateTime? PurchaseDate { get; set; }
 
-        public int? Quantity { get; set; }
+        //public int? Quantity { get; set; }
 
-        [StringLength(500)]
-        public string? Notes { get; set; }
+        //[StringLength(500)]
+        //public string? Notes { get; set; }
     }
 
 }

@@ -92,9 +92,11 @@ else
 
 
 
- *@
 
-                @model JObject
+
+ *@
+ @* ------------------ *@
+                @* @model JObject
 
 @{
     ViewData["Title"] = Model["title"]?.ToString();
@@ -127,29 +129,56 @@ else
         </div>
     </div>
 
-    <div class="recipe-content">
-        <div class="recipe-sidebar">
-            <div class="ingredients-card">
-                <h3><i class="fas fa-list"></i> Ingredients</h3>
-                <ul class="ingredients-list">
-                    @foreach (var ingredient in Model["extendedIngredients"])
-                    {
-                        @if(ingredient["original"] != null)
-                        {
-                            <li class="ingredient-item">
-                                <span>@ingredient["original"]</span>
-                                @if (User.Identity.IsAuthenticated)
-                                {
-                                    <button class="btn-add" onclick="addToShoppingList('@ingredient["original"]')">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                }
-                            </li>
-                        }
-                    }
-                </ul>
+  
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h3 class="mb-0">Ingredients</h3>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                @foreach (var ingredient in Model["extendedIngredients"])
+                {
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@ingredient["original"]</span>
+                        <form asp-action="AddToShoppingList" method="post" class="d-inline">
+                            <input type="hidden" name="ingredient" value="@ingredient["original"]" />
+                            <input type="hidden" name="recipeId" value="@Model["id"]" />
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-plus"></i> Add to List
+                            </button>
+                        </form>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-3">
+                <form asp-action="AddMissingIngredientsToList" method="post">
+                    <input type="hidden" name="recipeId" value="@Model["id"]" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Add All Ingredients to Shopping List
+                    </button>
+                </form>
             </div>
         </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @TempData["Info"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    
 
         <div class="recipe-main">
             <div class="instructions-card">
@@ -195,8 +224,7 @@ else
                                     <div class="user-info">
                                         <img src="https://ui-avatars.com/api/?name=@review.UserId&background=random" class="user-avatar" />
                                         <div class="user-details">
-@*                                             <span class="user-name">@(review.UserName ?? "Chef")</span>
- *@                                            <div class="rating-stars">
+                                            <div class="rating-stars">
                                                 @for (int i = 0; i < review.Rating; i++)
                                                 {
                                                     <span class="star">★</span>
@@ -217,12 +245,30 @@ else
                         </div>
                     }
                 </div>
+          
             </div>
         </div>
     </div>
 </div>
 
 <style>
+    .ingredient-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .add-to-list {
+        padding: 2px 8px;
+        border-radius: 50%;
+        margin-left: 10px;
+    }
+
+    .ingredients-list {
+        list-style: none;
+        padding-left: 0;
+    }
     .recipe-container {
         max-width: 1200px;
         margin: 0 auto;
@@ -463,4 +509,658 @@ else
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
-</script>
+</script> *@
+
+            @model JObject
+
+@{
+    ViewData["Title"] = Model["title"]?.ToString();
+}
+
+<div class="recipe-details-container">
+    <div class="recipe-header">
+        <div class="recipe-image-container">
+            <img src="@Model["image"]" alt="@Model["title"]" class="recipe-main-image">
+            <div class="recipe-overlay">
+                <div class="recipe-meta">
+                    <span><i class="fas fa-clock"></i> @Model["readyInMinutes"] min</span>
+                    <span><i class="fas fa-utensils"></i> @Model["servings"] servings</span>
+                </div>
+            </div>
+        </div>
+        <div class="recipe-info">
+            <h1 class="recipe-title">@Model["title"]</h1>
+            @if (User .Identity.IsAuthenticated)
+            {
+                <form method="post" asp-controller="FavoriteRecipes" asp-action="AddToFavorites" class="favorite-form">
+                    <input type="hidden" name="recipeId" value="@Model["id"]?.ToString()" />
+                    <input type="hidden" name="title" value="@Model["title"]?.ToString()" />
+                    <input type="hidden" name="imageUrl" value="@Model["image"]?.ToString()" />
+                    <button type="submit" class="btn-favorite">
+                        <i class="fas fa-heart"></i> Save Recipe
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="ingredients-card">
+        <div class="card-header">
+            <h3>Ingredients</h3>
+        </div>
+        <div class="card-body">
+            <ul class="ingredients-list">
+                @foreach (var ingredient in Model["extendedIngredients"])
+                {
+                    <li class="ingredient-item">
+                        <span>@ingredient["original"]</span>
+                        <form asp-action="AddToShoppingList" method="post" class="d-inline">
+                            <input type="hidden" name="ingredient" value="@ingredient["original"]" />
+                            <input type="hidden" name="recipeId" value="@Model["id"]" />
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-plus"></i> Add to List
+                            </button>
+                        </form>
+                    </li>
+                }
+            </ul>
+            <div class="mt-3">
+                <form asp-action="AddMissingIngredientsToList" method="post">
+                    <input type="hidden" name="recipeId" value="@Model["id"]" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart"></i> Add All Ingredients to Shopping List
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @TempData["Info"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="recipe-main">
+        <div class="instructions-card">
+            <h3><i class="fas fa-tasks"></i> Instructions</h3>
+            <div class="instructions-content">
+                @Html.Raw(Model["instructions"])
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <h3><i class="fas fa-star"></i> Reviews</h3>
+            @if (User .Identity.IsAuthenticated)
+            {
+                <div class="review-form-card">
+                    <form method="post" asp-action="SubmitReview">
+                        <input type="hidden" name="RecipeId" value="@Model["id"]" />
+                        <div class="rating-group">
+                            <label>Your Rating</label>
+                            <div class="star-rating">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" id="star@(i)" name="Rating" value="@i" required />
+                                    <label for="star@(i)">★</label>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Review</label>
+                            <textarea name="Comment" rows="3" placeholder="Share your cooking experience..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Post Review</button>
+                    </form>
+                </div>
+            }
+
+            <div class="reviews-list">
+                @if (ViewBag.Reviews != null && ViewBag.Reviews.Count > 0)
+                {
+                    foreach (var review in ViewBag.Reviews)
+                    {
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="user-info">
+                                    <img src="https://ui-avatars.com/api/?name=@review.UserId&background=random" class="user-avatar" />
+                                    <div class="user-details">
+                                        <div class="rating-stars">
+                                            @for (int i = 0; i < review.Rating; i++)
+                                            {
+                                                <span class="star">★</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="review-text">@review.Comment</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-reviews">
+                        <i class="fas fa-comment-alt"></i>
+                        <p>Be the first to review this recipe!</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #eef2f3;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .recipe-details-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .recipe-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .recipe-image-container {
+        flex: 0 0 200px; /* Adjusted width for the image */
+        height: 200px; /* Adjusted height for the image */
+        overflow: hidden;
+        border-radius: 10px;
+        margin-right: 1.5rem;
+        position: relative;
+    }
+
+    .recipe-main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .recipe-main-image:hover {
+        transform: scale(1.05);
+    }
+
+    .recipe-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+    }
+
+    .recipe-meta {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .recipe-info {
+        flex: 1;
+    }
+
+    .recipe-title {
+        font-size: 2rem;
+        margin: 0;
+        color: #2c3e50;
+    }
+
+    .btn-favorite {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-favorite:hover {
+        background: #c0392b;
+    }
+
+    .ingredients-card, .instructions-card, .reviews-section {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .ingredients-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .ingredient-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        background: #ffffff;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-outline-primary {
+        border: 1px solid #007bff;
+        color: #007bff;
+        transition: background 0.3s, color 0.3s;
+    }
+
+    .btn-outline-primary:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 0.75rem 1.5rem;
+        transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .instructions-content {
+        line-height: 1.6;
+        padding: 1rem;
+        background: #ffffff;
+        border-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .reviews-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .review-card {
+        background: #ffffff;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .rating-stars {
+        color: #f39c12;
+    }
+
+    .star {
+        font-size: 1.2rem;
+    }
+
+    .review-text {
+        margin-top: 0.5rem;
+        color: #555;
+    }
+
+    .no-reviews {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .no-reviews i {
+        font-size: 40px;
+        margin-bottom: 10px;
+        color: #ddd;
+    }
+
+    .review-form-card {
+        margin-top: 1rem;
+    }
+
+    .rating-group {
+        margin-bottom: 1rem;
+    }
+
+    .star-rating {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 5px;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #ddd;
+        transition: color 0.2s;
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label {
+        color: #f39c12;
+    }
+
+    .btn-submit {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .btn-submit:hover {
+        background: #2980b9;
+    }
+
+    @@media (max-width: 768px) {
+        .recipe-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .recipe-image-container {
+            margin-bottom: 1rem;
+        }
+
+        .recipe-title {
+            font-size: 1.5rem;
+        }
+    }
+</style> *@
+
+        <style>
+            body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f8; /* Lighter background for a softer look */
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.recipe-details-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem; /* Increased padding for better spacing */
+    background: #ffffff;
+    border-radius: 12px; /* Slightly rounded corners */
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1); /* Deeper shadow for more depth */
+}
+
+.recipe-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.recipe-image-container {
+    flex: 0 0 300px; /* Increased width for the image */
+    height: 300px; /* Increased height for the image */
+    overflow: hidden;
+    border-radius: 12px; /* Rounded corners */
+    margin-right: 1.5rem;
+    position: relative;
+}
+
+.recipe-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.recipe-main-image:hover {
+    transform: scale(1.1); /* Slightly larger scale on hover */
+}
+
+.recipe-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay for better contrast */
+    color: white;
+}
+
+.recipe-meta {
+    display: flex;
+    justify-content: space-between;
+}
+
+.recipe-info {
+    flex: 1;
+}
+
+.recipe-title {
+    font-size: 2.2rem; /* Slightly larger title */
+    margin: 0;
+    color: #2c3e50;
+}
+
+.btn-favorite {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem; /* Increased padding */
+    border-radius: 25px; /* More rounded corners */
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s; /* Added transform for hover effect */
+}
+
+.btn-favorite:hover {
+    background: #c0392b;
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.ingredients-card, .instructions-card, .reviews-section {
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.ingredients-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ingredient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem; /* Increased padding for better touch targets */
+    margin: 0.5rem 0;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-primary {
+    border: 1px solid #007bff;
+    color: #007bff;
+    transition: background 0.3s, color 0.3s;
+}
+
+.btn-outline-primary:hover {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.75rem 1.5rem;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+.instructions-content {
+    line-height: 1.6;
+    padding: 1rem;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.reviews-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.review-card {
+    background: #ffffff;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.rating-stars {
+    color: #f39c12;
+}
+
+.star {
+    font-size: 1.2rem;
+}
+
+.review-text {
+    margin-top: 0.5rem;
+    color: #555;
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.no-reviews i {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #ddd;
+}
+
+.review-form-card {
+    margin-top: 1rem;
+}
+
+.rating-group {
+    margin-bottom: 1rem;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 5px;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #f39c12;
+}
+
+.btn-submit {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-submit:hover {
+    background: #2980b9;
+}
+
+@@media (max-width: 768px) {
+    .recipe-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .recipe-image-container {
+        margin-bottom: 1rem;
+    }
+
+    .recipe-title {
+        font-size: 1.8rem; /* Adjusted for smaller screens */
+    }
+}
+        </style>

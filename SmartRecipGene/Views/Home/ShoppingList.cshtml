@@ -1,4 +1,4 @@
-﻿@model List<SmartRecipGene.Models.ShoppingListItem>
+﻿@* @model List<SmartRecipGene.Models.ShoppingListItem>
 
 <h2>Shopping List</h2>
 
@@ -33,3 +33,94 @@
         }
     </tbody>
 </table>
+ *@
+
+                            @model List<SmartRecipGene.Models.ShoppingListItem>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">My Shopping List</h2>
+                    <span class="badge bg-light text-primary">@Model.Count items</span>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Your shopping list is empty.
+                        </div>
+                    }
+                    else
+                    {
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                @TempData["Success"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ingredient</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="@(item.Purchased ? "table-success" : "")">
+                                            <td>
+                                                <span class="@(item.Purchased ? "text-decoration-line-through" : "")">
+                                                    @item.Ingredient
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(item.Purchased ? "bg-success" : "bg-warning")">
+                                                    @(item.Purchased ? "Purchased" : "Pending")
+                                                </span>
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="btn-group">
+                                                    @if (!item.Purchased)
+                                                    {
+                                                        <form asp-action="MarkAsPurchased" method="post" class="d-inline me-2">
+                                                            <input type="hidden" name="id" value="@item.Id" />
+                                                            <button type="submit" class="btn btn-sm btn-success" title="Mark as Purchased">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                    <form asp-action="RemoveFromShoppingList" method="post" class="d-inline">
+                                                        <input type="hidden" name="id" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-danger" title="Remove">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function () {
+            $('.alert').alert('close');
+        }, 5000);
+    </script>
+}

@@ -307,7 +307,7 @@ namespace SmartRecipGene.Controllers
 
             return View(recipes); // Pass the JArray to the view
         }
-        
+
         //public async Task<IActionResult> SearchRecipes(string query, string cuisine, string mealType, string diet)
         //{
         //    string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
@@ -345,22 +345,52 @@ namespace SmartRecipGene.Controllers
         //        return View("Recipes", new JArray());
         //    }
         //}
+        //[HttpPost]
+        //[Authorize]
+        //public async Task<IActionResult> AddToShoppingList(string ingredient)
+        //{
+        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //    var shoppingItem = new ShoppingListItem
+        //    {
+        //        UserId = userId,
+        //        Ingredient = ingredient
+        //    };
+
+        //    _context.ShoppingList.Add(shoppingItem);
+        //    await _context.SaveChangesAsync();
+
+        //    return RedirectToAction("ShoppingList");
+        //}
+
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddToShoppingList(string ingredient)
+        public async Task<IActionResult> AddToShoppingList(string ingredient, int recipeId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var shoppingItem = new ShoppingListItem
+            // Check for existing ingredient
+            var existingItem = await _context.ShoppingList
+                .FirstOrDefaultAsync(x => x.UserId == userId && x.Ingredient.ToLower() == ingredient.ToLower());
+
+            if (existingItem == null)
             {
-                UserId = userId,
-                Ingredient = ingredient
-            };
+                var shoppingItem = new ShoppingListItem
+                {
+                    UserId = userId,
+                    Ingredient = ingredient,
+                    Purchased = false
+                };
+                _context.ShoppingList.Add(shoppingItem);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = $"{ingredient} added to shopping list!";
+            }
+            else
+            {
+                TempData["Info"] = $"{ingredient} is already in your shopping list.";
+            }
 
-            _context.ShoppingList.Add(shoppingItem);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("ShoppingList");
+            return RedirectToAction(nameof(RecipeDetails), new { id = recipeId });
         }
 
 
@@ -374,6 +404,19 @@ namespace SmartRecipGene.Controllers
             return View(items);
         }
 
+        //[HttpPost]
+        //[Authorize]
+        //public async Task<IActionResult> MarkAsPurchased(int id)
+        //{
+        //    var item = await _context.ShoppingList.FindAsync(id);
+        //    if (item != null)
+        //    {
+        //        item.Purchased = true;
+        //        await _context.SaveChangesAsync();
+        //    }
+
+        //    return RedirectToAction("ShoppingList");
+        //}
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> MarkAsPurchased(int id)
@@ -383,21 +426,35 @@ namespace SmartRecipGene.Controllers
             {
                 item.Purchased = true;
                 await _context.SaveChangesAsync();
+                TempData["Success"] = $"{item.Ingredient} marked as purchased!";
             }
 
             return RedirectToAction("ShoppingList");
         }
 
+        //[HttpPost]
+        //[Authorize]
+        //public async Task<IActionResult> RemoveFromShoppingList(int id)
+        //{
+        //    var item = await _context.ShoppingList.FindAsync(id);
+        //    if (item != null)  // ✅ Add null check to avoid CS8602
+        //    {
+        //        _context.ShoppingList.Remove(item);
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    return RedirectToAction("ShoppingList");
+        //}
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> RemoveFromShoppingList(int id)
         {
             var item = await _context.ShoppingList.FindAsync(id);
-            if (item != null)  // ✅ Add null check to avoid CS8602
+            if (item != null)
             {
                 _context.ShoppingList.Remove(item);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = $"{item.Ingredient} removed from shopping list!";
             }
             return RedirectToAction("ShoppingList");
         }
@@ -448,6 +505,11 @@ namespace SmartRecipGene.Controllers
         [Authorize]
         public async Task<IActionResult> SubmitReview(int RecipeId, int Rating, string Comment)
         {
+            if (User.IsInRole("Admin"))
+            {
+                TempData["Error"] = "Administrators cannot submit reviews.";
+                return RedirectToAction(nameof(RecipeDetails), new { id = RecipeId });
+            }
             try
             {
                 if (Rating < 1 || Rating > 5)
@@ -594,6 +656,61 @@ namespace SmartRecipGene.Controllers
                 message = "Review deleted successfully",
                 averageRating = Math.Round(averageRating, 1)
             });
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddMissingIngredientsToList(int recipeId)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Get recipe details from API
+                string apiUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey=4f23d090497a4cc6942f7f6e1f3ffca4";
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var recipe = JObject.Parse(content);
+                    var ingredients = recipe["extendedIngredients"];
+
+                    foreach (var ingredient in ingredients)
+                    {
+                        var ingredientName = ingredient["original"].ToString();
+
+                        // Check if ingredient already exists in shopping list
+                        var existingItem = await _context.ShoppingList
+                            .FirstOrDefaultAsync(i => i.UserId == userId &&
+                                                    i.Ingredient.ToLower() == ingredientName.ToLower());
+
+                        if (existingItem == null)
+                        {
+                            var shoppingItem = new ShoppingListItem
+                            {
+                                UserId = userId,
+                                Ingredient = ingredientName,
+                                Purchased = false
+                            };
+                            _context.ShoppingList.Add(shoppingItem);
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                    TempData["Success"] = "Missing ingredients added to shopping list!";
+                }
+                else
+                {
+                    TempData["Error"] = "Could not fetch recipe ingredients.";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding missing ingredients for recipe: {RecipeId}", recipeId);
+                TempData["Error"] = "An error occurred while adding ingredients to shopping list.";
+            }
+
+            return RedirectToAction(nameof(RecipeDetails), new { id = recipeId });
         }
 
         [HttpGet]

@@ -144,6 +144,21 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog Posts</a>
                         </li>
+                        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                            <div class="container-fluid">
+                                <!-- ... existing nav items ... -->
+                                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                                    <ul class="navbar-nav flex-grow-1">
+                                        <!-- ... other nav items ... -->
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link text-dark" asp-controller="Home" asp-action="ShoppingList">
+                                                    <i class="fas fa-shopping-cart"></i> Shopping List
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
 
                         @if (User.Identity.IsAuthenticated)
                         {

@@ -354,19 +354,15 @@
         transition: transform 0.2s;
         border-radius: 8px;
     }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
+    .card:hover {
+        transform: translateY(-5px);
+    }
     .search-container {
         margin-bottom: 20px;
     }
-
     .search-box {
         position: relative;
     }
-
     .search-icon {
         position: absolute;
         left: 12px;
@@ -374,12 +370,10 @@
         transform: translateY(-50%);
         color: #6c757d;
     }
-
     #searchInput {
         padding-left: 35px;
         border-radius: 20px;
     }
-
     .suggestions-box {
         position: absolute;
         width: 100%;
@@ -393,41 +387,33 @@
         z-index: 1000;
         margin-top: 5px;
     }
-
     .suggestion-item {
         padding: 8px 12px;
         cursor: pointer;
         border-bottom: 1px solid #eee;
     }
-
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-
-        .suggestion-item:hover {
-            background-color: #f8f9fa;
-        }
-
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
     .btn-group {
         display: flex;
         gap: 5px;
     }
-
     .table th {
         position: relative;
     }
-
-        .table th i {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
+    .table th i {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
     .table-hover tbody tr:hover {
         background-color: rgba(0,0,0,.075);
     }
-
     .no-results {
         padding: 8px 12px;
         color: #6c757d;
@@ -442,95 +428,211 @@
         }
     }
 
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     const searchInput = document.getElementById('searchInput');
+    //     const suggestionsBox = document.getElementById('searchSuggestions');
+    //     const table = document.getElementById('recipeTable').getElementsByTagName('tbody')[0];
+    //     const cuisineFilter = document.getElementById('cuisineFilter');
+    //     const dietFilter = document.getElementById('dietFilter');
+    //     let typingTimer;
+
+    //     searchInput.addEventListener('input', handleSearch);
+    //     cuisineFilter.addEventListener('change', handleFilters);
+    //     dietFilter.addEventListener('change', handleFilters);
+
+    //     function handleSearch() {
+    //         clearTimeout(typingTimer);
+    //         const query = this.value.trim();
+
+    //         if (query.length < 2) {
+    //             suggestionsBox.style.display = 'none';
+    //             showAllRows();
+    //             return;
+    //         }
+
+    //         typingTimer = setTimeout(async () => {
+    //             try {
+    //                 const response = await fetch(`/AdminRecipe/GetRecipeSuggestions?query=${encodeURIComponent(query)}`);
+    //                 const suggestions = await response.json();
+    //                 updateSuggestions(suggestions, query);
+    //             } catch (error) {
+    //                 console.error('Error:', error);
+    //             }
+    //         }, 300);
+    //     }
+
+    //     function updateSuggestions(suggestions, query) {
+    //         suggestionsBox.innerHTML = '';
+
+    //         if (suggestions.length > 0) {
+    //             suggestions.forEach(suggestion => {
+    //                 const div = document.createElement('div');
+    //                 div.className = 'suggestion-item';
+    //                 div.textContent = suggestion;
+    //                 div.onclick = () => {
+    //                     searchInput.value = suggestion;
+    //                     suggestionsBox.style.display = 'none';
+    //                     filterTable(suggestion);
+    //                 };
+    //                 suggestionsBox.appendChild(div);
+    //             });
+    //         } else {
+    //             const div = document.createElement('div');
+    //             div.className = 'no-results';
+    //             div.textContent = 'No suggestions found';
+    //             suggestionsBox.appendChild(div);
+    //         }
+
+    //         suggestionsBox.style.display = 'block';
+    //         filterTable(query);
+    //     }
+
+    //     function handleFilters() {
+    //         const cuisineValue = cuisineFilter.value.toLowerCase();
+    //         const dietValue = dietFilter.value.toLowerCase();
+    //         filterTableByValues(cuisineValue, dietValue);
+    //     }
+
+    //     function filterTableByValues(cuisine, diet) {
+    //         const rows = table.getElementsByTagName('tr');
+    //         let hasVisibleRows = false;
+
+    //         for (let row of rows) {
+    //             const rowCuisine = row.cells[1].textContent.toLowerCase();
+    //             const rowDiet = row.cells[2].textContent.toLowerCase();
+    //             const matchesCuisine = !cuisine || rowCuisine.includes(cuisine);
+    //             const matchesDiet = !diet || rowDiet.includes(diet);
+
+    //             if (matchesCuisine && matchesDiet) {
+    //                 row.style.display = '';
+    //                 hasVisibleRows = true;
+    //             } else {
+    //                 row.style.display = 'none';
+    //             }
+    //         }
+
+    //         updateNoResultsRow(hasVisibleRows);
+    //     }
+
+    //     function filterTable(query) {
+    //         const rows = table.getElementsByTagName('tr');
+    //         const lowercaseQuery = query.toLowerCase();
+    //         let hasVisibleRows = false;
+
+    //         for (let row of rows) {
+    //             const title = row.cells[0].textContent.toLowerCase();
+    //             const cuisine = row.cells[1].textContent.toLowerCase();
+    //             const diet = row.cells[2].textContent.toLowerCase();
+
+    //             if (title.includes(lowercaseQuery) ||
+    //                 cuisine.includes(lowercaseQuery) ||
+    //                 diet.includes(lowercaseQuery)) {
+    //                 row.style.display = '';
+    //                 hasVisibleRows = true;
+    //             } else {
+    //                 row.style.display = 'none';
+    //             }
+    //         }
+
+    //         updateNoResultsRow(hasVisibleRows);
+    //     }
+
+    //     function updateNoResultsRow(hasVisibleRows) {
+    //         const tbody = table.querySelector('tbody');
+    //         const existingNoResults = tbody.querySelector('.no-results-row');
+
+    //         if (!hasVisibleRows) {
+    //             if (!existingNoResults) {
+    //                 const noResultsRow = table.insertRow();
+    //                 noResultsRow.className = 'no-results-row';
+    //                 const cell = noResultsRow.insertCell();
+    //                 cell.colSpan = 7;
+    //                 cell.textContent = 'No matching recipes found';
+    //                 cell.style.textAlign = 'center';
+    //                 cell.style.padding = '20px';
+    //             }
+    //         } else if (existingNoResults) {
+    //             existingNoResults.remove();
+    //         }
+    //     }
+
+    //     function showAllRows() {
+    //         const rows = table.getElementsByTagName('tr');
+    //         for (let row of rows) {
+    //             row.style.display = '';
+    //         }
+    //         const noResultsRow = table.querySelector('.no-results-row');
+    //         if (noResultsRow) {
+    //             noResultsRow.remove();
+    //         }
+    //     }
+
+    //     function sortTable(n) {
+    //         const table = document.getElementById('recipeTable');
+    //         let switching = true;
+    //         let dir = 'asc';
+    //         let switchcount = 0;
+
+    //         while (switching) {
+    //             switching = false;
+    //             const rows = table.getElementsByTagName('tr');
+
+    //             for (let i = 1; i < rows.length - 1; i++) {
+    //                 let shouldSwitch = false;
+    //                 const x = rows[i].getElementsByTagName('td')[n];
+    //                 const y = rows[i + 1].getElementsByTagName('td')[n];
+
+    //                 if (dir === 'asc') {
+    //                     if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+    //                         shouldSwitch = true;
+    //                         break;
+    //                     }
+    //                 } else {
+    //                     if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+    //                         shouldSwitch = true;
+    //                         break;
+    //                     }
+    //                 }
+
+    //                 if (shouldSwitch) {
+    //                     rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+    //                     switching = true;
+    //                     switchcount++;
+    //                 }
+    //             }
+
+    //             if (switchcount === 0 && dir === 'asc') {
+    //                 dir = 'desc';
+    //                 switching = true;
+    //             }
+    //         }
+    //     }
+
+    //     document.addEventListener('click', function (e) {
+    //         if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
+    //             suggestionsBox.style.display = 'none';
+    //         }
+    //     });
+    // });
+
+    // ... existing code ...
+
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
-        const suggestionsBox = document.getElementById('searchSuggestions');
-        const table = document.getElementById('recipeTable').getElementsByTagName('tbody')[0];
         const cuisineFilter = document.getElementById('cuisineFilter');
         const dietFilter = document.getElementById('dietFilter');
-        let typingTimer;
+        const table = document.getElementById('recipeTable').getElementsByTagName('tbody')[0];
 
-        searchInput.addEventListener('input', handleSearch);
-        cuisineFilter.addEventListener('change', handleFilters);
-        dietFilter.addEventListener('change', handleFilters);
+        // Add event listeners for filters
+        searchInput.addEventListener('input', filterRecipes);
+        cuisineFilter.addEventListener('change', filterRecipes);
+        dietFilter.addEventListener('change', filterRecipes);
 
-        function handleSearch() {
-            clearTimeout(typingTimer);
-            const query = this.value.trim();
-
-            if (query.length < 2) {
-                suggestionsBox.style.display = 'none';
-                showAllRows();
-                return;
-            }
-
-            typingTimer = setTimeout(async () => {
-                try {
-                    const response = await fetch(`/AdminRecipe/GetRecipeSuggestions?query=${encodeURIComponent(query)}`);
-                    const suggestions = await response.json();
-                    updateSuggestions(suggestions, query);
-                } catch (error) {
-                    console.error('Error:', error);
-                }
-            }, 300);
-        }
-
-        function updateSuggestions(suggestions, query) {
-            suggestionsBox.innerHTML = '';
-
-            if (suggestions.length > 0) {
-                suggestions.forEach(suggestion => {
-                    const div = document.createElement('div');
-                    div.className = 'suggestion-item';
-                    div.textContent = suggestion;
-                    div.onclick = () => {
-                        searchInput.value = suggestion;
-                        suggestionsBox.style.display = 'none';
-                        filterTable(suggestion);
-                    };
-                    suggestionsBox.appendChild(div);
-                });
-            } else {
-                const div = document.createElement('div');
-                div.className = 'no-results';
-                div.textContent = 'No suggestions found';
-                suggestionsBox.appendChild(div);
-            }
-
-            suggestionsBox.style.display = 'block';
-            filterTable(query);
-        }
-
-        function handleFilters() {
-            const cuisineValue = cuisineFilter.value.toLowerCase();
-            const dietValue = dietFilter.value.toLowerCase();
-            filterTableByValues(cuisineValue, dietValue);
-        }
-
-        function filterTableByValues(cuisine, diet) {
+        function filterRecipes() {
+            const searchQuery = searchInput.value.toLowerCase().trim();
+            const selectedCuisine = cuisineFilter.value.toLowerCase();
+            const selectedDiet = dietFilter.value.toLowerCase();
             const rows = table.getElementsByTagName('tr');
-            let hasVisibleRows = false;
-
-            for (let row of rows) {
-                const rowCuisine = row.cells[1].textContent.toLowerCase();
-                const rowDiet = row.cells[2].textContent.toLowerCase();
-                const matchesCuisine = !cuisine || rowCuisine.includes(cuisine);
-                const matchesDiet = !diet || rowDiet.includes(diet);
-
-                if (matchesCuisine && matchesDiet) {
-                    row.style.display = '';
-                    hasVisibleRows = true;
-                } else {
-                    row.style.display = 'none';
-                }
-            }
-
-            updateNoResultsRow(hasVisibleRows);
-        }
-
-        function filterTable(query) {
-            const rows = table.getElementsByTagName('tr');
-            const lowercaseQuery = query.toLowerCase();
             let hasVisibleRows = false;
 
             for (let row of rows) {
@@ -538,9 +640,15 @@
                 const cuisine = row.cells[1].textContent.toLowerCase();
                 const diet = row.cells[2].textContent.toLowerCase();
 
-                if (title.includes(lowercaseQuery) ||
-                    cuisine.includes(lowercaseQuery) ||
-                    diet.includes(lowercaseQuery)) {
+                const matchesSearch = searchQuery === '' ||
+                    title.includes(searchQuery) ||
+                    cuisine.includes(searchQuery) ||
+                    diet.includes(searchQuery);
+
+                const matchesCuisine = selectedCuisine === '' || cuisine === selectedCuisine;
+                const matchesDiet = selectedDiet === '' || diet === selectedDiet;
+
+                if (matchesSearch && matchesCuisine && matchesDiet) {
                     row.style.display = '';
                     hasVisibleRows = true;
                 } else {
@@ -548,84 +656,97 @@
                 }
             }
 
-            updateNoResultsRow(hasVisibleRows);
-        }
-
-        function updateNoResultsRow(hasVisibleRows) {
-            const tbody = table.querySelector('tbody');
-            const existingNoResults = tbody.querySelector('.no-results-row');
-
+            // Handle no results
+            const noResultsRow = table.querySelector('.no-results-row');
             if (!hasVisibleRows) {
-                if (!existingNoResults) {
-                    const noResultsRow = table.insertRow();
-                    noResultsRow.className = 'no-results-row';
-                    const cell = noResultsRow.insertCell();
+                if (!noResultsRow) {
+                    const newRow = table.insertRow();
+                    newRow.className = 'no-results-row';
+                    const cell = newRow.insertCell();
                     cell.colSpan = 7;
                     cell.textContent = 'No matching recipes found';
                     cell.style.textAlign = 'center';
                     cell.style.padding = '20px';
                 }
-            } else if (existingNoResults) {
-                existingNoResults.remove();
-            }
-        }
-
-        function showAllRows() {
-            const rows = table.getElementsByTagName('tr');
-            for (let row of rows) {
-                row.style.display = '';
-            }
-            const noResultsRow = table.querySelector('.no-results-row');
-            if (noResultsRow) {
+            } else if (noResultsRow) {
                 noResultsRow.remove();
             }
+
+            // Update stats cards based on filtered results
+            updateStatsCards();
         }
 
-        function sortTable(n) {
-            const table = document.getElementById('recipeTable');
+        function updateStatsCards() {
+            const visibleRows = Array.from(table.getElementsByTagName('tr')).filter(row => row.style.display !== 'none');
+
+            // Update total recipes
+            document.querySelector('.bg-primary h2').textContent = visibleRows.length;
+
+            // Update vegetarian count
+            const vegetarianCount = visibleRows.filter(row =>
+                row.cells[2].textContent.toLowerCase().includes('vegetarian')).length;
+            document.querySelector('.bg-success h2').textContent = vegetarianCount;
+
+            // Update quick recipes count
+            const quickRecipesCount = visibleRows.filter(row =>
+                parseInt(row.cells[3].textContent) <= 30).length;
+            document.querySelector('.bg-warning h2').textContent = quickRecipesCount;
+
+            // Update cuisine types count
+            const uniqueCuisines = new Set(visibleRows.map(row => row.cells[1].textContent.trim()));
+            document.querySelector('.bg-info h2').textContent = uniqueCuisines.size;
+        }
+
+        // Add sorting functionality
+        window.sortTable = function (n) {
             let switching = true;
-            let dir = 'asc';
+            let dir = "asc";
             let switchcount = 0;
 
             while (switching) {
                 switching = false;
-                const rows = table.getElementsByTagName('tr');
+                const rows = table.getElementsByTagName("tr");
 
-                for (let i = 1; i < rows.length - 1; i++) {
+                for (let i = 0; i < rows.length - 1; i++) {
                     let shouldSwitch = false;
-                    const x = rows[i].getElementsByTagName('td')[n];
-                    const y = rows[i + 1].getElementsByTagName('td')[n];
+                    const x = rows[i].getElementsByTagName("td")[n];
+                    const y = rows[i + 1].getElementsByTagName("td")[n];
 
-                    if (dir === 'asc') {
-                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    if (!x || !y) continue;
+
+                    let xValue = x.textContent.toLowerCase();
+                    let yValue = y.textContent.toLowerCase();
+
+                    // Handle numeric values (cooking time and servings)
+                    if (n === 3 || n === 4) {
+                        xValue = parseInt(xValue);
+                        yValue = parseInt(yValue);
+                    }
+
+                    if (dir === "asc") {
+                        if (xValue > yValue) {
                             shouldSwitch = true;
                             break;
                         }
                     } else {
-                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        if (xValue < yValue) {
                             shouldSwitch = true;
                             break;
                         }
                     }
-
-                    if (shouldSwitch) {
-                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                        switching = true;
-                        switchcount++;
-                    }
                 }
 
-                if (switchcount === 0 && dir === 'asc') {
-                    dir = 'desc';
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
                     switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount === 0 && dir === "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
                 }
             }
         }
-
-        document.addEventListener('click', function (e) {
-            if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
-                suggestionsBox.style.display = 'none';
-            }
-        });
     });
 </script>
