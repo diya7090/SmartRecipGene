@@ -9,45 +9,37 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json; // Add this for session access
+using Newtonsoft.Json;
+using Microsoft.Extensions.Options; // Add this for session access
 
 
 namespace SmartRecipGene.Controllers
 {
     public class HomeController : Controller
     {
-        
+        private readonly SpoonacularSettings _spoonacularSettings;
             private readonly SpoonacularService _spoonacularService;
             private readonly ApplicationDbContext _context;
             private readonly HttpClient _httpClient;
             private readonly ILogger<HomeController> _logger;
 
             public HomeController(
+                IOptions<SpoonacularSettings> spoonacularSettings,
                 ApplicationDbContext context,
                 SpoonacularService spoonacularService,
+
                 IHttpClientFactory httpClientFactory,
                 ILogger<HomeController> logger)
             {
                 _context = context;
                 _spoonacularService = spoonacularService;
+              _spoonacularSettings = spoonacularSettings.Value;
+
                 _httpClient = httpClientFactory.CreateClient();
                 _logger = logger;
             }
 
-            // ... rest of your controller code ...
-        
-        //private readonly SpoonacularService _spoonacularService;
-
-        //private readonly ApplicationDbContext _context;
-        //private readonly HttpClient _httpClient; // Declare as a private readonly field
-
-        //public HomeController(ApplicationDbContext context, SpoonacularService spoonacularService, IHttpClientFactory httpClientFactory )
-        //{
-        //    _context = context ;
-        //    _spoonacularService = spoonacularService;
-        //    _httpClient = httpClientFactory.CreateClient(); // Correct way to initialize HttpClient
-        //}
-
+            
         public async Task<IActionResult> GetRecipes(string ingredients)
         {
             var response = await _spoonacularService.GetRecipesByIngredientsAsync(ingredients);
@@ -112,8 +104,10 @@ namespace SmartRecipGene.Controllers
                 }
                 else
                 {
+                    var apiKey = _spoonacularSettings.ApiKey;
+
                     // If not in database, try API
-                    string apiUrl = $"https://api.spoonacular.com/recipes/{id}/information?apiKey=4f23d090497a4cc6942f7f6e1f3ffca4";
+                    string apiUrl = $"https://api.spoonacular.com/recipes/{id}/information?apiKey={apiKey}";
                     var response = await _httpClient.GetAsync(apiUrl);
 
                     if (response.IsSuccessStatusCode)
@@ -216,7 +210,8 @@ namespace SmartRecipGene.Controllers
             }
 
             // Then search in API
-            string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+            var apiKey = _spoonacularSettings.ApiKey;
+
             string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&query={query}&number=100";
 
             if (!string.IsNullOrEmpty(cuisine))
@@ -308,60 +303,6 @@ namespace SmartRecipGene.Controllers
             return View(recipes); // Pass the JArray to the view
         }
 
-        //public async Task<IActionResult> SearchRecipes(string query, string cuisine, string mealType, string diet)
-        //{
-        //    string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
-        //    string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}";
-
-        //    if (!string.IsNullOrEmpty(query))
-        //        url += $"&query={query}";
-        //    if (!string.IsNullOrEmpty(cuisine))
-        //        url += $"&cuisine={cuisine}";
-        //    if (!string.IsNullOrEmpty(mealType))
-        //        url += $"&type={mealType}";
-        //    if (!string.IsNullOrEmpty(diet))
-        //        url += $"&diet={diet}";
-
-        //    try
-        //    {
-        //        var response = await _httpClient.GetStringAsync(url);
-        //        Console.WriteLine("Full API Response: " + response); // ✅ Log the full response
-
-        //        var jsonResponse = JObject.Parse(response);
-
-        //        if (!jsonResponse.ContainsKey("results") || !jsonResponse["results"].HasValues)
-        //        {
-        //            ViewBag.Message = "No recipes found based on your ingredients.";
-        //            return View("Recipes", new JArray()); // Return an empty array
-        //        }
-
-        //        var recipes = jsonResponse["results"];
-        //        return View("Recipes", recipes);
-        //    }
-        //    catch (HttpRequestException ex)
-        //    {
-        //        Console.WriteLine("API Error: " + ex.Message);
-        //        ViewBag.Message = "Error fetching recipes. Please try again later.";
-        //        return View("Recipes", new JArray());
-        //    }
-        //}
-        //[HttpPost]
-        //[Authorize]
-        //public async Task<IActionResult> AddToShoppingList(string ingredient)
-        //{
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        //    var shoppingItem = new ShoppingListItem
-        //    {
-        //        UserId = userId,
-        //        Ingredient = ingredient
-        //    };
-
-        //    _context.ShoppingList.Add(shoppingItem);
-        //    await _context.SaveChangesAsync();
-
-        //    return RedirectToAction("ShoppingList");
-        //}
 
         [HttpPost]
         [Authorize]
@@ -404,19 +345,6 @@ namespace SmartRecipGene.Controllers
             return View(items);
         }
 
-        //[HttpPost]
-        //[Authorize]
-        //public async Task<IActionResult> MarkAsPurchased(int id)
-        //{
-        //    var item = await _context.ShoppingList.FindAsync(id);
-        //    if (item != null)
-        //    {
-        //        item.Purchased = true;
-        //        await _context.SaveChangesAsync();
-        //    }
-
-        //    return RedirectToAction("ShoppingList");
-        //}
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> MarkAsPurchased(int id)
@@ -476,7 +404,9 @@ namespace SmartRecipGene.Controllers
                     {
                         using (var httpClient = new HttpClient())
                         {
-                            string apiUrl = $"https://api.spoonacular.com/recipes/{review.RecipeId}/information?apiKey=4f23d090497a4cc6942f7f6e1f3ffca4";
+                            var apiKey = _spoonacularSettings.ApiKey;
+
+                            string apiUrl = $"https://api.spoonacular.com/recipes/{review.RecipeId}/information?apiKey={apiKey}";
                             var response = await httpClient.GetAsync(apiUrl);
 
                             if (response.IsSuccessStatusCode)
@@ -664,9 +594,10 @@ namespace SmartRecipGene.Controllers
             try
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var apiKey = _spoonacularSettings.ApiKey;
 
                 // Get recipe details from API
-                string apiUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey=4f23d090497a4cc6942f7f6e1f3ffca4";
+                string apiUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey={apiKey}";
                 var response = await _httpClient.GetAsync(apiUrl);
 
                 if (response.IsSuccessStatusCode)
@@ -737,7 +668,9 @@ public async Task<IActionResult> GetSpellingSuggestions(string query)
     // Get suggestions from API
     try
     {
-        string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+                var apiKey = _spoonacularSettings.ApiKey;
+
+                //string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
         string url = $"https://api.spoonacular.com/recipes/autocomplete?apiKey={apiKey}&query={query}&number=5";
         
         var response = await _httpClient.GetStringAsync(url);

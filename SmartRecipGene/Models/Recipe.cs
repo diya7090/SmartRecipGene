@@ -21,6 +21,13 @@
         public string? MealType { get; set; }
        
         public string? Equipment { get; set; }
-       // public List<string>? StepByStepImages { get; set; }
+        // public List<string>? StepByStepImages { get; set; }
+        public ICollection<Review> Reviews { get; set; }
+
+        public Recipe()
+        {
+            Reviews = new HashSet<Review>();
+        }
+
     }
 }

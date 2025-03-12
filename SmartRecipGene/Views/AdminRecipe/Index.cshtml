@@ -232,6 +232,9 @@
     });
 </script> *@
 
+@* Add this near the top of your view *@
+@Html.AntiForgeryToken()
+
                 @model IEnumerable<SmartRecipGene.Models.Recipe>
 
 <h2 class="mb-4">Recipe Management Dashboard</h2>
@@ -305,12 +308,19 @@
         </div>
     </div>
 </div>
-
+<div class="bulk-actions mb-2" style="display: none;">
+    <button class="btn btn-danger" onclick="bulkDelete()">
+        <i class="fas fa-trash"></i> Delete Selected
+    </button>
+</div>
 <!-- Recipe Table -->
 <div class="table-responsive">
     <table class="table table-hover table-bordered" id="recipeTable">
         <thead class="thead-dark">
             <tr>
+                <th>
+                    <input type="checkbox" id="selectAll" />
+                </th>
                 <th onclick="sortTable(0)" style="cursor: pointer;">Title <i class="fas fa-sort"></i></th>
                 <th onclick="sortTable(1)" style="cursor: pointer;">Cuisine Type <i class="fas fa-sort"></i></th>
                 <th onclick="sortTable(2)" style="cursor: pointer;">Diet Type <i class="fas fa-sort"></i></th>
@@ -324,6 +334,9 @@
             @foreach (var recipe in Model ?? Enumerable.Empty<SmartRecipGene.Models.Recipe>())
             {
                 <tr>
+                    <td>
+                        <input type="checkbox" class="recipe-checkbox" value="@recipe.Id" />
+                    </td>
                     <td>@recipe.Title</td>
                     <td>@recipe.CusineType</td>
                     <td>@recipe.DietType</td>
@@ -428,206 +441,61 @@
         }
     }
 
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     const searchInput = document.getElementById('searchInput');
-    //     const suggestionsBox = document.getElementById('searchSuggestions');
-    //     const table = document.getElementById('recipeTable').getElementsByTagName('tbody')[0];
-    //     const cuisineFilter = document.getElementById('cuisineFilter');
-    //     const dietFilter = document.getElementById('dietFilter');
-    //     let typingTimer;
-
-    //     searchInput.addEventListener('input', handleSearch);
-    //     cuisineFilter.addEventListener('change', handleFilters);
-    //     dietFilter.addEventListener('change', handleFilters);
-
-    //     function handleSearch() {
-    //         clearTimeout(typingTimer);
-    //         const query = this.value.trim();
-
-    //         if (query.length < 2) {
-    //             suggestionsBox.style.display = 'none';
-    //             showAllRows();
-    //             return;
-    //         }
-
-    //         typingTimer = setTimeout(async () => {
-    //             try {
-    //                 const response = await fetch(`/AdminRecipe/GetRecipeSuggestions?query=${encodeURIComponent(query)}`);
-    //                 const suggestions = await response.json();
-    //                 updateSuggestions(suggestions, query);
-    //             } catch (error) {
-    //                 console.error('Error:', error);
-    //             }
-    //         }, 300);
-    //     }
-
-    //     function updateSuggestions(suggestions, query) {
-    //         suggestionsBox.innerHTML = '';
-
-    //         if (suggestions.length > 0) {
-    //             suggestions.forEach(suggestion => {
-    //                 const div = document.createElement('div');
-    //                 div.className = 'suggestion-item';
-    //                 div.textContent = suggestion;
-    //                 div.onclick = () => {
-    //                     searchInput.value = suggestion;
-    //                     suggestionsBox.style.display = 'none';
-    //                     filterTable(suggestion);
-    //                 };
-    //                 suggestionsBox.appendChild(div);
-    //             });
-    //         } else {
-    //             const div = document.createElement('div');
-    //             div.className = 'no-results';
-    //             div.textContent = 'No suggestions found';
-    //             suggestionsBox.appendChild(div);
-    //         }
-
-    //         suggestionsBox.style.display = 'block';
-    //         filterTable(query);
-    //     }
-
-    //     function handleFilters() {
-    //         const cuisineValue = cuisineFilter.value.toLowerCase();
-    //         const dietValue = dietFilter.value.toLowerCase();
-    //         filterTableByValues(cuisineValue, dietValue);
-    //     }
-
-    //     function filterTableByValues(cuisine, diet) {
-    //         const rows = table.getElementsByTagName('tr');
-    //         let hasVisibleRows = false;
-
-    //         for (let row of rows) {
-    //             const rowCuisine = row.cells[1].textContent.toLowerCase();
-    //             const rowDiet = row.cells[2].textContent.toLowerCase();
-    //             const matchesCuisine = !cuisine || rowCuisine.includes(cuisine);
-    //             const matchesDiet = !diet || rowDiet.includes(diet);
-
-    //             if (matchesCuisine && matchesDiet) {
-    //                 row.style.display = '';
-    //                 hasVisibleRows = true;
-    //             } else {
-    //                 row.style.display = 'none';
-    //             }
-    //         }
-
-    //         updateNoResultsRow(hasVisibleRows);
-    //     }
-
-    //     function filterTable(query) {
-    //         const rows = table.getElementsByTagName('tr');
-    //         const lowercaseQuery = query.toLowerCase();
-    //         let hasVisibleRows = false;
-
-    //         for (let row of rows) {
-    //             const title = row.cells[0].textContent.toLowerCase();
-    //             const cuisine = row.cells[1].textContent.toLowerCase();
-    //             const diet = row.cells[2].textContent.toLowerCase();
-
-    //             if (title.includes(lowercaseQuery) ||
-    //                 cuisine.includes(lowercaseQuery) ||
-    //                 diet.includes(lowercaseQuery)) {
-    //                 row.style.display = '';
-    //                 hasVisibleRows = true;
-    //             } else {
-    //                 row.style.display = 'none';
-    //             }
-    //         }
-
-    //         updateNoResultsRow(hasVisibleRows);
-    //     }
-
-    //     function updateNoResultsRow(hasVisibleRows) {
-    //         const tbody = table.querySelector('tbody');
-    //         const existingNoResults = tbody.querySelector('.no-results-row');
-
-    //         if (!hasVisibleRows) {
-    //             if (!existingNoResults) {
-    //                 const noResultsRow = table.insertRow();
-    //                 noResultsRow.className = 'no-results-row';
-    //                 const cell = noResultsRow.insertCell();
-    //                 cell.colSpan = 7;
-    //                 cell.textContent = 'No matching recipes found';
-    //                 cell.style.textAlign = 'center';
-    //                 cell.style.padding = '20px';
-    //             }
-    //         } else if (existingNoResults) {
-    //             existingNoResults.remove();
-    //         }
-    //     }
-
-    //     function showAllRows() {
-    //         const rows = table.getElementsByTagName('tr');
-    //         for (let row of rows) {
-    //             row.style.display = '';
-    //         }
-    //         const noResultsRow = table.querySelector('.no-results-row');
-    //         if (noResultsRow) {
-    //             noResultsRow.remove();
-    //         }
-    //     }
-
-    //     function sortTable(n) {
-    //         const table = document.getElementById('recipeTable');
-    //         let switching = true;
-    //         let dir = 'asc';
-    //         let switchcount = 0;
-
-    //         while (switching) {
-    //             switching = false;
-    //             const rows = table.getElementsByTagName('tr');
-
-    //             for (let i = 1; i < rows.length - 1; i++) {
-    //                 let shouldSwitch = false;
-    //                 const x = rows[i].getElementsByTagName('td')[n];
-    //                 const y = rows[i + 1].getElementsByTagName('td')[n];
-
-    //                 if (dir === 'asc') {
-    //                     if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-    //                         shouldSwitch = true;
-    //                         break;
-    //                     }
-    //                 } else {
-    //                     if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-    //                         shouldSwitch = true;
-    //                         break;
-    //                     }
-    //                 }
-
-    //                 if (shouldSwitch) {
-    //                     rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-    //                     switching = true;
-    //                     switchcount++;
-    //                 }
-    //             }
-
-    //             if (switchcount === 0 && dir === 'asc') {
-    //                 dir = 'desc';
-    //                 switching = true;
-    //             }
-    //         }
-    //     }
-
-    //     document.addEventListener('click', function (e) {
-    //         if (!suggestionsBox.contains(e.target) && e.target !== searchInput) {
-    //             suggestionsBox.style.display = 'none';
-    //         }
-    //     });
-    // });
-
-    // ... existing code ...
-
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
         const cuisineFilter = document.getElementById('cuisineFilter');
         const dietFilter = document.getElementById('dietFilter');
         const table = document.getElementById('recipeTable').getElementsByTagName('tbody')[0];
-
+        const selectAll = document.getElementById('selectAll');
+        const bulkActions = document.querySelector('.bulk-actions');
         // Add event listeners for filters
         searchInput.addEventListener('input', filterRecipes);
         cuisineFilter.addEventListener('change', filterRecipes);
         dietFilter.addEventListener('change', filterRecipes);
+        selectAll?.addEventListener('change', handleSelectAll);
+        document.querySelectorAll('.recipe-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updateBulkActionsVisibility);
+        });
 
+        function handleSelectAll() {
+            document.querySelectorAll('.recipe-checkbox').forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateBulkActionsVisibility();
+        }
+
+        function updateBulkActionsVisibility() {
+            const checkedBoxes = document.querySelectorAll('.recipe-checkbox:checked');
+            bulkActions.style.display = checkedBoxes.length > 0 ? 'block' : 'none';
+        }
+
+        window.bulkDelete = function () {
+            const selectedIds = Array.from(document.querySelectorAll('.recipe-checkbox:checked'))
+                .map(cb => cb.value);
+
+            if (confirm(`Are you sure you want to delete ${selectedIds.length} recipes?`)) {
+                fetch('/AdminRecipe/BulkDelete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(selectedIds)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Error deleting recipes');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error deleting recipes');
+                    });
+            }
+        }
         function filterRecipes() {
             const searchQuery = searchInput.value.toLowerCase().trim();
             const selectedCuisine = cuisineFilter.value.toLowerCase();
@@ -636,9 +504,9 @@
             let hasVisibleRows = false;
 
             for (let row of rows) {
-                const title = row.cells[0].textContent.toLowerCase();
-                const cuisine = row.cells[1].textContent.toLowerCase();
-                const diet = row.cells[2].textContent.toLowerCase();
+                const title = row.cells[1].textContent.toLowerCase();
+                const cuisine = row.cells[2].textContent.toLowerCase();
+                const diet = row.cells[3].textContent.toLowerCase();
 
                 const matchesSearch = searchQuery === '' ||
                     title.includes(searchQuery) ||
@@ -663,7 +531,7 @@
                     const newRow = table.insertRow();
                     newRow.className = 'no-results-row';
                     const cell = newRow.insertCell();
-                    cell.colSpan = 7;
+                    cell.colSpan = 8;
                     cell.textContent = 'No matching recipes found';
                     cell.style.textAlign = 'center';
                     cell.style.padding = '20px';
@@ -684,16 +552,16 @@
 
             // Update vegetarian count
             const vegetarianCount = visibleRows.filter(row =>
-                row.cells[2].textContent.toLowerCase().includes('vegetarian')).length;
+                row.cells[3].textContent.toLowerCase().includes('vegetarian')).length;
             document.querySelector('.bg-success h2').textContent = vegetarianCount;
 
             // Update quick recipes count
             const quickRecipesCount = visibleRows.filter(row =>
-                parseInt(row.cells[3].textContent) <= 30).length;
+                parseInt(row.cells[4].textContent) <= 30).length;
             document.querySelector('.bg-warning h2').textContent = quickRecipesCount;
 
             // Update cuisine types count
-            const uniqueCuisines = new Set(visibleRows.map(row => row.cells[1].textContent.trim()));
+            const uniqueCuisines = new Set(visibleRows.map(row => row.cells[2].textContent.trim()));
             document.querySelector('.bg-info h2').textContent = uniqueCuisines.size;
         }
 
@@ -709,8 +577,8 @@
 
                 for (let i = 0; i < rows.length - 1; i++) {
                     let shouldSwitch = false;
-                    const x = rows[i].getElementsByTagName("td")[n];
-                    const y = rows[i + 1].getElementsByTagName("td")[n];
+                    const x = rows[i].getElementsByTagName("td")[n+1];
+                    const y = rows[i + 1].getElementsByTagName("td")[n+1];
 
                     if (!x || !y) continue;
 

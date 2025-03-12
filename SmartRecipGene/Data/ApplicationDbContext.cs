@@ -6,8 +6,10 @@ namespace SmartRecipGene.Data
 {
     public class ApplicationDbContext: IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+         : base(options)
+        {
+        }
         public DbSet<Review> Reviews { get; set; }
 
         public DbSet<ShoppingListItem> ShoppingList { get; set; }
@@ -26,9 +28,46 @@ namespace SmartRecipGene.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            //modelBuilder.Entity<ApplicationUser>()
+            //   .ToTable("AspNetUsers");
+
             modelBuilder.Entity<ShoppingListItem>()
-                .HasKey(s => s.Id);  // Explicitly setting the primary key
+               .HasKey(s => s.Id);
+
+            modelBuilder.Entity<Recipe>()
+                .HasIndex(r => r.Title);
+
+            modelBuilder.Entity<BlogPost>()
+                .HasIndex(b => b.Title);
+            modelBuilder.Entity<FavoriteRecipe>()
+               .HasOne(f => f.User)
+               .WithMany()
+               .HasForeignKey(f => f.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<FavoriteRecipe>()
+                .HasOne(f => f.Recipe)
+                .WithMany()
+                .HasForeignKey(f => f.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Recipe)
+                .WithMany(r => r.Reviews)
+                .HasForeignKey(r => r.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Review>()
+            .Property(r => r.CreatedAt)
+            .HasDefaultValueSql("GETDATE()");
         }
 
     }
-}
+
+    }
+

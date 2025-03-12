@@ -78,7 +78,7 @@
         <div class="featured-posts">
             <h2>Featured Posts</h2>
             <div class="featured-scroll">
-                @foreach (var blog in Model.Take(3))
+                @foreach (var blog in Model)
                 {
                     <div class="featured-card">
                         <div class="featured-image">
@@ -106,7 +106,7 @@
         <div class="recent-posts">
             <h2>Recent Posts</h2>
             <div class="posts-grid">
-                @foreach (var blog in Model.Skip(3))
+                @foreach (var blog in Model.Skip(1))
                 {
                     <div class="blog-card">
                         <div class="blog-image">

@@ -18,6 +18,8 @@ namespace SmartRecipGene.Models
         [StringLength(1000)]
         public string Comment { get; set; } = string.Empty;
 
-       
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public ApplicationUser User { get; set; }
+        public Recipe Recipe { get; set; }
     }
 }
