@@ -56,11 +56,8 @@ namespace SmartRecipGene.Models
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
 
-        public int? RecipeId { get; set; }
+        public int RecipeId { get; set; }
 
-        [ForeignKey("RecipeId")]
-        public Recipe Recipe { get; set; }
-            
         public bool IsExternalRecipe { get; set; }
 
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;

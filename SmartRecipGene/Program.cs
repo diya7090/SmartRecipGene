@@ -24,11 +24,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 6;
-
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultUI()
-
 .AddDefaultTokenProviders();
 
 
@@ -119,7 +117,7 @@ async Task CreateRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserMa
     }
 
     // Add admin user
-    var adminEmail = "admin@example.com";
+    var adminEmail = "diyadodhiawala@gmail.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
     if (adminUser == null)
@@ -132,7 +130,7 @@ async Task CreateRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserMa
             Name = "Admin User"
         };
 
-        var result = await userManager.CreateAsync(admin, "Admin123!"); // Change this password in production
+        var result = await userManager.CreateAsync(admin, "Diya@123"); // Change this password in production
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(admin, "Admin");

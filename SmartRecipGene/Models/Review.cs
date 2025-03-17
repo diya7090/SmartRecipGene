@@ -20,6 +20,5 @@ namespace SmartRecipGene.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public ApplicationUser User { get; set; }
-        public Recipe Recipe { get; set; }
     }
 }

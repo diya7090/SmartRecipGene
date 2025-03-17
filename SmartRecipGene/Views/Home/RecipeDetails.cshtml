@@ -530,23 +530,23 @@ else
         </div>
         <div class="recipe-info">
             <h1 class="recipe-title">@Model["title"]</h1>
-            @if (User.Identity.IsAuthenticated)
-            {
-                @* <form method="post" asp-controller="FavoriteRecipes" asp-action="AddToFavorites" class="favorite-form">
+           @*  @if (User.Identity.IsAuthenticated)
+            { *@
+                <form method="post" asp-controller="FavoriteRecipes" asp-action="AddToFavorites" class="favorite-form">
                     <input type="hidden" name="recipeId" value="@Model["id"]?.ToString()" />
                     <input type="hidden" name="title" value="@Model["title"]?.ToString()" />
                     <input type="hidden" name="imageUrl" value="@Model["image"]?.ToString()" />
                     <button type="submit" class="btn-favorite">
                         <i class="fas fa-heart"></i> Save Recipe
                     </button>
-                </form> *@
-                <form method="post" asp-controller="FavoriteRecipes" asp-action="AddToFavorites">
+                </form>
+               @*  <form method="post" asp-controller="FavoriteRecipes" asp-action="AddToFavorites">
                     <input type="hidden" name="recipeId" value="@Convert.ToInt32(Model["id"])" />
                     <input type="hidden" name="title" value="@Model["title"]?.ToString()" />
                     <input type="hidden" name="imageUrl" value="@Model["image"]?.ToString()" />
                     <button type="submit" class="btn btn-warning">⭐ Save to Favorites</button>
-                </form>
-            }
+                </form> *@
+           @*  } *@
         </div>
     </div>
 
@@ -607,7 +607,7 @@ else
 
         <div class="reviews-section">
             <h3><i class="fas fa-star"></i> Reviews</h3>
-            @if (User .Identity.IsAuthenticated)
+            @if (User.Identity.IsAuthenticated)
             {
                 <div class="review-form-card">
                     <form method="post" asp-action="SubmitReview">

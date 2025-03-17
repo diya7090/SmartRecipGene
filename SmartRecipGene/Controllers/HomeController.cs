@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options; // Add this for session access
 
 
@@ -64,9 +65,92 @@ namespace SmartRecipGene.Controllers
             return View("Recipes", recipes);
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            try
+            {
+                // Get most loved recipes based on review count
+                var mostLovedRecipes = await _context.Recipes
+                    .OrderByDescending(r => _context.Reviews.Count(rev => rev.RecipeId == r.Id))
+                    .Take(6)
+                    .Select(r => new
+                    {
+                        Id = r.Id,
+                        Title = r.Title,
+                        ImageUrl = r.ImageUrl,
+                        ReviewCount = _context.Reviews.Count(rev => rev.RecipeId == r.Id)
+                    })
+                    .ToListAsync();
+
+                // If not enough recipes in database, fetch from API
+                if (mostLovedRecipes.Count < 6)
+                {
+                    var apiKey = _spoonacularSettings.ApiKey;
+                    string url = $"https://api.spoonacular.com/recipes/random?apiKey={apiKey}&number={6 - mostLovedRecipes.Count}";
+                    
+                    var response = await _httpClient.GetStringAsync(url);
+                    var apiResponse = JObject.Parse(response);
+                    
+                    if (apiResponse["recipes"] != null)
+                    {
+                        var apiRecipes = apiResponse["recipes"].Select(r => new
+                        {
+                            Id = (int)r["id"],
+                            Title = (string)r["title"],
+                            ImageUrl = (string)r["image"],
+                            ReviewCount = 0
+                        });
+                        
+                        mostLovedRecipes.AddRange(apiRecipes);
+                    }
+                }
+
+                // Get recommended recipes based on ID (since CreatedDate is not available)
+                var recommendedRecipes = await _context.Recipes
+                    .OrderByDescending(r => r.Id) // Using Id instead of CreatedDate
+                    .Take(6)
+                    .Select(r => new
+                    {
+                        Id = r.Id,
+                        Title = r.Title,
+                        ImageUrl = r.ImageUrl
+                    })
+                    .ToListAsync();
+
+                // If not enough recommended recipes, fetch from API
+                if (recommendedRecipes.Count < 6)
+                {
+                    var apiKey = _spoonacularSettings.ApiKey;
+                    string url = $"https://api.spoonacular.com/recipes/random?apiKey={apiKey}&number={6 - recommendedRecipes.Count}";
+                    
+                    var response = await _httpClient.GetStringAsync(url);
+                    var apiResponse = JObject.Parse(response);
+                    
+                    if (apiResponse["recipes"] != null)
+                    {
+                        var apiRecipes = apiResponse["recipes"].Select(r => new
+                        {
+                            Id = (int)r["id"],
+                            Title = (string)r["title"],
+                            ImageUrl = (string)r["image"]
+                        });
+                        
+                        recommendedRecipes.AddRange(apiRecipes);
+                    }
+                }
+
+                ViewBag.MostLovedRecipes = mostLovedRecipes;
+                ViewBag.RecommendedRecipes = recommendedRecipes;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading home page recipes");
+                ViewBag.MostLovedRecipes = new List<object>();
+                ViewBag.RecommendedRecipes = new List<object>();
+                return View();
+            }
         }
 
 
@@ -386,6 +470,129 @@ namespace SmartRecipGene.Controllers
             }
             return RedirectToAction("ShoppingList");
         }
+        //[HttpGet]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> AllReviews()
+        //{
+        //    var reviews = await _context.Reviews
+        //        .OrderByDescending(r => r.Id)
+        //        .ToListAsync();
+
+        //    var recipeDetails = new Dictionary<int, string>();
+
+        //    foreach (var review in reviews)
+        //    {
+        //        try
+        //        {
+        //            if (!recipeDetails.ContainsKey(review.RecipeId))  // Only fetch if not already in dictionary
+        //            {
+        //                using (var httpClient = new HttpClient())
+        //                {
+        //                    var apiKey = _spoonacularSettings.ApiKey;
+
+        //                    string apiUrl = $"https://api.spoonacular.com/recipes/{review.RecipeId}/information?apiKey={apiKey}";
+        //                    var response = await httpClient.GetAsync(apiUrl);
+
+        //                    //if (response.IsSuccessStatusCode)
+        //                    //{
+        //                    //    string jsonResponse = await response.Content.ReadAsStringAsync();
+        //                    //    var recipeData = JObject.Parse(jsonResponse);
+        //                    //    recipeDetails[review.RecipeId] = recipeData["title"]?.ToString() ?? $"Recipe {review.RecipeId}";
+        //                    //}
+        //                    //else
+        //                    //{
+        //                    //    recipeDetails[review.RecipeId] = $"Recipe {review.RecipeId}";
+        //                    //}
+        //                }
+        //            }
+        //        }
+        //        catch (Exception)
+        //        {
+        //            recipeDetails[review.RecipeId] = $"Recipe {review.RecipeId}";
+        //        }
+        //    }
+
+        //    ViewBag.RecipeDetails = recipeDetails;
+        //    return View("~/Views/Admin/AllReviews.cshtml", reviews);
+        //}
+        // [HttpGet]--------final recipe
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> AllReviews()
+        //{
+        //    var reviews = await _context.Reviews
+        //        .OrderByDescending(r => r.Id)
+        //        .ToListAsync();
+
+        //    var recipeDetails = new Dictionary<int, string>();
+
+        //    foreach (var review in reviews)
+        //    {
+        //        try
+        //        {
+        //            if (!recipeDetails.ContainsKey(review.RecipeId))
+        //            {
+        //                // First check if we have the recipe in our database
+        //                var dbRecipe = await _context.Recipes.FindAsync(review.RecipeId);
+        //                if (dbRecipe != null && !string.IsNullOrEmpty(dbRecipe.Title))
+        //                {
+        //                    recipeDetails[review.RecipeId] = dbRecipe.Title;
+        //                    continue; // Skip API call if we found it in database
+        //                }
+
+        //                using (var httpClient = _httpClient)
+        //                {
+        //                    var apiKey = _spoonacularSettings.ApiKey;
+        //                    string apiUrl = $"https://api.spoonacular.com/recipes/{review.RecipeId}/information?apiKey={apiKey}";
+        //                    var response = await httpClient.GetAsync(apiUrl);
+
+        //                    if (response.IsSuccessStatusCode)
+        //                    {
+        //                        string jsonResponse = await response.Content.ReadAsStringAsync();
+        //                        var recipeData = JObject.Parse(jsonResponse);
+        //                        string title = recipeData["title"]?.ToString();
+
+        //                        if (!string.IsNullOrEmpty(title))
+        //                        {
+        //                            recipeDetails[review.RecipeId] = title;
+
+        //                            // Update or add to database
+        //                            if (dbRecipe == null)
+        //                            {
+        //                                _context.Recipes.Add(new Recipe
+        //                                {
+        //                                    Id = review.RecipeId,
+        //                                    Title = title
+        //                                });
+        //                            }
+        //                            else
+        //                            {
+        //                                dbRecipe.Title = title;
+        //                                _context.Recipes.Update(dbRecipe);
+        //                            }
+        //                            await _context.SaveChangesAsync();
+        //                        }
+        //                        else
+        //                        {
+        //                            recipeDetails[review.RecipeId] = $"Recipe {review.RecipeId}";
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        recipeDetails[review.RecipeId] = $"Recipe {review.RecipeId}";
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            _logger.LogError(ex, $"Error fetching recipe details for ID {review.RecipeId}");
+        //            recipeDetails[review.RecipeId] = $"Recipe {review.RecipeId}";
+        //        }
+        //    }
+
+        //    ViewBag.RecipeDetails = recipeDetails;
+        //    return View("~/Views/Admin/AllReviews.cshtml", reviews);
+        //}
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AllReviews()
@@ -400,31 +607,48 @@ namespace SmartRecipGene.Controllers
             {
                 try
                 {
-                    if (!recipeDetails.ContainsKey(review.RecipeId))  // Only fetch if not already in dictionary
+                    if (!recipeDetails.ContainsKey(review.RecipeId))
                     {
-                        using (var httpClient = new HttpClient())
+                        var dbRecipe = await _context.Recipes.FindAsync(review.RecipeId);
+                        if (dbRecipe != null && !string.IsNullOrEmpty(dbRecipe.Title))
                         {
-                            var apiKey = _spoonacularSettings.ApiKey;
-
-                            string apiUrl = $"https://api.spoonacular.com/recipes/{review.RecipeId}/information?apiKey={apiKey}";
-                            var response = await httpClient.GetAsync(apiUrl);
-
-                            if (response.IsSuccessStatusCode)
+                            recipeDetails[review.RecipeId] = dbRecipe.Title;
+                        }
+                        else
+                        {
+                            using (var httpClient = _httpClient)
                             {
-                                string jsonResponse = await response.Content.ReadAsStringAsync();
-                                var recipeData = JObject.Parse(jsonResponse);
-                                recipeDetails[review.RecipeId] = recipeData["title"]?.ToString() ?? $"Recipe {review.RecipeId}";
-                            }
-                            else
-                            {
-                                recipeDetails[review.RecipeId] = $"Recipe {review.RecipeId}";
+                                var apiKey = _spoonacularSettings.ApiKey;
+                                string apiUrl = $"https://api.spoonacular.com/recipes/{review.RecipeId}/information?apiKey={apiKey}";
+                                var response = await httpClient.GetAsync(apiUrl);
+
+                                if (response.IsSuccessStatusCode)
+                                {
+                                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                                    var recipeData = JObject.Parse(jsonResponse);
+                                    string title = recipeData["title"]?.ToString();
+
+                                    if (!string.IsNullOrEmpty(title))
+                                    {
+                                        recipeDetails[review.RecipeId] = title;
+                                    }
+                                    else
+                                    {
+                                        recipeDetails[review.RecipeId] = "Untitled Recipe";
+                                    }
+                                }
+                                else
+                                {
+                                    recipeDetails[review.RecipeId] = "Recipe Not Found";
+                                }
                             }
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    recipeDetails[review.RecipeId] = $"Recipe {review.RecipeId}";
+                    _logger.LogError(ex, $"Error fetching recipe details for ID {review.RecipeId}");
+                    recipeDetails[review.RecipeId] = "Unavailable Recipe";
                 }
             }
 
@@ -690,6 +914,39 @@ public async Task<IActionResult> GetSpellingSuggestions(string query)
 }
 
 
+        public IActionResult Contact()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SubmitContact(Contact contact)
+        {
+            try
+    {
+        if (ModelState.IsValid)
+        {
+            contact.DateSubmitted = DateTime.UtcNow;
+            contact.IsRead = false;
+            _context.Contacts.Add(contact);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+        return Json(new { success = false, message = "Invalid form data" });
+    }
+    catch (Exception ex)
+    {
+        // Log the exception if you have logging configured
+        return Json(new { success = false, message = ex.Message });
+    }
+            // if (ModelState.IsValid)
+            // {
+            //     _context.Contacts.Add(contact);
+            //     await _context.SaveChangesAsync();
+            //     return Json(new { success = true, message = "Thank you for your message!" });
+            // }
+            // return Json(new { success = false, message = "Please check your input and try again." });
+        }
+
         public IActionResult Privacy()
         {
             return View();
@@ -702,3 +959,5 @@ public async Task<IActionResult> GetSpellingSuggestions(string query)
         }
     }
 }
+
+

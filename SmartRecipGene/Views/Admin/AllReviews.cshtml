@@ -14,7 +14,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var review in Model)
+@*                 @foreach (var review in Model)
                 {
                     <tr>
                         <td>
@@ -31,6 +31,35 @@
                         <td>@review.Comment</td>
                         <td>
                             <a asp-action="RecipeDetails" asp-route-id="@review.RecipeId"
+                               class="btn btn-primary btn-sm">View Recipe</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table> *@
+
+                @foreach (var review in Model)
+                {
+                    <tr>
+                        <td>
+                            @{
+                                var recipeName = ViewBag.RecipeDetails.ContainsKey(review.RecipeId)
+                                ? ViewBag.RecipeDetails[review.RecipeId]
+                                : $"Recipe {review.RecipeId}";
+                            }
+                            <a asp-controller="Home" asp-action="RecipeDetails" asp-route-id="@review.RecipeId">
+                                @recipeName
+                            </a>
+                        </td>
+                        <td>
+                            @for (int i = 0; i < review.Rating; i++)
+                            {
+                                <span class="text-warning">⭐</span>
+                            }
+                        </td>
+                        <td>@review.Comment</td>
+                        <td>
+                            <a asp-controller="Home" asp-action="RecipeDetails" asp-route-id="@review.RecipeId"
                                class="btn btn-primary btn-sm">View Recipe</a>
                         </td>
                     </tr>

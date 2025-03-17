@@ -156,7 +156,6 @@ namespace SmartRecipGene.Controllers
             if (user == null) return RedirectToAction("Login", "Account");
 
             var favorites = await _context.FavoriteRecipes
-                .Include(f => f.Recipe)
                 .Where(f => f.UserId == user.Id)
                 .ToListAsync();
 

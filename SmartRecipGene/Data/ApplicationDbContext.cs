@@ -22,7 +22,7 @@ namespace SmartRecipGene.Data
 
         public DbSet<UserActivity> UserActivities { get; set; }
 
-        //public DbSet<ShoppingListItem> ShoppingList { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,23 +45,12 @@ namespace SmartRecipGene.Data
                .HasForeignKey(f => f.UserId)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<FavoriteRecipe>()
-                .HasOne(f => f.Recipe)
-                .WithMany()
-                .HasForeignKey(f => f.RecipeId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.Recipe)
-                .WithMany(r => r.Reviews)
-                .HasForeignKey(r => r.RecipeId)
-                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Review>()
             .Property(r => r.CreatedAt)
             .HasDefaultValueSql("GETDATE()");
