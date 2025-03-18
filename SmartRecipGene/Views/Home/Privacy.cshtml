@@ -1,6 +1,123 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<style>
+    .privacy-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
+
+    .privacy-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .privacy-section {
+        margin-bottom: 30px;
+    }
+
+    .privacy-section h3 {
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #ffc107;
+    }
+
+    .privacy-section p {
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 15px;
+    }
+
+    .privacy-section ul {
+        padding-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    .privacy-section li {
+        margin-bottom: 10px;
+        color: #555;
+    }
+
+    .last-updated {
+        font-style: italic;
+        color: #666;
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+</style>
+
+<div class="privacy-container">
+    <div class="privacy-header">
+        <h1>Privacy Policy</h1>
+        <p class="lead">Your privacy is important to us at SmartRecipGene</p>
+    </div>
+
+    <div class="privacy-section">
+        <h3>Information We Collect</h3>
+        <p>When you use SmartRecipGene, we collect the following types of information:</p>
+        <ul>
+            <li>Account information (email, username)</li>
+            <li>Recipe preferences and dietary restrictions</li>
+            <li>Shopping list contents</li>
+            <li>User-generated content (reviews, comments)</li>
+        </ul>
+    </div>
+
+    <div class="privacy-section">
+        <h3>How We Use Your Information</h3>
+        <p>We use the collected information to:</p>
+        <ul>
+            <li>Personalize your recipe recommendations</li>
+            <li>Improve our recipe generation algorithm</li>
+            <li>Maintain and improve our services</li>
+            <li>Send important updates about our service</li>
+        </ul>
+    </div>
+
+    <div class="privacy-section">
+        <h3>Data Security</h3>
+        <p>We implement appropriate security measures to protect your personal information from unauthorized access, alteration, or disclosure. Your data is stored securely and is only accessible to authorized personnel.</p>
+    </div>
+
+    <div class="privacy-section">
+        <h3>Cookies and Tracking</h3>
+        <p>We use cookies to enhance your browsing experience and analyze website traffic. You can control cookie settings through your browser preferences.</p>
+    </div>
+
+    <div class="privacy-section">
+        <h3>Third-Party Services</h3>
+        <p>We may use third-party services for:</p>
+        <ul>
+            <li>Recipe data (Spoonacular API)</li>
+            <li>Analytics</li>
+            <li>User authentication</li>
+        </ul>
+    </div>
+
+    <div class="privacy-section">
+        <h3>Your Rights</h3>
+        <p>You have the right to:</p>
+        <ul>
+            <li>Access your personal data</li>
+            <li>Correct inaccurate information</li>
+            <li>Request deletion of your data</li>
+            <li>Opt-out of marketing communications</li>
+        </ul>
+    </div>
+    <div class="privacy-section">
+        <h3>Contact Us</h3>
+        <p>If you have any questions about this Privacy Policy, please contact us through our <a asp-controller="Home" asp-action="Contact" class="contact-link">Contact page</a>.</p>
+    </div>
+    <div class
+    ="last-updated">
+        Last updated: @DateTime.Now.ToString("MMMM dd, yyyy")
+    </div>
+</div>

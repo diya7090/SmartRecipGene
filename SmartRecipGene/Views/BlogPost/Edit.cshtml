@@ -13,8 +13,10 @@
 <h2 class="text-center text-warning">Edit Blog Post</h2>
 
 <div class="container">
-    <form asp-action="Edit" method="post">
+    <form asp-action="Edit" method="post" onsubmit="return prepareContent()">
         <input type="hidden" asp-for="Id">
+         <input type="hidden" asp-for="CreatedAt">
+        <input type="hidden" asp-for="Views">
 
         <div class="mb-3">
             <label class="form-label">Title</label>
@@ -23,8 +25,9 @@
 
         <div class="mb-3">
             <label class="form-label">Content</label>
-            <div id="editor" style="height: 200px;"></div>
-            <input type="hidden" asp-for="Content" id="contentInput" />
+            <div id="editor" style="height: 300px;"></div>
+            <input type="hidden" asp-for="Content" id="contentInput" required />
+            <span asp-validation-for="Content" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
@@ -65,19 +68,57 @@
         placeholder: 'Write your blog content here...',
         modules: {
             toolbar: [
-                [{ header: [1, 2, false] }],
-                ['bold', 'italic', 'underline'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-                ['link', 'image']
+                // [{ header: [1, 2, false] }],
+                // ['bold', 'italic', 'underline'],
+                // [{ list: 'ordered' }, { list: 'bullet' }],
+                // ['link', 'image']
+                 [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                ['link', 'image'],
+                ['clean']
             ]
         }
     });
-    var existingContent = @Html.Raw(Json.Serialize(Model.Content));
-    if (existingContent) {
-        quill.root.innerHTML = existingContent;
+    document.addEventListener('DOMContentLoaded', function() {
+        var content = @Html.Raw(Json.Serialize(Model.Content));
+        if (content && content.trim() !== '') {
+            quill.root.innerHTML = content;
+        }
+    });
+
+    // Handle form submission and content validation
+    function prepareContent() {
+        var content = quill.root.innerHTML;
+        if (!content || content.trim() === '<p><br></p>') {
+            alert('Content cannot be empty');
+            return false;
+        }
+        document.getElementById('contentInput').value = content;
+        return true;
     }
-    // Store the Quill editor content in the hidden input before form submission
-    document.querySelector("form").onsubmit = function () {
-        document.getElementById("contentInput").value = quill.root.innerHTML;
-    };
+    // var content = @Html.Raw(Json.Serialize(Model.Content));
+    // if (content) {
+    //     quill.root.innerHTML = content;
+    // }
+
+    // // Update hidden input before form submission
+    // document.querySelector('form').addEventListener('submit', function() {
+    //     document.getElementById('contentInput').value = quill.root.innerHTML;
+    // });
+    // var existingContent = @Html.Raw(Json.Serialize(Model.Content));
+    // if (existingContent) {
+    //     quill.root.innerHTML = existingContent;
+    // }
+    // // Store the Quill editor content in the hidden input before form submission
+    // document.querySelector("form").onsubmit = function () {
+    //     document.getElementById("contentInput").value = quill.root.innerHTML;
+    // };
+    
 </script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

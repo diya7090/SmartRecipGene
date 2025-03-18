@@ -3,6 +3,212 @@
 @{
     ViewData["Title"] = "Blog Post Details";
 }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+.blog-post {
+        max-width: 1000px;
+        margin: 20px auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+
+    .hero-section {
+        position: relative;
+        height: 600px;
+        overflow: hidden;
+    }
+
+    .blog-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+
+    .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        padding: 100px 40px 40px;
+        color: white;
+    }
+
+    .blog-title {
+        font-size: 3rem;
+        font-weight: 800;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 15px;
+    }
+
+    .blog-meta {
+        display: flex;
+        gap: 25px;
+        font-size: 1.1rem;
+        align-items: center;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .meta-item i {
+        font-size: 1.2rem;
+    }
+
+    .category-badge {
+        background: #ffc107;
+        color: #000;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .content-wrapper {
+        padding: 40px;
+        background: white;
+    }
+    .blog-post {
+        max-width: 1000px;
+        margin: 20px auto;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .blog-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
+        transition: all 0.3s ease;
+    }
+
+    .blog-image:hover {
+        filter: brightness(1.1);
+    }
+
+    .blog-header {
+        padding: 20px 30px;
+    }
+
+    .blog-title {
+        font-size: 2.2rem;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .blog-info {
+        display: flex;
+        gap: 20px;
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    .blog-info span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .blog-content {
+        padding: 0 30px 30px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .blog-content h1, h2, h3 {
+        color: #444;
+        margin: 20px 0 10px;
+    }
+
+    .blog-content ul, ol {
+        margin-left: 20px;
+        margin-bottom: 20px;
+    }
+
+    .blog-tags {
+        padding: 15px 30px;
+        background: #f8f9fa;
+        border-top: 1px solid #eee;
+    }
+
+    .tag {
+        display: inline-block;
+        padding: 4px 12px;
+        margin: 3px;
+        background: #e9ecef;
+        border-radius: 15px;
+        color: #555;
+        font-size: 0.9rem;
+    }
+
+    .blog-actions {
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fa;
+        border-radius: 0 0 8px 8px;
+    }
+
+    .btn {
+        padding: 8px 20px;
+        margin: 0 5px;
+        border-radius: 5px;
+        font-weight: 500;
+        transition: transform 0.2s;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Recipe-specific styling */
+    .recipe-section {
+        background: #f9f9f9;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+    }
+
+    .ingredients-list {
+        columns: 2;
+        margin: 15px 0;
+    }
+
+    .cooking-steps {
+        counter-reset: step-counter;
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .cooking-steps li {
+        margin-bottom: 15px;
+        padding-left: 40px;
+        position: relative;
+    }
+
+    .cooking-steps li:before {
+        content: counter(step-counter);
+        counter-increment: step-counter;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: #ffc107;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+    }
+</style>
 
 <h2 class="text-center text-primary">📖 Blog Post Details</h2>
 
@@ -21,19 +227,22 @@
             <hr />
 
             <div class="card-text">
+                <div id="content-display">
+
                 @Html.Raw(Model.Content) <!-- Renders HTML content -->
             </div>
-            @if (!string.IsNullOrEmpty(Model.Tags))
-            {
-                <p><strong>Tags:</strong> @Model.Tags</p>
-            }
+           @if (User.IsInRole("Admin") || User.IsInRole("ADMIN") || User.IsInRole("admin"))
+                {
+                    <p><strong>Status:</strong> @(Model.IsPublished ? "Published" : "Draft")</p>
 
-            <p><strong>Status:</strong> @(Model.IsPublished ? "Published" : "Draft")</p>
+                    <div class="text-center mt-4">
+                        <a href="@Url.Action("Edit", "BlogPost", new { id = Model.Id })" class="btn btn-warning">✏️ Edit</a>
+                    </div>
+                }
 
-            <div class="text-center mt-4">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">✏️ Edit</a>
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                <div class="text-center mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
             </div>
-        </div>
     </div>
 </div>

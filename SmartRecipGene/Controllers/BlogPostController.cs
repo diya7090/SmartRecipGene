@@ -60,10 +60,21 @@ namespace SmartRecipGene.Controllers
         // GET: BlogPost/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
-            var blogPost = await _context.BlogPosts.FindAsync(id);
-            if (blogPost == null) return NotFound();
-            return View(blogPost);
+            if (id == null)
+        {
+            return NotFound();
+        }
+
+        var blogPost = await _context.BlogPosts.FindAsync(id);
+        if (blogPost == null)
+        {
+            return NotFound();
+        }
+        return View(blogPost);
+            // if (id == null) return NotFound();
+            // var blogPost = await _context.BlogPosts.FindAsync(id);
+            // if (blogPost == null) return NotFound();
+            // return View(blogPost);
         }
 
         // POST: BlogPost/Edit/5
@@ -71,15 +82,45 @@ namespace SmartRecipGene.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,Author,ImageUrl,Category,Tags,IsPublished,CreatedAt")] BlogPost blogPost)
         {
-            if (id != blogPost.Id) return NotFound();
+            // if (id != blogPost.Id) return NotFound();
 
-            if (ModelState.IsValid)
+            // if (ModelState.IsValid)
+            // {
+            //     _context.Update(blogPost);
+            //     await _context.SaveChangesAsync();
+            //     return RedirectToAction(nameof(Index));
+            // }
+            // return View(blogPost);
+            if (id != blogPost.Id)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
             {
                 _context.Update(blogPost);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(blogPost);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BlogPostExists(blogPost.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+        return View(blogPost);
+        }
+        private bool BlogPostExists(int id)
+        {
+            return _context.BlogPosts.Any(e => e.Id == id);
         }
 
         // GET: BlogPost/Delete/5

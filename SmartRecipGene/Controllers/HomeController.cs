@@ -707,52 +707,7 @@ namespace SmartRecipGene.Controllers
                 return RedirectToAction(nameof(RecipeDetails), new { id = RecipeId });
             }
         }
-        //[HttpPost]
-        //[Authorize]
-        //public async Task<IActionResult> AddReview(int recipeId, string comment, int rating)
-        //{
-        //    if (rating < 1 || rating > 5)
-        //    {
-        //        return Json(new { success = false, message = "Rating must be between 1 and 5" });
-        //    }
-
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        //    var existingReview = await _context.Reviews
-        //        .FirstOrDefaultAsync(r => r.RecipeId == recipeId && r.UserId == userId);
-
-        //    if (existingReview != null)
-        //    {
-        //        existingReview.Comment = comment;
-        //        existingReview.Rating = rating;
-        //        _context.Reviews.Update(existingReview);
-        //    }
-        //    else
-        //    {
-        //        var review = new Review
-        //        {
-        //            RecipeId = recipeId,
-        //            UserId = userId,
-        //            Comment = comment,
-        //            Rating = rating
-        //        };
-        //        _context.Reviews.Add(review);
-        //    }
-
-        //    await _context.SaveChangesAsync();
-
-        //    var averageRating = await _context.Reviews
-        //        .Where(r => r.RecipeId == recipeId)
-        //        .AverageAsync(r => (double?)r.Rating) ?? 0;
-
-        //    return Json(new
-        //    {
-        //        success = true,
-        //        message = "Review submitted successfully",
-        //        averageRating = Math.Round(averageRating, 1)
-        //    });
-        //}
-
+      
         [HttpGet]
         public async Task<IActionResult> GetReviews(int recipeId)
         {
@@ -948,6 +903,10 @@ public async Task<IActionResult> GetSpellingSuggestions(string query)
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+        public IActionResult About()
         {
             return View();
         }

@@ -16,7 +16,7 @@
 
 </head>
 <body>
-    <header>
+    @* <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
@@ -31,7 +31,7 @@
                             <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Ingredients">Find Recipes</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="FindByIngredients">Find Recipes</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Desserts" asp-action="Index">🍰 Desserts</a>
@@ -42,6 +42,7 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog Posts</a>
                         </li>
+                        
                         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
                             <div class="container-fluid">
                                 <!-- ... existing nav items ... -->
@@ -83,6 +84,97 @@
                                         Contact Messages
                                     </a>
                                 </li>
+                               
+                            }
+
+                            <li class="nav-item">
+                                <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline">
+                                    <button type="submit" class="nav-link btn btn-link">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header> *@
+
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-utensils"></i> SmartRecipGene
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Ingredients">Find Recipes by Ingredients</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Desserts" asp-action="Index">🍰 Desserts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog Posts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="About">About Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="FavoriteRecipes" asp-action="Index">❤️ My Favorites</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="ShoppingList">
+                                    <i class="fas fa-shopping-cart"></i> Shopping List
+                                </a>
+                            </li>
+                           
+                            <li class="nav-item">
+                                <span class="nav-link">Welcome, @User.Identity.Name!</span>
+                            </li>
+
+                            @if (User.IsInRole("Admin") || User.IsInRole("ADMIN") || User.IsInRole("admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link admin-link" asp-controller="Admin" asp-action="Index">Manage Users</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link admin-link" asp-controller="AdminRecipe" asp-action="Index">Recipes Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link admin-link" asp-controller="Admin" asp-action="Dashboard">Admin Panel</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Home" asp-action="AllReviews">View All Reviews</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="ContactMessages">Contact Messages</a>
+                                </li>
                             }
 
                             <li class="nav-item">
@@ -105,7 +197,6 @@
             </div>
         </nav>
     </header>
-
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -122,17 +213,23 @@
                 <div class="footer-section">
                     <h5>Quick Links</h5>
                     <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a asp-controller="Home" asp-action="About">About Us</a></li>
+                         <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                         <li><a  asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li> 
                     </ul>
                 </div>
-                <div class="footer-section">
+                                <div class="footer-section">
                     <h5>Follow Us</h5>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-pinterest"></i></a>
+                        <a href="https://www.facebook.com/SmartRecipGene" target="_blank" title="Follow us on Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://www.instagram.com/SmartRecipGene" target="_blank" title="Follow us on Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.pinterest.com/SmartRecipGene" target="_blank" title="Follow us on Pinterest">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
                     </div>
                 </div>
             </div>
