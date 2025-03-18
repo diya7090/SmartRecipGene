@@ -1,0 +1,66 @@
+@model PreferencesViewModel
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Set Your Preferences</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Preferences" method="post">
+                        <div class="mb-4">
+                            <h5>Dietary Restrictions</h5>
+                            <div class="btn-group-vertical w-100">
+                                @foreach (var restriction in new[] { "Vegetarian", "Vegan", "Gluten-Free", "Dairy-Free", "Nut-Free" })
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" 
+                                               name="DietaryRestrictions" value="@restriction"
+                                               @(Model.DietaryRestrictions.Contains(restriction) ? "checked" : "") />
+                                        <label class="form-check-label">@restriction</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Preferred Cuisines</h5>
+                            <div class="btn-group-vertical w-100">
+                                @foreach (var cuisine in new[] { "Italian", "Chinese", "Mexican", "Indian", "Japanese", "Mediterranean" })
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" 
+                                               name="PreferredCuisines" value="@cuisine"
+                                               @(Model.PreferredCuisines.Contains(cuisine) ? "checked" : "") />
+                                        <label class="form-check-label">@cuisine</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Meal Types</h5>
+                            <div class="btn-group-vertical w-100">
+                                @foreach (var mealType in new[] { "Breakfast", "Lunch", "Dinner", "Snacks", "Desserts" })
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" 
+                                               name="MealTypes" value="@mealType"
+                                               @(Model.MealTypes.Contains(mealType) ? "checked" : "") />
+                                        <label class="form-check-label">@mealType</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Save Preferences</button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Skip for Now</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

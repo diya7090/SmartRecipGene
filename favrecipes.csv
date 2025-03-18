@@ -1,0 +1,31 @@
+﻿Id,RecipeId,Title,ImageUrl,UserId
+2,652002,Mint Chocolate Chip Ice Cream,https://img.spoonacular.com/recipes/652002-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+3,664340,Vanilla Yogurt Mousse With Strawberry Marshmallow,https://img.spoonacular.com/recipes/664340-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+5,593415,Curried Red Kidney Beans with Paneer (Paneer Rajma),https://img.spoonacular.com/recipes/593415-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+6,652542,Mughlai Malai Kofta Curry,https://img.spoonacular.com/recipes/652542-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+7,634847,Berry and White Chocolate Trifle,https://img.spoonacular.com/recipes/634847-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+9,640077,"Corn Chowder with Potatoes, Poblanos, and Smoked Gouda",https://img.spoonacular.com/recipes/640077-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+10,647016,HomeMade Hashbrowns with Spinach and Carrots,https://img.spoonacular.com/recipes/647016-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+15,648752,Karela Fry/bittergourd Fry,https://img.spoonacular.com/recipes/648752-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+16,635032,Bitter Gourd Boiled With Pork Ribs (Ma-Ra Tom Ka-Dook Mou),https://img.spoonacular.com/recipes/635032-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+17,664964,Warm Mixed Berry Crumb Cake,https://img.spoonacular.com/recipes/664964-556x370.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+18,632080,All Time Favorite- Gulab Jamun,https://img.spoonacular.com/recipes/632080-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+19,651994,Miniature Fruit Tarts,https://img.spoonacular.com/recipes/651994-556x370.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+20,664964,Warm Mixed Berry Crumb Cake,https://img.spoonacular.com/recipes/664964-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+24,9,Gulab Jamun,https://i.pinimg.com/736x/06/eb/76/06eb76823ef81363735e9d35ed5a57f9.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+25,65,Aloo Puri (Potato-Stuffed Fried Bread),https://i.pinimg.com/736x/a2/c1/59/a2c1596cbe969a2c4655e51efd6b3fdb.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+26,34,Paneer Butter Masala,https://i.pinimg.com/736x/da/f3/98/daf3988311896ed002a1d75f3702870c.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+27,339,Bhungra Bataka,image_url_bhungra_bataka.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+28,339,Bhungra Bataka,image_url_bhungra_bataka.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+29,642256,Eggless Cardamom and Chocolate Cheesecake,https://img.spoonacular.com/recipes/642256-556x370.jpg,8bf74987-ef5a-449b-bdfc-f4d7737b908d
+30,272,Bharela Marcha nu Athanu (Stuffed Green Chili Pickle),stuffed-chili-pickle.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+31,8,Rajma Chawal,https://i.pinimg.com/736x/49/38/6b/49386b2128fb462ffc3defc2df2e8046.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+32,660101,Simple Garlic Pasta,https://img.spoonacular.com/recipes/660101-556x370.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+33,661447,Square Deviled Eggs,https://img.spoonacular.com/recipes/661447-556x370.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+34,91,Pindi Chana Sabji,https://i.pinimg.com/736x/91/96/84/919684e0a11b5decbe28001d4dc03e5d.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+35,9,Gulab Jamun,https://i.pinimg.com/736x/06/eb/76/06eb76823ef81363735e9d35ed5a57f9.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+36,5,Chole Bhature,https://i.pinimg.com/736x/78/2f/52/782f52e646fbe7e56c54082a408eb7e6.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1
+37,6,Masala Dosa,https://i.pinimg.com/736x/1c/64/f4/1c64f4a48f94ef2ac3f009791cd6b6ca.jpg,7239fd7c-7f9b-4b32-9bb3-4c8eba52c80b
+38,1095745,Mushroom Hummus Crostini,https://img.spoonacular.com/recipes/1095745-556x370.jpg,7239fd7c-7f9b-4b32-9bb3-4c8eba52c80b
+39,8,Rajma Chawal,https://i.pinimg.com/736x/49/38/6b/49386b2128fb462ffc3defc2df2e8046.jpg,7239fd7c-7f9b-4b32-9bb3-4c8eba52c80b
+41,113,Crispy Spring Rolls,https://i.pinimg.com/736x/74/55/86/7455861056a201b44b68a5ef65e36583.jpg,ded4e1c1-b78f-43a8-9fb7-b9b9ca0609b1

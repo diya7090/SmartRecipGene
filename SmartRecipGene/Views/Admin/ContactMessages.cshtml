@@ -1,0 +1,197 @@
+﻿@model IEnumerable<Contact>
+
+<div class="container mt-4">
+    <h2>Contact Messages</h2>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Date</th>
+
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+               @*  @foreach (var message in Model)
+                {
+                    <tr class="@(!message.IsRead ? "table-info" : "")">
+                        <td>@message.DateSubmitted.ToString("MMM dd, yyyy HH:mm")</td>
+                        <td>@message.Name</td>
+                        <td>@message.Email</td>
+                        <td>@message.Subject</td>
+                        <td>@message.Message</td>
+                        <td>@(message.IsRead ? "Read" : "Unread")</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary mark-as-read" data-id="@message.Id">
+                                Mark as @(message.IsRead ? "Unread" : "Read")
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-message" data-id="@message.Id">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                } *@
+
+                @foreach (var message in Model)
+                {
+                    <tr class="@(message.IsRead ? "table-light" : "")">
+                        <td>@message.Name</td>
+                        <td>@message.Email</td>
+                        <td>@message.Subject</td>
+                        <td>@message.Message</td>
+                        <td>@message.DateSubmitted.ToString("g")</td>
+                        <td>
+                            <span class="badge @(message.IsRead ? "bg-success" : "bg-warning")">
+                                @(message.IsRead ? "Read" : "Unread")
+                            </span>
+                        </td>
+                        <td>
+                           
+                               <button class="btn btn-sm btn-primary mark-as-read" data-id="@message.Id">
+                                   Mark as @(message.IsRead ? "Unread" : "Read")
+                               </button>
+                               <button class="btn btn-sm btn-danger delete-message" data-id="@message.Id">
+                                   Delete
+                               </button>
+                          
+
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                // Mark as Read functionality
+                                document.querySelectorAll('.mark-as-read').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        const messageId = this.dataset.id;
+
+                                        fetch('/Admin/ToggleMessageRead/' + messageId, {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            }
+                                        })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    const row = this.closest('tr');
+                                                    row.classList.toggle('table-light');
+
+                                                    // Update button text
+                                                    this.textContent = 'Mark as ' + (data.isRead ? 'Unread' : 'Read');
+
+                                                    // Update status badge
+                                                    const badge = row.querySelector('.badge');
+                                                    badge.classList.toggle('bg-success');
+                                                    badge.classList.toggle('bg-warning');
+                                                    badge.textContent = data.isRead ? 'Read' : 'Unread';
+                                                } else {
+                                                    alert('Failed to update message status');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                alert('Error occurred while updating message status');
+                                            });
+                                    });
+                                });
+
+                                // Delete functionality
+                                document.querySelectorAll('.delete-message').forEach(button => {
+                                    button.addEventListener('click', function () {
+                                        if (confirm('Are you sure you want to delete this message?')) {
+                                            const messageId = this.dataset.id;
+
+                                            fetch('/Admin/DeleteMessage/' + messageId, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                }
+                                            })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        const row = this.closest('tr');
+                                                        row.style.opacity = '0';
+                                                        setTimeout(() => row.remove(), 300);
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error:', error);
+                                                    alert('Error deleting message');
+                                                });
+                                        }
+                                    });
+                                });
+                            });
+                           </script>
+                       
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* 
+    <script>
+         $(document).ready(function () {
+            // Change selector to match the button class 'toggle-read'
+            $('.toggle-read').click(function () {
+                var btn = $(this);
+                var messageId = btn.data('id');
+
+                $.ajax({
+                    url: '@Url.Action("ToggleMessageRead", "Admin")/' + messageId,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.success) {
+                            var row = btn.closest('tr');
+                            row.toggleClass('table-light');
+
+                            // Update the status badge
+                            var statusBadge = row.find('.badge');
+                            if (response.isRead) {  
+                                statusBadge.removeClass('bg-warning').addClass('bg-success').text('Read');
+                                btn.text('Mark as Unread');
+                            } else {
+                                statusBadge.removeClass('bg-success').addClass('bg-warning').text('Unread');
+                                btn.text('Mark as Read');
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('Failed to update message status. Please try again.');
+                    }
+                });
+            });
+
+
+            // Keep the delete functionality
+            $('.delete-message').click(function () {
+                if (confirm('Are you sure you want to delete this message?')) {
+                    var btn = $(this);
+                    var messageId = btn.data('id');
+
+                    $.ajax({
+                        url: '@Url.Action("DeleteMessage", "Admin")/' + messageId,
+                        type: 'POST',
+                        success: function (response) {
+                            if (response.success) {
+                                btn.closest('tr').fadeOut(function () {
+                                    $(this).remove();
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        
+    </script> *@
+    
+
