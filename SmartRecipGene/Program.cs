@@ -1,10 +1,12 @@
-﻿
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using SmartRecipGene.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http; // Required for session access
 using SmartRecipGene.Data;
 using SmartRecipGene.Services;
-using SmartRecipGene.Models; // Adjust namespace as per your project
+using SmartRecipGene.Models;
+using Microsoft.AspNetCore.DataProtection; // Adjust namespace as per your project
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +32,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultUI()
 .AddDefaultTokenProviders();
-.AddEmailSender<EmailSender>();
 
 builder.Services.Configure<IdentityOptions>(options => 
 {
@@ -41,8 +42,6 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
-
 // Add services to the container
 builder.Services.AddControllersWithViews();
 // Add after AddIdentity configuration
@@ -65,7 +64,9 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor(); // Required for accessing session in controllers
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<SpoonacularService>();
-
+builder.Services.AddScoped<CustomEmailConfirmationTokenProvider<ApplicationUser>>();
+builder.Services.Configure<CustomEmailConfirmationTokenProviderOptions>(opt =>
+    opt.TokenLifespan = TimeSpan.FromDays(3));
 var app = builder.Build();
 
 // Ensure roles and admin user are created
@@ -164,3 +165,4 @@ async Task CreateRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserMa
         await userManager.AddToRoleAsync(adminUser, "Admin");
     }
     }
+   

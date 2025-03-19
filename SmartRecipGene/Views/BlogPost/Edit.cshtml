@@ -100,24 +100,6 @@
         document.getElementById('contentInput').value = content;
         return true;
     }
-    // var content = @Html.Raw(Json.Serialize(Model.Content));
-    // if (content) {
-    //     quill.root.innerHTML = content;
-    // }
-
-    // // Update hidden input before form submission
-    // document.querySelector('form').addEventListener('submit', function() {
-    //     document.getElementById('contentInput').value = quill.root.innerHTML;
-    // });
-    // var existingContent = @Html.Raw(Json.Serialize(Model.Content));
-    // if (existingContent) {
-    //     quill.root.innerHTML = existingContent;
-    // }
-    // // Store the Quill editor content in the hidden input before form submission
-    // document.querySelector("form").onsubmit = function () {
-    //     document.getElementById("contentInput").value = quill.root.innerHTML;
-    // };
-    
 </script>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

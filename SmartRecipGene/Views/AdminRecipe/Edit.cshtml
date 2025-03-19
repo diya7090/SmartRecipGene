@@ -1,83 +1,127 @@
 ﻿@model SmartRecipGene.Models.Recipe
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<div class="container">
+    <h2>Edit Recipe</h2>
 
-<h2>Edit Recipe</h2>
+    <form asp-action="Edit" method="post" onsubmit="return prepareContent()">
+        <input type="hidden" asp-for="Id" />
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label>Title</label>
+            <input asp-for="Title" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input asp-for="ImageUrl" class="form-control">
+        </div>
 
-    <div class="form-group">
-        <label>Title</label>
-        <input asp-for="Title" class="form-control" required />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Image URL</label>
-        <input asp-for="ImageUrl" class="form-control">
-    </div>
+        <div class="form-group">
+            <label>Ingredients</label>
+            <textarea asp-for="Ingredients" class="form-control"></textarea>
+        </div>
 
-    <div class="form-group">
-        <label>Ingredients</label>
-        <textarea asp-for="Ingredients" class="form-control"></textarea>
-    </div>
+        <div class="form-group">
+            <label>Instructions</label>
+            <div id="editor" style="height: 300px;"></div>
+            <input type="hidden" asp-for="Instructions" id="instructionsInput" required />
+            <span asp-validation-for="Instructions" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label>Instructions</label>
-        <textarea asp-for="Instructions" class="form-control"></textarea>
-    </div>
+        <div class="form-group">
+            <label>Preparation Time (mins)</label>
+            <input asp-for="PreparationTime" type="number" class="form-control" required />
+        </div>
 
-    <div class="form-group">
-        <label>Preparation Time (mins)</label>
-        <input asp-for="PreparationTime" type="number" class="form-control" required />
-    </div>
+        <div class="form-group">
+            <label>Cooking Time (mins)</label>
+            <input asp-for="CookingTime" type="number" class="form-control" required />
+        </div>
 
-    <div class="form-group">
-        <label>Cooking Time (mins)</label>
-        <input asp-for="CookingTime" type="number" class="form-control" required />
-    </div>
+        <div class="form-group">
+            <label>Servings</label>
+            <input asp-for="Servings" type="number" class="form-control" required />
+        </div>
 
-    <div class="form-group">
-        <label>Servings</label>
-        <input asp-for="Servings" type="number" class="form-control" required />
-    </div>
+        <div class="form-group">
+            <label>Serving Size</label>
+            <input asp-for="ServingSize" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label>Serving Size</label>
-        <input asp-for="ServingSize" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label>Difficulty Level</label>
+            <select asp-for="DifficultyLevel" class="form-control">
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+        </div>
 
-    <div class="form-group">
-        <label>Difficulty Level</label>
-        <select asp-for="DifficultyLevel" class="form-control">
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-        </select>
-    </div>
+        <div class="form-group">
+            <label>Cuisine Type</label>
+            <input asp-for="CusineType" class="form-control" required />
+        </div>
 
-    <div class="form-group">
-        <label>Cuisine Type</label>
-        <input asp-for="CusineType" class="form-control" required />
-    </div>
+        <div class="form-group">
+            <label>Diet Type</label>
+            <input asp-for="DietType" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label>Diet Type</label>
-        <input asp-for="DietType" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label>Allergens</label>
+            <input asp-for="Allergens" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label>Allergens</label>
-        <input asp-for="Allergens" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label>Meal Type</label>
+            <input asp-for="MealType" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label>Meal Type</label>
-        <input asp-for="MealType" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label>Equipment</label>
+            <input asp-for="Equipment" class="form-control" />
+        </div>
 
-    <div class="form-group">
-        <label>Equipment</label>
-        <input asp-for="Equipment" class="form-control" />
-    </div>
+        <button type="submit" class="btn btn-warning">Update Recipe</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Write your blog content here...',
+        modules: {
+            toolbar: [
+                // [{ header: [1, 2, false] }],
+                // ['bold', 'italic', 'underline'],
+                // [{ list: 'ordered' }, { list: 'bullet' }],
+                // ['link', 'image']
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        var content = @Html.Raw(Json.Serialize(Model.Instructions));
+        if (content && content.trim() !== '') {
+            quill.root.innerHTML = content;
+        }
+    });
 
-    <button type="submit" class="btn btn-warning">Update Recipe</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+    // Handle form submission and content validation
+    function prepareContent() {
+        var content = quill.root.innerHTML;
+        if (!content || content.trim() === '<p><br></p>') {
+            alert('Content cannot be empty');
+            return false;
+        }
+        document.getElementById('instructionsInput').value = content;
+        return true;
+    }
+</script>

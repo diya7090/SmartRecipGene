@@ -112,7 +112,7 @@
     </header> *@
 
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="fas fa-utensils"></i> SmartRecipGene
@@ -140,12 +140,7 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
-                        </li>
-                    </ul>
-
-                    <ul class="navbar-nav">
+    
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -188,20 +183,38 @@
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
-                            </li>
+                           
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="@(User.Identity.IsAuthenticated ? "#" : "/Identity/Account/Login")" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-user"></i> <!-- User icon -->
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                        <!-- If user is authenticated -->
+                                    
+                                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Profile</a></li>
+                                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout">Logout</a></li>
+                                    </ul>
+                                </li>
+                                }
+                                else
+                                {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Login" id="userDropdown">
+                                        <i class="fas fa-user"></i> <!-- User icon -->
+                                    </a>
+                                </li>
+                                }
+
                         }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="">
+        <main role="main" class="">
             @RenderBody()
         </main>
     </div>
@@ -260,7 +273,7 @@
 
     /* Navbar Styles */
     .navbar {
-        background-color: white;
+        background-color: var(--nav-bg);
         padding: 1rem 0;
     }
 
@@ -276,7 +289,7 @@
     }
 
     .nav-link {
-        color: #333 !important;
+        color: var(--nav-links) !important;
         font-weight: 600;
         padding: 0.5rem 1rem;
         transition: color 0.3s;
@@ -300,6 +313,18 @@
         font-weight: 600;
     }
 
+    .nav-item:has(#userDropdown) {
+        margin-left: auto;
+        border: 1px solid #fff;
+        width: 40px;
+        text-align: center;
+        border-radius: 50%;
+    }
+
+    #userDropdown.dropdown-toggle::after {
+        display: none;
+    }
+
     /* Main Content */
     main {
         flex: 1;
@@ -310,7 +335,6 @@
         background: #2c3e50;
         color: white;
         padding: 4rem 0 2rem;
-        margin-top: 4rem;
     }
 
     .footer-content {

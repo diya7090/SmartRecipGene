@@ -1,4 +1,6 @@
 :root {
+    --nav-links: #fff;
+    --nav-bg: #734060;
     --primary-color: #00BFA6; /* Coral Pink */
     --secondary-color: #FF7675; /* Turquoise */
     --accent-color: #FDCB6E; /* Sunny Yellow */
