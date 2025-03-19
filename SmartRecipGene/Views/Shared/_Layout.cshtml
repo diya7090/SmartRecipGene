@@ -10,7 +10,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Charm&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     @await RenderSectionAsync("Styles", required: false)
 
@@ -264,7 +267,7 @@
     .navbar-brand {
         font-family: 'Merriweather', serif;
         font-size: 1.5rem;
-        color: #ff6b6b !important;
+        color:  var(--primary-color) !important; !important;
         font-weight: 700;
     }
 
@@ -280,7 +283,7 @@
     }
 
     .nav-link:hover {
-        color: #ff6b6b !important;
+        color:  var(--primary-color) !important; !important;
     }
 
     .admin-link {
@@ -321,7 +324,7 @@
         font-family: 'Merriweather', serif;
         font-size: 1.2rem;
         margin-bottom: 1.5rem;
-        color: #ff6b6b;
+        color:  var(--primary-color) !important;
     }
 
     .footer-section ul {
@@ -341,7 +344,7 @@
     }
 
     .footer-section a:hover {
-        color: #ff6b6b;
+        color:  var(--primary-color) !important;
     }
 
     .social-links {

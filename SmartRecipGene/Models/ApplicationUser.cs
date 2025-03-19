@@ -36,8 +36,12 @@ namespace SmartRecipGene.Models
             Reviews = new List<Review>();
         }
 
-        [PersonalData]
-        [StringLength(100)]
+        // [PersonalData]
+        // [StringLength(100)]
+         [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters")]
+        [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Name can only contain letters and spaces")]
+        [Display(Name = "Full Name")]
         public string Name { get; set; }
 
         [PersonalData]

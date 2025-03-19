@@ -12,8 +12,19 @@
             <h2>Create a new account.</h2>
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-        <div class="form-floating mb-3">
+        <!-- <div class="form-floating mb-3">
                 <input asp-for="Input.Name" class="form-control" autocomplete="name" aria-required="true" placeholder="name" />
+                <label asp-for="Input.Name">Name</label>
+                <span asp-validation-for="Input.Name" class="text-danger"></span>
+            </div> -->
+                        <div class="form-floating mb-3">
+                <input asp-for="Input.Name" class="form-control" 
+                       autocomplete="name" 
+                       aria-required="true" 
+                       placeholder="name"
+                       pattern="[A-Za-z\s]+"
+                       oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')"
+                       title="Please enter only letters and spaces" />
                 <label asp-for="Input.Name">Name</label>
                 <span asp-validation-for="Input.Name" class="text-danger"></span>
             </div>
@@ -70,4 +81,12 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('Input_Name').addEventListener('keypress', function(e) {
+            var char = String.fromCharCode(e.keyCode || e.which);
+            if (!/[A-Za-z\s]/.test(char)) {
+                e.preventDefault();
+            }
+        });
+    </script>
 }
