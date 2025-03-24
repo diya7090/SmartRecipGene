@@ -98,8 +98,9 @@
                         <div class="card-body">
                             @if (!string.IsNullOrEmpty(Model.Instructions))
                             {
-                                <p class="mb-0 white-space-pre-wrap">@Model.Instructions</p>
-                            }
+                                <p class="mb-0 white-space-pre-wrap">  @Html.Raw(Model.Instructions)</p>
+                            }                      
+
                             else
                             {
                                 <p class="text-muted">No instructions available</p>

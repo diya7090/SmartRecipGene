@@ -244,38 +244,155 @@ namespace SmartRecipGene.Controllers
             }
         }
 
-        private bool ContainsNonVegetarianIngredients(JToken recipe)
-        {
-            var ingredients = recipe["extendedIngredients"]?.ToObject<JArray>();
-            if (ingredients == null) return false;
+        //private bool ContainsNonVegetarianIngredients(JToken recipe)
+        //{
+        //    var ingredients = recipe["extendedIngredients"]?.ToObject<JArray>();
+        //    if (ingredients == null) return false;
 
-            var nonVegKeywords = new[] { "egg", "eggs", "chicken", "beef", "pork", "fish", "mutton",
-        "shrimp", "crab", "duck", "meat", "bacon", "ham", "turkey", "seafood", "prawn", "mayonnaise" };
+        //    var nonVegKeywords = new[] { "egg", "eggs", "chicken", "beef", "pork", "fish", "mutton",
+        //"shrimp", "crab", "duck", "meat", "bacon", "ham", "turkey", "seafood", "prawn", "mayonnaise" };
 
-            return ingredients.Any(ingredient =>
-                nonVegKeywords.Any(keyword =>
-                    ingredient["name"]?.ToString().ToLower().Contains(keyword) == true));
-        }
+        //    return ingredients.Any(ingredient =>
+        //        nonVegKeywords.Any(keyword =>
+        //            ingredient["name"]?.ToString().ToLower().Contains(keyword) == true));
+        //}
+
+        //[HttpGet]
+        //public async Task<IActionResult> SearchRecipes(string query, string cuisine, string mealType, string diet)
+        //{
+        //    var combinedResults = new JArray();
+
+        //    // First, search in database
+        //    var dbQuery = _context.Recipes.AsQueryable();
+
+        //    if (!string.IsNullOrEmpty(query))
+        //    {
+        //        dbQuery = dbQuery.Where(r => r.Title.Contains(query));
+        //    }
+        //    if (!string.IsNullOrEmpty(cuisine))
+        //    {
+        //        dbQuery = dbQuery.Where(r => r.CusineType == cuisine);
+        //    }
+        //    if (!string.IsNullOrEmpty(mealType))
+        //    {
+        //        dbQuery = dbQuery.Where(r => r.MealType == mealType);
+        //    }
+
+        //    var dbRecipes = await dbQuery.ToListAsync();
+        //    foreach (var recipe in dbRecipes)
+        //    {
+        //        var recipeJson = new JObject
+        //        {
+        //            ["id"] = recipe.Id,
+        //            ["title"] = recipe.Title,
+        //            ["image"] = recipe.ImageUrl ?? "",
+        //            ["readyInMinutes"] = recipe.CookingTime,
+        //            ["servings"] = recipe.Servings,
+        //            ["sourceType"] = "database"
+        //        };
+        //        combinedResults.Add(recipeJson);
+        //    }
+
+        //    // Then search in API
+        //    var apiKey = _spoonacularSettings.ApiKey;
+
+        //    string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&query={query}&number=100";
+
+        //    if (!string.IsNullOrEmpty(cuisine))
+        //    {
+        //        url += $"&cuisine={cuisine.ToLower()}";
+        //    }
+        //    if (!string.IsNullOrEmpty(mealType))
+        //    {
+        //        url += $"&type={mealType.ToLower()}";
+        //    }
+        //    if (!string.IsNullOrEmpty(diet))
+        //    {
+        //        switch (diet.ToLower())
+        //        {
+        //            case "vegetarian":
+        //                url += "&diet=vegetarian";
+        //                url += "&excludeIngredients=chicken,beef,pork,fish,mutton,shrimp,crab,duck,meat,bacon,ham,turkey,seafood,prawn,egg,eggs,mayonnaise";
+        //                break;
+        //            case "vegan":
+        //                url += "&diet=vegan";
+        //                break;
+        //            case "gluten-free":
+        //                url += "&diet=gluten-free";
+        //                break;
+        //        }
+        //    }
+
+        //    url += "&fillIngredients=true&addRecipeInformation=true";
+
+        //    try
+        //    {
+        //        var response = await _httpClient.GetStringAsync(url);
+        //        var jsonResponse = JObject.Parse(response);
+
+        //        if (jsonResponse.ContainsKey("results") && jsonResponse["results"].HasValues)
+        //        {
+        //            var apiRecipes = jsonResponse["results"].ToObject<JArray>();
+        //            foreach (var recipe in apiRecipes)
+        //            {
+        //                recipe["sourceType"] = "api";
+        //                combinedResults.Add(recipe);
+        //            }
+        //        }
+
+        //        // Apply vegetarian filtering if needed
+        //        if (diet?.ToLower() == "vegetarian")
+        //        {
+        //            combinedResults = new JArray(
+        //                combinedResults.Where(r =>
+        //                    (r["sourceType"].ToString() == "database") ||
+        //                    (r["sourceType"].ToString() == "api" &&
+        //                    r["vegetarian"]?.Value<bool>() == true &&
+        //                    !ContainsNonVegetarianIngredients(r) &&
+        //                    !r["title"].ToString().ToLower().Contains("egg"))
+        //                )
+        //            );
+        //        }
+
+        //        if (!combinedResults.HasValues)
+        //        {
+        //            ViewBag.Message = "No recipes found based on your filters.";
+        //            return View("RecipeResults", new JArray());
+        //        }
+
+        //        return View("RecipeResults", combinedResults);
+        //    }
+        //    catch (HttpRequestException ex)
+        //    {
+        //        Console.WriteLine($"API Error: {ex.Message}");
+        //        ViewBag.Message = "Error fetching recipes from API. Showing database results only.";
+        //        return View("RecipeResults", combinedResults);
+        //    }
+        //}
+
 
         [HttpGet]
         public async Task<IActionResult> SearchRecipes(string query, string cuisine, string mealType, string diet)
         {
             var combinedResults = new JArray();
 
-            // First, search in database
+            // Database search
             var dbQuery = _context.Recipes.AsQueryable();
-
             if (!string.IsNullOrEmpty(query))
             {
-                dbQuery = dbQuery.Where(r => r.Title.Contains(query));
+                dbQuery = dbQuery.Where(r => EF.Functions.Like(r.Title, $"%{query}%"));
             }
             if (!string.IsNullOrEmpty(cuisine))
             {
-                dbQuery = dbQuery.Where(r => r.CusineType == cuisine);
+                dbQuery = dbQuery.Where(r => r.CusineType.ToLower() == cuisine.ToLower());
             }
             if (!string.IsNullOrEmpty(mealType))
             {
-                dbQuery = dbQuery.Where(r => r.MealType == mealType);
+                dbQuery = dbQuery.Where(r => r.MealType.ToLower() == mealType.ToLower());
+            }
+            if (!string.IsNullOrEmpty(diet))
+            {
+                dbQuery = dbQuery.Where(r => r.DietType.ToLower() == diet.ToLower());
             }
 
             var dbRecipes = await dbQuery.ToListAsync();
@@ -288,42 +405,44 @@ namespace SmartRecipGene.Controllers
                     ["image"] = recipe.ImageUrl ?? "",
                     ["readyInMinutes"] = recipe.CookingTime,
                     ["servings"] = recipe.Servings,
-                    ["sourceType"] = "database"
+                    ["sourceType"] = "database",
+                    ["vegetarian"] = recipe.DietType?.ToLower() == "vegetarian"
                 };
                 combinedResults.Add(recipeJson);
             }
 
-            // Then search in API
-            var apiKey = _spoonacularSettings.ApiKey;
-
-            string url = $"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&query={query}&number=100";
+            // API search
+            var baseUrl = "https://api.spoonacular.com/recipes/complexSearch";
+            var queryParams = new Dictionary<string, string>
+            {
+                ["apiKey"] = _spoonacularSettings.ApiKey,
+                ["query"] = query ?? string.Empty,
+                ["number"] = "100",
+                ["fillIngredients"] = "true",
+                ["addRecipeInformation"] = "true",
+                ["instructionsRequired"] = "true"
+            };
 
             if (!string.IsNullOrEmpty(cuisine))
             {
-                url += $"&cuisine={cuisine.ToLower()}";
+                queryParams["cuisine"] = cuisine.ToLower();
             }
             if (!string.IsNullOrEmpty(mealType))
             {
-                url += $"&type={mealType.ToLower()}";
+                queryParams["type"] = mealType.ToLower();
             }
             if (!string.IsNullOrEmpty(diet))
             {
-                switch (diet.ToLower())
+                queryParams["diet"] = diet.ToLower();
+                if (diet.ToLower() == "vegetarian")
                 {
-                    case "vegetarian":
-                        url += "&diet=vegetarian";
-                        url += "&excludeIngredients=chicken,beef,pork,fish,mutton,shrimp,crab,duck,meat,bacon,ham,turkey,seafood,prawn,egg,eggs,mayonnaise";
-                        break;
-                    case "vegan":
-                        url += "&diet=vegan";
-                        break;
-                    case "gluten-free":
-                        url += "&diet=gluten-free";
-                        break;
+                    queryParams["diet"] = "vegetarian";
+                    queryParams["excludeIngredients"] = string.Join(",", GetNonVegetarianIngredients());
                 }
             }
 
-            url += "&fillIngredients=true&addRecipeInformation=true";
+            string url = baseUrl + "?" + string.Join("&", queryParams.Select(p =>
+                $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value)}"));
 
             try
             {
@@ -335,23 +454,16 @@ namespace SmartRecipGene.Controllers
                     var apiRecipes = jsonResponse["results"].ToObject<JArray>();
                     foreach (var recipe in apiRecipes)
                     {
+                        if (diet?.ToLower() == "vegetarian")
+                        {
+                            if (!IsVegetarianRecipe(recipe))
+                            {
+                                continue;
+                            }
+                        }
                         recipe["sourceType"] = "api";
                         combinedResults.Add(recipe);
                     }
-                }
-
-                // Apply vegetarian filtering if needed
-                if (diet?.ToLower() == "vegetarian")
-                {
-                    combinedResults = new JArray(
-                        combinedResults.Where(r =>
-                            (r["sourceType"].ToString() == "database") ||
-                            (r["sourceType"].ToString() == "api" &&
-                            r["vegetarian"]?.Value<bool>() == true &&
-                            !ContainsNonVegetarianIngredients(r) &&
-                            !r["title"].ToString().ToLower().Contains("egg"))
-                        )
-                    );
                 }
 
                 if (!combinedResults.HasValues)
@@ -364,14 +476,51 @@ namespace SmartRecipGene.Controllers
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"API Error: {ex.Message}");
+                _logger.LogError(ex, "API Error in SearchRecipes");
                 ViewBag.Message = "Error fetching recipes from API. Showing database results only.";
                 return View("RecipeResults", combinedResults);
             }
         }
-       
-      
 
+        private string[] GetNonVegetarianIngredients()
+        {
+            return new[] {
+        "chicken", "beef", "pork", "fish", "mutton", "shrimp", "crab", "duck",
+        "meat", "bacon", "ham", "turkey", "seafood", "prawn", "gelatin", "lard",
+        "rennet", "stock", "bone broth", "anchovy", "worcestershire", "oyster sauce",
+        "fish sauce", "shellfish", "squid", "octopus", "lamb", "egg", "eggs",
+        "mayonnaise", "caviar", "scallop", "lobster", "cod", "salmon", "tuna",
+        "pepperoni", "sausage", "salami", "chorizo", "bone", "veal", "foie gras",
+        "liver", "pate", "sardines", "anchovies", "mussels", "clams", "oysters"
+    };
+        }
+
+        private bool IsVegetarianRecipe(JToken recipe)
+        {
+            // Check if explicitly marked as vegetarian
+            if (recipe["vegetarian"]?.Value<bool>() != true)
+            {
+                return false;
+            }
+
+            // Check title for non-vegetarian keywords
+            var title = recipe["title"]?.ToString().ToLower() ?? "";
+            if (GetNonVegetarianIngredients().Any(keyword => title.Contains(keyword)))
+            {
+                return false;
+            }
+
+            // Check ingredients
+            var ingredients = recipe["extendedIngredients"]?.ToObject<JArray>();
+            if (ingredients == null) return true;
+
+            var nonVegKeywords = GetNonVegetarianIngredients();
+            return !ingredients.Any(ingredient =>
+                nonVegKeywords.Any(keyword =>
+                    ingredient["name"]?.ToString().ToLower().Contains(keyword) == true ||
+                    ingredient["original"]?.ToString().ToLower().Contains(keyword) == true
+                ));
+        }
         [Authorize]
 
         public IActionResult Ingredients()

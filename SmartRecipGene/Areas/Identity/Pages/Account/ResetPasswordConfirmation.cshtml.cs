@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using SmartRecipGene.Models;
 
 namespace SmartRecipGene.Areas.Identity.Pages.Account
 {

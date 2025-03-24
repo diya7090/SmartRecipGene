@@ -1,16 +1,5 @@
 :root {
-    --nav-links: #fff;
-    --nav-bg: #734060;
-    --primary-color: #00BFA6; /* Coral Pink */
-    --secondary-color: #FF7675; /* Turquoise */
-    --accent-color: #FDCB6E; /* Sunny Yellow */
-    --highlight-color: #6C5CE7; /* Bright Purple */
-    --success-color: #2ECC71; /* Emerald Green */
-    --warning-color: #FF9F43; /* Orange */
-    --error-color: #FF4757; /* Red */
-    --text-dark: #2D3436; /* Dark Gray */
-    --text-light: #636E72; /* Light Gray */
-    --background-light: #F9F9F9; /* Off White */
+    --primary-color: #e67e22;
 }
 
 html {

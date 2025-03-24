@@ -1,29 +1,6 @@
-﻿@*  
+﻿ @model Newtonsoft.Json.Linq.JArray
 
-@model Newtonsoft.Json.Linq.JArray
-
-<h2>Recipe Results</h2>
-
-@if (Model != null && Model.Count > 0)
-{
-    foreach (var recipe in Model)
-    {
-        <div class="recipe">
-            <h3>@recipe["title"]</h3>
-            <img src="@recipe["image"]" alt="@recipe["title"]" width="200" />
-            <a href="@Url.Action("RecipeDetails", "Home", new { id = recipe["id"] })">View Details</a>
-        </div>
-    }
-}
-else
-{
-    <p>No recipes found.</p>
-}
- *@
-
- @model Newtonsoft.Json.Linq.JArray
-
-<div class="recipe-hero">
+<div class="recipe-hero d-none" >
     <div class="hero-content">
         <h1>Found Recipes</h1>
         <p>Discover delicious possibilities with your ingredients</p>
@@ -31,6 +8,12 @@ else
 </div>
 
 <div class="recipe-container">
+    <div class="recipe-hero">
+        <div class="hero-content">
+            <h1>Found Recipes</h1>
+            <p>Discover delicious possibilities with your ingredients</p>
+        </div>
+    </div>
     @if (Model != null && Model.Count > 0)
     {
         <div class="recipe-grid">

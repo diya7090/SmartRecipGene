@@ -63,6 +63,8 @@
                 <select name="mealType" class="filter-select">
                     <option value="">Select Meal Type</option>
                     <option value="main course">Main Course</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
                     <option value="side dish">Side Dish</option>
                     <option value="dessert">Dessert</option>
                     <option value="appetizer">Appetizer</option>
@@ -101,6 +103,94 @@
         <button type="submit" class="search-button">
             <i class="fas fa-search"></i> Find Recipes
         </button>
+
+@*         <div class="meal-container">
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/8b/c8/37/8bc8378a740f93b9dab9b28d14cd3acf.jpg" alt="Breakfast">
+                <p>BREAKFAST</p>
+            </div>
+            <div class="meal-item">   
+                <img src="https://i.pinimg.com/736x/3e/03/0f/3e030f7fa775ab6d9e2df3c9f6980f2f.jpg" alt="Main Course">
+                <p>MAIN COURSE</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/e5/0d/1b/e50d1b532f488e6ec32bb30e5ccdd37a.jpg" alt="Lunch">
+                <p>LUNCH</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/f9/b0/86/f9b086aafc7e3b056b22a534291407d9.jpg" alt="Dinner">
+                <p>DINNER</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/4d/53/f8/4d53f8e63fffc67094785ffd60e7a875.jpg" alt="Beverage">
+                <p>BEVERAGE</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/94/7f/73/947f73a9cf310e01a7a49512b51470a3.jpg" alt="Dessert">
+                <p>DESSERT</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/3c/94/fb/3c94fbfc2b227a816c87ab6ab4191089.jpg" alt="Snack">
+                <p>SNACK</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/61/82/35/6182351b6972c5c75d9e67e2928a2677.jpg" alt="Salad">
+                <p>SALAD</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/cf/78/56/cf78568807ec5812108452d81ae9fd5e.jpg" alt="Bread">
+                <p>BREAD</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/a9/8f/97/a98f9751fd7a914b0fe545233e9e19c3.jpg" alt="Sauce">
+                <p>SAUCE</p>
+            </div>
+        </div>
+ *@
+
+        <div class="meal-container">
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=breakfast&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/8b/c8/37/8bc8378a740f93b9dab9b28d14cd3acf.jpg" alt="Breakfast">
+                <p>BREAKFAST</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=main+course&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/3e/03/0f/3e030f7fa775ab6d9e2df3c9f6980f2f.jpg" alt="Main Course">
+                <p>MAIN COURSE</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=lunch&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/e5/0d/1b/e50d1b532f488e6ec32bb30e5ccdd37a.jpg" alt="Lunch">
+                <p>LUNCH</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=dinner&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/f9/b0/86/f9b086aafc7e3b056b22a534291407d9.jpg" alt="Dinner">
+                <p>DINNER</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=beverage&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/4d/53/f8/4d53f8e63fffc67094785ffd60e7a875.jpg" alt="Beverage">
+                <p>BEVERAGE</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=dessert&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/94/7f/73/947f73a9cf310e01a7a49512b51470a3.jpg" alt="Dessert">
+                <p>DESSERT</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=snack&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/3c/94/fb/3c94fbfc2b227a816c87ab6ab4191089.jpg" alt="Snack">
+                <p>SNACK</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=salad&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/61/82/35/6182351b6972c5c75d9e67e2928a2677.jpg" alt="Salad">
+                <p>SALAD</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=bread&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/cf/78/56/cf78568807ec5812108452d81ae9fd5e.jpg" alt="Bread">
+                <p>BREAD</p>
+            </a>
+            <a href="https://localhost:7119/Home/SearchRecipes?query=&cuisine=&mealType=sauce&diet=" class="meal-item">
+                <img src="https://i.pinimg.com/736x/a9/8f/97/a98f9751fd7a914b0fe545233e9e19c3.jpg" alt="Sauce">
+                <p>SAUCE</p>
+            </a>
+        </div>
+
         <!-- Most Loved Recipes Section -->
         <div class="recipes-section">
             <h2 class="section-title">Most Loved Recipes</h2>
@@ -124,6 +214,50 @@
                 <button class="scroll-btn next" onclick="scrollRecipes('mostLovedRecipes', 1)">❯</button>
             </div>
         </div>
+
+@*         <div class="meal-container">
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/8b/c8/37/8bc8378a740f93b9dab9b28d14cd3acf.jpg" alt="Breakfast">
+                <p>BREAKFAST</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/3e/03/0f/3e030f7fa775ab6d9e2df3c9f6980f2f.jpg" alt="Main Course">
+                <p>MAIN COURSE</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/e5/0d/1b/e50d1b532f488e6ec32bb30e5ccdd37a.jpg" alt="Lunch">
+                <p>LUNCH</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/f9/b0/86/f9b086aafc7e3b056b22a534291407d9.jpg" alt="Dinner">
+                <p>DINNER</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/4d/53/f8/4d53f8e63fffc67094785ffd60e7a875.jpg" alt="Beverage">
+                <p>BEVERAGE</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/94/7f/73/947f73a9cf310e01a7a49512b51470a3.jpg" alt="Dessert">
+                <p>DESSERT</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/3c/94/fb/3c94fbfc2b227a816c87ab6ab4191089.jpg" alt="Snack">
+                <p>SNACK</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/61/82/35/6182351b6972c5c75d9e67e2928a2677.jpg" alt="Salad">
+                <p>SALAD</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/cf/78/56/cf78568807ec5812108452d81ae9fd5e.jpg" alt="Bread">
+                <p>BREAD</p>
+            </div>
+            <div class="meal-item">
+                <img src="https://i.pinimg.com/736x/a9/8f/97/a98f9751fd7a914b0fe545233e9e19c3.jpg" alt="Sauce">
+                <p>SAUCE</p>
+            </div>
+        </div>
+ *@
         
         <!-- Recommended Recipes Section -->
         <div class="recipes-section">
@@ -227,6 +361,78 @@
     text-align: center;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
+
+.meal-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.meal-item {
+    text-align: center;
+    width: 120px;
+     text-decoration: none !important;
+}
+
+.meal-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.meal-item p {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+
+}
+
+.meal-item img:hover {
+    transform: scale(1.1);
+}
+
+/* Responsive CSS */
+@@media (max-width: 768px) {
+    .meal-item {
+        width: 100px;
+    }
+
+    .meal-item img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .meal-item p {
+        font-size: 12px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .meal-container {
+        gap: 10px;
+    }
+
+    .meal-item {
+        width: 80px;
+    }
+
+    .meal-item img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .meal-item p {
+        font-size: 10px;
+    }
+}
+
 
 .scroll-container {
     position: relative;
