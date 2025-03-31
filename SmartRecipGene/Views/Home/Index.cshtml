@@ -206,6 +206,7 @@
                                 <h3>@recipe.Title</h3>
                                 <a href="@Url.Action("RecipeDetails", "Home", new { id = recipe.Id })"
                                    class="view-recipe-btn">View Recipe</a>
+                               
                             </div>
                         </div>
                     }
@@ -215,49 +216,7 @@
             </div>
         </div>
 
-@*         <div class="meal-container">
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/8b/c8/37/8bc8378a740f93b9dab9b28d14cd3acf.jpg" alt="Breakfast">
-                <p>BREAKFAST</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/3e/03/0f/3e030f7fa775ab6d9e2df3c9f6980f2f.jpg" alt="Main Course">
-                <p>MAIN COURSE</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/e5/0d/1b/e50d1b532f488e6ec32bb30e5ccdd37a.jpg" alt="Lunch">
-                <p>LUNCH</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/f9/b0/86/f9b086aafc7e3b056b22a534291407d9.jpg" alt="Dinner">
-                <p>DINNER</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/4d/53/f8/4d53f8e63fffc67094785ffd60e7a875.jpg" alt="Beverage">
-                <p>BEVERAGE</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/94/7f/73/947f73a9cf310e01a7a49512b51470a3.jpg" alt="Dessert">
-                <p>DESSERT</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/3c/94/fb/3c94fbfc2b227a816c87ab6ab4191089.jpg" alt="Snack">
-                <p>SNACK</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/61/82/35/6182351b6972c5c75d9e67e2928a2677.jpg" alt="Salad">
-                <p>SALAD</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/cf/78/56/cf78568807ec5812108452d81ae9fd5e.jpg" alt="Bread">
-                <p>BREAD</p>
-            </div>
-            <div class="meal-item">
-                <img src="https://i.pinimg.com/736x/a9/8f/97/a98f9751fd7a914b0fe545233e9e19c3.jpg" alt="Sauce">
-                <p>SAUCE</p>
-            </div>
-        </div>
- *@
+    
         
         <!-- Recommended Recipes Section -->
         <div class="recipes-section">
@@ -273,6 +232,7 @@
                                 <h3>@recipe.Title</h3>
                                 <a href="@Url.Action("RecipeDetails", "Home", new { id = recipe.Id })"
                                    class="view-recipe-btn">View Recipe</a>
+                               
                             </div>
                         </div>
                     }
@@ -347,11 +307,7 @@
 </div>
 
 <style>
-    .recipes-section {
-    max-width: 1200px;
-    margin: 3rem auto;
-    padding: 0 1rem;
-}
+   
 
 .section-title {
     font-size: 2.5rem;
@@ -391,6 +347,7 @@
     font-size: 14px;
     font-weight: bold;
     color: #333;
+ 
 
 }
 
@@ -687,6 +644,7 @@
 </style>
 
 <script>
+   
     function scroll(containerId, direction) {
         const container = document.getElementById(containerId);
         const scrollAmount = 300 * direction;
