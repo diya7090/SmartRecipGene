@@ -248,9 +248,7 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Desserts" asp-action="Index">Desserts</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog</a>
-                        </li>
+                       
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="About">About Us</a>
                         </li>
@@ -286,6 +284,13 @@
                                         <li><a class="dropdown-item" asp-controller="AdminRecipe" asp-action="Index">Recipes Management</a></li>
                                         <li><a class="dropdown-item" asp-controller="Home" asp-action="AllReviews">View All Reviews</a></li>
                                         <li><a class="dropdown-item" asp-controller="Admin" asp-action="ContactMessages">Contact Messages</a></li>
+@*                                             class="dropdown-item"<a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog</a>
+ *@                                        <li>
+                                            <a class="dropdown-item" asp-controller="BlogPost" asp-action="Index">Blog Managemnet</a>
+                                        </li>
+                                        
+                                            
+                                       
                                         <li>
                                             <form asp-area="Identity" asp-page="/Account/Logout" method="post">
                                                 <button type="submit" class="dropdown-item">Logout</button>

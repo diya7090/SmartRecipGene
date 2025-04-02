@@ -39,32 +39,120 @@ namespace SmartRecipGene.Controllers
                 _httpClient = httpClientFactory.CreateClient();
                 _logger = logger;
             }
-
-            
         public async Task<IActionResult> GetRecipes(string ingredients)
         {
-            var response = await _spoonacularService.GetRecipesByIngredientsAsync(ingredients);
-            var recipes = JArray.Parse(response);
+            var combinedResults = new JArray();
 
-            // Store data in session instead of TempData
-            HttpContext.Session.SetString("Recipes", recipes.ToString(Newtonsoft.Json.Formatting.None));
+            if (!string.IsNullOrEmpty(ingredients))
+            {
+                // Database search
+                var ingredientList = ingredients.Split(',').Select(i => i.Trim().ToLower()).ToList();
+                var dbRecipes = await _context.Recipes
+                    .Where(r => r.Ingredients != null &&
+                        ingredientList.Any(i => r.Ingredients.ToLower().Contains(i)))
+                    .ToListAsync();
 
+                foreach (var recipe in dbRecipes)
+                {
+                    var usedIngredients = ingredientList.Count(i =>
+                        recipe.Ingredients.ToLower().Contains(i.ToLower()));
+
+                    var recipeJson = new JObject
+                    {
+                        ["id"] = recipe.Id,
+                        ["title"] = recipe.Title,
+                        ["image"] = recipe.ImageUrl ?? "",
+                        ["sourceType"] = "database",
+                        ["readyInMinutes"] = recipe.CookingTime,
+                        ["servings"] = recipe.Servings,
+                        ["usedIngredientCount"] = usedIngredients,
+                        ["missedIngredientCount"] = ingredientList.Count - usedIngredients,
+                        ["likes"] = 0,
+                        ["vegetarian"] = recipe.DietType?.ToLower() == "vegetarian"
+                    };
+                    combinedResults.Add(recipeJson);
+                }
+
+                // API search
+                try
+                {
+                    var baseUrl = "https://api.spoonacular.com/recipes/findByIngredients";
+                    var queryParams = new Dictionary<string, string>
+                    {
+                        ["apiKey"] = _spoonacularSettings.ApiKey,
+                        ["ingredients"] = ingredients,
+                        ["number"] = "10",
+                        ["ranking"] = "2", // Maximize used ingredients
+                        ["ignorePantry"] = "true"
+                    };
+
+                    string url = baseUrl + "?" + string.Join("&", queryParams.Select(p =>
+                        $"{Uri.EscapeDataString(p.Key)}={Uri.EscapeDataString(p.Value)}"));
+
+                    var response = await _httpClient.GetStringAsync(url);
+                    var apiRecipes = JArray.Parse(response);
+
+                    foreach (var recipe in apiRecipes)
+                    {
+                        recipe["sourceType"] = "api";
+                        combinedResults.Add(recipe);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error fetching recipes from API");
+                    ViewBag.Message = "Error fetching recipes from API. Showing database results only.";
+                }
+
+                if (!combinedResults.HasValues)
+                {
+                    ViewBag.Message = "No recipes found with these ingredients.";
+                    return View("RecipeResults", new JArray());
+                }
+            }
+
+            // Store in session
+            HttpContext.Session.SetString("Recipes", combinedResults.ToString(Formatting.None));
             return RedirectToAction("RecipeResults");
-        }
+        }        //public async Task<IActionResult> GetRecipes(string ingredients)
+        //{
+        //    var response = await _spoonacularService.GetRecipesByIngredientsAsync(ingredients);
+        //    var recipes = JArray.Parse(response);
 
-        public IActionResult RecipeResults()
+        //    // Store data in session instead of TempData
+        //    HttpContext.Session.SetString("Recipes", recipes.ToString(Newtonsoft.Json.Formatting.None));
+
+        //    return RedirectToAction("RecipeResults");
+        //}
+        public async Task<IActionResult> RecipeResults()
         {
             var recipesJson = HttpContext.Session.GetString("Recipes");
 
             if (string.IsNullOrEmpty(recipesJson))
             {
-                return RedirectToAction("Index"); // Redirect if session is empty
+                return RedirectToAction("Index");
             }
 
-            var recipes = JsonConvert.DeserializeObject<JArray>(recipesJson);
-            return View("Recipes", recipes);
+            var combinedResults = JArray.Parse(recipesJson);
+            return View("Recipes", combinedResults);
         }
+        //public IActionResult RecipeResults()
+        //{
+        //    var recipesJson = HttpContext.Session.GetString("Recipes");
 
+        //    if (string.IsNullOrEmpty(recipesJson))
+        //    {
+        //        return RedirectToAction("Index"); // Redirect if session is empty
+        //    }
+
+        //    var recipes = JsonConvert.DeserializeObject<JArray>(recipesJson);
+        //    return View("Recipes", recipes);
+        //}
+        // Remove these duplicate RecipeResults methods
+        // public async Task<IActionResult> RecipeResults() { ... }
+        // public IActionResult RecipeResults() { ... }
+
+        // Keep only this version of RecipeResults
         public async Task<IActionResult> Index()
         {
             try
