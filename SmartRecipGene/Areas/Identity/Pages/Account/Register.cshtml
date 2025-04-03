@@ -7,9 +7,10 @@
 
 <div class="register">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4"></div>
-            <div class="col-md-4 register-form p-3 mt-5 mb-5">
+        <div class="row register-outline">
+            <div class="col-md-6 register-img"></div>
+            <div class="col-md-6 register-form p-3">
+                <section>
                 <h4 class="text-center mb-4 mt-1">@ViewData["Title"]</h4>
                 <form id="registerForm" class="mt-4" asp-route-returnUrl="@Model.ReturnUrl" method="post">
 
@@ -45,7 +46,7 @@
                     <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
                 </form>
             </div>
-            <div class="col-md-4"></div>
+           @*  <div class="col-md-4"></div> *@
 
         </div>
     </div>
@@ -63,17 +64,21 @@
 }
 
 <style>
-    .register {
+    .register-outline {
+        -webkit-box-shadow: 0 0 5px 3px rgba(0,0,0,0.2) !important;
+    }
+
+    .register-img {
         background-image: url(/images/bg.png);
         background-position: center;
         background-repeat: no-repeat;
-        background-size: cover;
+        /*         background-size: cover;
+     */
     }
 
     .register-form {
-        -webkit-box-shadow: 0 0 5px 3px rgba(0,0,0,0.2);
-        box-shadow: 0 0 5px 3px rgba(0,0,0,0.2);
-        border-radius: 12px;
+        /*         box-shadow: 0 0 5px 3px rgba(0,0,0,0.2);
+     */ /* border-radius: 12px ; */
         background: #fff;
     }
 
@@ -81,4 +86,6 @@
         background: #734060;
         border-color: #2c3e50;
     }
+
 </style>
+
