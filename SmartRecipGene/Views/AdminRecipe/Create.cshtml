@@ -1,4 +1,4 @@
-﻿@model SmartRecipGene.Models.Recipe
+﻿@* @model SmartRecipGene.Models.Recipe
 
 <h2>Add New Recipe</h2>
 
@@ -100,6 +100,276 @@
     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
 </form>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function updateTotalTime() {
+            let prepTime = parseInt(document.querySelector("[name='PreparationTime']").value) || 0;
+            let cookTime = parseInt(document.querySelector("[name='CookingTime']").value) || 0;
+            document.getElementById("TotalTime").value = prepTime + cookTime;
+        }
+
+        document.querySelector("[name='PreparationTime']").addEventListener("input", updateTotalTime);
+        document.querySelector("[name='CookingTime']").addEventListener("input", updateTotalTime);
+    });
+</script> *@
+
+
+            @model SmartRecipGene.Models.Recipe
+
+<div class="recipe-form-container">
+    <div class="recipe-form-header">
+        <h2><i class="fas fa-utensils"></i> Add New Recipe</h2>
+        <p>Share your culinary creation with the community</p>
+    </div>
+
+    <div class="recipe-form-card">
+        <form asp-action="Create" method="post">
+            <!-- Your existing form content -->
+        <div class="form-group">
+        <label>Title</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label>Image URL</label>
+        <input asp-for="ImageUrl" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Ingredients</label>
+        <textarea asp-for="Ingredients" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Instructions</label>
+        <textarea asp-for="Instructions" class="form-control" rows="4" required></textarea>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Preparation Time (mins)</label>
+            <input asp-for="PreparationTime" type="number" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Cooking Time (mins)</label>
+            <input asp-for="CookingTime" type="number" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Total Time (mins)</label>
+            <input class="form-control" id="TotalTime" readonly />
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label>Servings</label>
+            <input asp-for="Servings" type="number" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Serving Size</label>
+            <input asp-for="ServingSize" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label>Difficulty Level</label>
+            <select asp-for="DifficultyLevel" class="form-control">
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Cuisine Type</label>
+        <input asp-for="CusineType" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label>Diet Type</label>
+        <select asp-for="DietType" class="form-control">
+            <option value="">Select Diet Type</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Non-Vegetarian">Non-Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Allergens</label>
+        <input asp-for="Allergens" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Meal Type</label>
+        <select asp-for="MealType" class="form-control">
+            <option value="">Select Meal Type</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="Snack">Snack</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Equipment</label>
+        <input asp-for="Equipment" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Recipe</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+    </div>
+</div>
+
+<style>
+    .recipe-form-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .recipe-form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .recipe-form-header h2 {
+        color: #E67E22;
+        font-family: 'Charm', cursive;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .recipe-form-header p {
+        color: #666;
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+
+    .recipe-form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        color: #333;
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 2px solid #eee;
+        border-radius: 8px;
+        padding: 0.8rem;
+        font-family: 'Source Sans Pro', sans-serif;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #E67E22;
+        box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+    }
+
+    select.form-control {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M0 2l4 4 4-4z' fill='%23333'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 8px;
+        padding-right: 2.5rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -10px;
+        margin-left: -10px;
+    }
+
+    .form-row > .form-group {
+        padding: 0 10px;
+        flex: 1;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success {
+        background-color: #E67E22;
+        border-color: #E67E22;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #d35400;
+        border-color: #d35400;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: #95a5a6;
+        border-color: #95a5a6;
+        color: white;
+        margin-left: 1rem;
+    }
+
+    .btn-secondary:hover {
+        background-color: #7f8c8d;
+        border-color: #7f8c8d;
+        transform: translateY(-2px);
+    }
+
+    #TotalTime {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+    }
+
+    @@media (max-width: 768px) {
+        .recipe-form-card {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            flex-direction: column;
+        }
+
+        .form-row > .form-group {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .btn-secondary {
+            margin-left: 0;
+        }
+    }
+</style>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         function updateTotalTime() {

@@ -14,29 +14,7 @@
                 </tr>
             </thead>
             <tbody>
-@*                 @foreach (var review in Model)
-                {
-                    <tr>
-                        <td>
-                            <a asp-action="RecipeDetails" asp-route-id="@review.RecipeId">
-                                @(ViewBag.RecipeDetails[review.RecipeId])
-                            </a>
-                        </td>
-                        <td>
-                            @for (int i = 0; i < review.Rating; i++)
-                            {
-                                <span class="text-warning">⭐</span>
-                            }
-                        </td>
-                        <td>@review.Comment</td>
-                        <td>
-                            <a asp-action="RecipeDetails" asp-route-id="@review.RecipeId"
-                               class="btn btn-primary btn-sm">View Recipe</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table> *@
+
 
                 @foreach (var review in Model)
                 {
@@ -68,3 +46,326 @@
         </table>
     </div>
 </div>
+<style>
+    :root {
+        --primary: #E67E22;
+        --primary-light: #F39C12;
+        --primary-lighter: #FDF2E9;
+        --primary-dark: #D35400;
+        --white: #ffffff;
+        --gray-50: #F8FAFC;
+        --gray-100: #F1F5F9;
+        --gray-200: #E2E8F0;
+        --text-dark: #2C3E50;
+        --text-medium: #34495E;
+        --text-light: #ECF0F1;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    h2 {
+        color: var(--text-dark);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary), var(--primary-light));
+        border-radius: 3px;
+    }
+
+    .card {
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-body h5 {
+        color: var(--white);
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body h2 {
+        color: var(--white);
+        font-weight: 700;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-responsive {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: var(--text-dark);
+        color: var(--white);
+        padding: 1.2rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border: none;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: var(--primary-lighter);
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--gray-100);
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        color: var(--white) !important;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(230, 126, 34, 0.2);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
+    }
+
+    .btn-info {
+        background: #3498DB;
+        color: var(--white) !important;
+    }
+
+    .btn-info:hover {
+        background: #2980B9;
+    }
+
+    .btn-danger {
+        background: #E74C3C;
+        color: var(--white) !important;
+    }
+
+    .btn-danger:hover {
+        background: #C0392B;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .form-control {
+        border: 1px solid var(--gray-200);
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+    }
+
+    .table td {
+        padding: 1rem 1.5rem;
+        color: var(--text-dark);
+        border-bottom: 1px solid var(--gray-100);
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+        /* Recipe title specific styling */
+        .table td:nth-child(2) {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-dark);
+            letter-spacing: 0.01em;
+        }
+
+        .table td a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .table td a:hover {
+                color: var(--primary);
+            }
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        .table td, .table th {
+            padding: 0.75rem;
+        }
+    }
+</style>
+@* <style>
+    :root {
+        --primary: #E67E22;
+        --primary-light: #F39C12;
+        --primary-lighter: #FEF5E7;
+        --primary-dark: #D35400;
+        --white: #ffffff;
+        --gray-50: #F8FAFC;
+        --gray-100: #F1F5F9;
+        --gray-200: #E2E8F0;
+        --text-dark: #2C3E50;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    h2 {
+        color: var(--text-dark);
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary), var(--primary-light));
+        border-radius: 3px;
+    }
+
+    .table-responsive {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(230, 126, 34, 0.1);
+        overflow: hidden;
+        margin-top: 2rem;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: var(--white);
+        padding: 1.2rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border: none;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: var(--primary-lighter);
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--gray-100);
+        color: var(--text-dark);
+    }
+
+    .table td a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .table td a:hover {
+        color: var(--primary-dark);
+    }
+
+    .text-warning {
+        color: var(--primary) !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        color: var(--white);
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(230, 126, 34, 0.2);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        .table td, .table th {
+            padding: 0.75rem;
+        }
+    }
+</style> *@

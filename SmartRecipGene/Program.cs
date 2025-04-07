@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http; // Required for session access
 using SmartRecipGene.Data;
-using SmartRecipGene.Services;
 using SmartRecipGene.Models;
 using Microsoft.AspNetCore.DataProtection; // Adjust namespace as per your project
 
@@ -63,6 +62,8 @@ builder.Services.AddSession(options =>
 //builder.Services.AddSession(); // Add Session services
 builder.Services.AddHttpContextAccessor(); // Required for accessing session in controllers
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<ISpoonacularService, SpoonacularService>();
+
 builder.Services.AddScoped<SpoonacularService>();
 builder.Services.AddScoped<CustomEmailConfirmationTokenProvider<ApplicationUser>>();
 builder.Services.Configure<CustomEmailConfirmationTokenProviderOptions>(opt =>
