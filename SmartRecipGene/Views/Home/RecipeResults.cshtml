@@ -1,4 +1,4 @@
-﻿ @model Newtonsoft.Json.Linq.JArray
+﻿@model PaginatedList<JToken>
 
 <div class="recipe-hero d-none" >
     <div class="hero-content">
@@ -14,10 +14,11 @@
             <p>Discover delicious possibilities with your ingredients</p>
         </div>
     </div>
-    @if (Model != null && Model.Count > 0)
+    
+    @if (Model != null && Model.Items.Any())
     {
         <div class="recipe-grid">
-            @foreach (var recipe in Model)
+            @foreach (var recipe in Model.Items)
             {
                 <div class="recipe-card">
                     <div class="recipe-image">
@@ -38,6 +39,50 @@
                 </div>
             }
         </div>
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Recipe pagination">
+                <ul class="pagination justify-content-center">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" 
+                            asp-action="GetRecipes" 
+                            asp-route-page="@(Model.PageIndex - 1)"
+                            asp-route-ingredients="@ViewBag.Ingredients">Previous</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    }
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page @Model.PageIndex of @Model.TotalPages
+                        </span>
+                    </li>
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" 
+                            asp-action="GetRecipes" 
+                            asp-route-page="@(Model.PageIndex + 1)"
+                            asp-route-ingredients="@ViewBag.Ingredients">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
     }
     else
     {

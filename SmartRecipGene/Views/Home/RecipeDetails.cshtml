@@ -473,13 +473,7 @@
                         {
                             <li class="ingredient-item">
                                 <span>@ingredient["original"]</span>
-                                <form asp-action="AddToShoppingList" method="post" class="d-inline">
-                                    <input type="hidden" name="ingredient" value="@ingredient["original"]" />
-                                    <input type="hidden" name="recipeId" value="@Model["id"]" />
-                                    <button type="submit" class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-plus"></i> Add
-                                    </button>
-                                </form>
+                               
                             </li>
                         }
                     </ul>

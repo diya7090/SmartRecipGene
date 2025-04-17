@@ -473,12 +473,11 @@ namespace SmartRecipGene.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Ingredient")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("Purchased")
-                        .HasColumnType("bit");
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()

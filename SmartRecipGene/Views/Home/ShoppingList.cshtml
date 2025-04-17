@@ -1,40 +1,4 @@
-﻿@* @model List<SmartRecipGene.Models.ShoppingListItem>
-
-<h2>Shopping List</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Ingredient</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Ingredient</td>
-                <td>@(item.Purchased ? "Purchased" : "Pending")</td>
-                <td>
-                    @if (!item.Purchased)
-                    {
-                        <form asp-action="MarkAsPurchased" method="post">
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <button type="submit" class="btn btn-success">Mark as Purchased</button>
-                        </form>
-                    }
-                    <form asp-action="RemoveFromShoppingList" method="post">
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <button type="submit" class="btn btn-danger">Remove</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
- *@
-
+﻿@* 
                             @model List<SmartRecipGene.Models.ShoppingListItem>
 
 <div class="container mt-4">
@@ -123,4 +87,113 @@
             $('.alert').alert('close');
         }, 5000);
     </script>
-}
+} *@
+                          @model List<dynamic>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">My Shopping List</h2>
+                    <span class="badge bg-light text-primary">@Model.Count recipes</span>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Your shopping list is empty.
+                            </div>
+                    }
+                    else
+                    {
+                        foreach (var recipe in Model)
+                        {
+                                    <div class="recipe-card mb-4">
+                                        <div class="recipe-header d-flex justify-content-between align-items-center bg-light p-3 rounded">
+                                            <h4 class="mb-0">@recipe.RecipeTitle</h4>
+                                            <div class="recipe-meta">
+                                                <small class="text-muted">Added: @recipe.DateAdded.ToString("MMM dd, yyyy")</small>
+                                                <form asp-action="RemoveFromShoppingList" method="post" class="d-inline ms-3">
+                                                    <input type="hidden" name="recipeId" value="@recipe.RecipeId" />
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i> Remove
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="ingredients-list p-3">
+                                            <h5><i class="fas fa-list"></i> Ingredients:</h5>
+                                            <ul class="list-group">
+                                        @foreach (var ingredient in recipe.Ingredients)
+                                        {
+                                                        <li class="list-group-item">
+                                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                                @ingredient
+                                                        </li>
+                                        }
+                                            </ul>
+                                        </div>
+                                    </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .recipe-card {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .recipe-header {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .ingredients-list {
+        background-color: #fff;
+    }
+
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+        border-radius: 0 !important;
+    }
+
+    .list-group-item:first-child {
+        border-top: none;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .btn-danger {
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        transform: scale(1.05);
+    }
+
+    .recipe-meta {
+        display: flex;
+        align-items: center;
+    }
+
+    @@media (max-width: 768px) {
+        .recipe-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .recipe-meta {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
