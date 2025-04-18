@@ -22,11 +22,22 @@
        
         public string? Equipment { get; set; }
         // public List<string>? StepByStepImages { get; set; }
+        public decimal? EstimatedCost { get; set; } // Estimated total cost of the recipe
         public ICollection<Review> Reviews { get; set; }
+        public ICollection<ShoppingList> ShoppingLists { get; set; }
+
+        // Kit-related properties
+        public bool IsKitAvailable { get; set; } = false;
+        public decimal? KitPrice { get; set; }
+        public int? KitServingSize { get; set; }
+        public string? KitDescription { get; set; }
+        public string? KitImageUrl { get; set; }
+        public bool IsKitInStock { get; set; } = true;
 
         public Recipe()
         {
             Reviews = new HashSet<Review>();
+            ShoppingLists = new HashSet<ShoppingList>();
         }
 
     }
