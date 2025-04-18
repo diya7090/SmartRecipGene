@@ -404,6 +404,9 @@ namespace SmartRecipGene.Migrations
                     b.Property<int>("PreparationTime")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("PricePerServing")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("ServingSize")
                         .HasColumnType("nvarchar(max)");
 
@@ -476,14 +479,22 @@ namespace SmartRecipGene.Migrations
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Purchased")
+                        .HasColumnType("bit");
+
                     b.Property<int>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Servings")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ShoppingList");
                 });
@@ -625,6 +636,17 @@ namespace SmartRecipGene.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SmartRecipGene.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartRecipGene.Models.ShoppingListItem", b =>
+                {
                     b.HasOne("SmartRecipGene.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")

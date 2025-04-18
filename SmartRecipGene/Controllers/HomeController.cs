@@ -820,31 +820,28 @@ public async Task<IActionResult> SearchRecipes(string query, string cuisine, str
         {
             try
             {
-                var recipe = await _context.Recipes
-                    .Include(r => r.ShoppingLists)
-                    .FirstOrDefaultAsync(r => r.Id == recipeId);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var item = await _context.ShoppingList
+                    .FirstOrDefaultAsync(s => s.UserId == userId && s.RecipeId == recipeId);
 
-                if (recipe == null)
+                if (item != null)
                 {
-                    return Json(new { success = false, message = "Recipe not found" });
-                }
-
-                var shoppingListItem = recipe.ShoppingLists
-                    .FirstOrDefault(sl => sl.UserId == User.Identity.Name && !sl.IsPurchased);
-
-                if (shoppingListItem != null)
-                {
-                    recipe.ShoppingLists.Remove(shoppingListItem);
+                    _context.ShoppingList.Remove(item);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Recipe removed from shopping list!";
                 }
-
-                return Json(new { success = true });
+                else
+                {
+                    TempData["Error"] = "Recipe not found in shopping list.";
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error removing recipe from shopping list");
-                return Json(new { success = false, message = ex.Message });
+                _logger.LogError(ex, "Error removing recipe from shopping list: {RecipeId}", recipeId);
+                TempData["Error"] = "An error occurred while removing the recipe from shopping list.";
             }
+
+            return RedirectToAction("ShoppingList");
         }
        
 
@@ -1372,93 +1369,6 @@ public async Task<IActionResult> IsFavorite(int recipeId)
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddToShoppingList(int recipeId, int quantity = 1)
-        {
-            try
-            {
-                // First try to get recipe from database
-                var recipe = await _context.Recipes
-                    .Include(r => r.ShoppingLists)
-                    .FirstOrDefaultAsync(r => r.Id == recipeId);
-
-                if (recipe == null)
-                {
-                    // If not in database, try to get from API
-                    try
-                    {
-                        var apiKey = _spoonacularSettings.ApiKey;
-                        var apiUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey={apiKey}";
-                        var response = await _httpClient.GetStringAsync(apiUrl);
-                        var recipeData = JObject.Parse(response);
-
-                        // Create a new recipe in database for API recipe
-                        recipe = new Recipe
-                        {
-                            Id = recipeId,
-                            Title = recipeData["title"]?.ToString() ?? "Untitled Recipe",
-                            ImageUrl = recipeData["image"]?.ToString() ?? "",
-                            Instructions = recipeData["instructions"]?.ToString() ?? "",
-                            CookingTime = recipeData["readyInMinutes"]?.ToObject<int>() ?? 0,
-                            Servings = recipeData["servings"]?.ToObject<int>() ?? 0,
-                            IsKitAvailable = true, // Default to true for API recipes
-                            IsKitInStock = true,
-                            KitPrice = 19.99m, // Default price for API recipes
-                            ShoppingLists = new List<ShoppingList>()
-                        };
-
-                        _context.Recipes.Add(recipe);
-                        await _context.SaveChangesAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Error fetching recipe from API");
-                        return Json(new { success = false, message = "Recipe not found in database or API" });
-                    }
-                }
-
-                if (!recipe.IsKitAvailable)
-                {
-                    return Json(new { success = false, message = "Recipe kit is not available for purchase" });
-                }
-
-                if (!recipe.IsKitInStock)
-                {
-                    return Json(new { success = false, message = "Recipe kit is currently out of stock" });
-                }
-
-                var existingItem = recipe.ShoppingLists
-                    .FirstOrDefault(sl => sl.UserId == User.Identity.Name && !sl.IsPurchased);
-
-                if (existingItem != null)
-                {
-                    existingItem.Quantity += quantity;
-                    existingItem.TotalPrice = existingItem.Quantity * recipe.KitPrice;
-                }
-                else
-                {
-                    var shoppingListItem = new ShoppingList
-                    {
-                        UserId = User.Identity.Name,
-                        RecipeId = recipeId,
-                        Quantity = quantity,
-                        TotalPrice = quantity * recipe.KitPrice,
-                        DateAdded = DateTime.UtcNow
-                    };
-
-                    recipe.ShoppingLists.Add(shoppingListItem);
-                }
-
-                await _context.SaveChangesAsync();
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding recipe to shopping list");
-                return Json(new { success = false, message = ex.Message });
-            }
         }
     }
 }
