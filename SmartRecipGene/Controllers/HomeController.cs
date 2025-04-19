@@ -741,77 +741,159 @@ public async Task<IActionResult> SearchRecipes(string query, string cuisine, str
 
             return View(recipes); // Pass the JArray to the view
         }
+[HttpGet]
+[Authorize]
+public async Task<IActionResult> ShoppingList()
+{
+    try
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var shoppingList = await _context.ShoppingList
+            .Where(s => s.UserId == userId)
+            .OrderByDescending(s => s.DateAdded)
+            .ToListAsync();
 
+        var recipeDetails = new List<dynamic>();
+        decimal usdToInrRate = 83.0m;
 
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> ShoppingList()
+        foreach (var item in shoppingList)
         {
-            try
+            decimal pricePerServing = 0;
+            string recipeTitle = "";
+            int defaultServings = 1;
+            List<string> ingredients = new List<string>();
+
+            var dbRecipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == item.RecipeId);
+
+            if (dbRecipe != null)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var shoppingList = await _context.ShoppingList
-                    .Where(s => s.UserId == userId)
-                    .OrderByDescending(s => s.DateAdded)
-                    .ToListAsync();
-
-                var recipeIngredients = new List<dynamic>();
-
-                foreach (var item in shoppingList)
+                recipeTitle = dbRecipe.Title;
+                pricePerServing = dbRecipe.PricePerServing ;
+                defaultServings = dbRecipe.Servings;
+                ingredients = !string.IsNullOrEmpty(dbRecipe.Ingredients)
+                    ? dbRecipe.Ingredients.Split(',').Select(i => i.Trim()).ToList()
+                    : new List<string>();
+            }
+            else
+            {
+                try
                 {
-                    // First try to get recipe from database
-                    var dbRecipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == item.RecipeId);
+                    var apiKey = _spoonacularSettings.ApiKey;
+                    var apiUrl = $"https://api.spoonacular.com/recipes/{item.RecipeId}/information?apiKey={apiKey}";
+                    var response = await _httpClient.GetStringAsync(apiUrl);
+                    var recipe = JObject.Parse(response);
 
-                    if (dbRecipe != null)
+                    recipeTitle = recipe["title"]?.ToString() ?? "";
+                    pricePerServing = (recipe["pricePerServing"]?.Value<decimal>() ?? 0) * usdToInrRate;
+                    defaultServings = recipe["servings"]?.Value<int>() ?? 1;
+                    
+                    var ingredientsList = recipe["extendedIngredients"]?.ToObject<JArray>();
+                    if (ingredientsList != null)
                     {
-                        var ingredients = !string.IsNullOrEmpty(dbRecipe.Ingredients)
-                            ? dbRecipe.Ingredients.Split(',').Select(i => i.Trim()).ToList()
-                            : new List<string>();
-
-                        recipeIngredients.Add(new
-                        {
-                            RecipeId = item.RecipeId,
-                            RecipeTitle = dbRecipe.Title,
-                            DateAdded = item.DateAdded,
-                            Ingredients = ingredients
-                        });
-                    }
-                    else
-                    {
-                        // If not in database, fetch from API
-                        try
-                        {
-                            var apiKey = _spoonacularSettings.ApiKey;
-                            var apiUrl = $"https://api.spoonacular.com/recipes/{item.RecipeId}/information?apiKey={apiKey}";
-                            var response = await _httpClient.GetStringAsync(apiUrl);
-                            var recipe = JObject.Parse(response);
-
-                            recipeIngredients.Add(new
-                            {
-                                RecipeId = item.RecipeId,
-                                RecipeTitle = recipe["title"].ToString(),
-                                DateAdded = item.DateAdded,
-                                Ingredients = recipe["extendedIngredients"].Select(i => i["original"].ToString())
-                            });
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, $"Error fetching recipe {item.RecipeId} from API");
-                        }
+                        ingredients = ingredientsList
+                            .Select(i => i["original"]?.ToString() ?? "")
+                            .Where(i => !string.IsNullOrEmpty(i))
+                            .ToList();
                     }
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error fetching recipe {item.RecipeId} from API");
+                }
+            }
 
-                return View(recipeIngredients);
-            }
-            catch (Exception ex)
+            recipeDetails.Add(new
             {
-                _logger.LogError(ex, "Error fetching shopping list");
-                TempData["Error"] = "An error occurred while loading your shopping list.";
-                return View(new List<dynamic>());
-            }
+                RecipeId = item.RecipeId,
+                RecipeTitle = recipeTitle,
+                DateAdded = item.DateAdded,
+                Ingredients = ingredients,
+                Servings = item.Servings,
+                DefaultServings = defaultServings,
+                PricePerServing = pricePerServing,
+                TotalPrice = pricePerServing * item.Servings,
+                Purchased = item.Purchased
+            });
         }
-       
+
+        return View(recipeDetails);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error fetching shopping list");
+        TempData["Error"] = "An error occurred while loading your shopping list.";
+        return View(new List<dynamic>());
+    }
+}
+
+        //[HttpGet]
+        //[Authorize]
+        //public async Task<IActionResult> ShoppingList()
+        //{
+        //    try
+        //    {
+        //        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //        var shoppingList = await _context.ShoppingList
+        //            .Where(s => s.UserId == userId)
+        //            .OrderByDescending(s => s.DateAdded)
+        //            .ToListAsync();
+
+        //        var recipeIngredients = new List<dynamic>();
+
+        //        foreach (var item in shoppingList)
+        //        {
+        //            // First try to get recipe from database
+        //            var dbRecipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == item.RecipeId);
+
+        //            if (dbRecipe != null)
+        //            {
+        //                var ingredients = !string.IsNullOrEmpty(dbRecipe.Ingredients)
+        //                    ? dbRecipe.Ingredients.Split(',').Select(i => i.Trim()).ToList()
+        //                    : new List<string>();
+
+        //                recipeIngredients.Add(new
+        //                {
+        //                    RecipeId = item.RecipeId,
+        //                    RecipeTitle = dbRecipe.Title,
+        //                    DateAdded = item.DateAdded,
+        //                    Ingredients = ingredients
+        //                });
+        //            }
+        //            else
+        //            {
+        //                // If not in database, fetch from API
+        //                try
+        //                {
+        //                    var apiKey = _spoonacularSettings.ApiKey;
+        //                    var apiUrl = $"https://api.spoonacular.com/recipes/{item.RecipeId}/information?apiKey={apiKey}";
+        //                    var response = await _httpClient.GetStringAsync(apiUrl);
+        //                    var recipe = JObject.Parse(response);
+
+        //                    recipeIngredients.Add(new
+        //                    {
+        //                        RecipeId = item.RecipeId,
+        //                        RecipeTitle = recipe["title"].ToString(),
+        //                        DateAdded = item.DateAdded,
+        //                        Ingredients = recipe["extendedIngredients"].Select(i => i["original"].ToString())
+        //                    });
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    _logger.LogError(ex, $"Error fetching recipe {item.RecipeId} from API");
+        //                }
+        //            }
+        //        }
+
+        //        return View(recipeIngredients);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error fetching shopping list");
+        //        TempData["Error"] = "An error occurred while loading your shopping list.";
+        //        return View(new List<dynamic>());
+        //    }
+        //}
+
 
 
         [HttpPost]
@@ -1018,97 +1100,147 @@ public async Task<IActionResult> SearchRecipes(string query, string cuisine, str
                 averageRating = Math.Round(averageRating, 1)
             });
         }
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> AddMissingIngredientsToList(int recipeId)
+        //        [HttpPost]
+        // [Authorize]
+        // public async Task<IActionResult> AddMissingIngredientsToList(int recipeId, int servings = 1)
+        // {
+        //     try
+        //     {
+        //         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        //         // Check if recipe already exists in shopping list
+        //         var existingItem = await _context.ShoppingList
+        //             .FirstOrDefaultAsync(i => i.UserId == userId && i.RecipeId == recipeId);
+
+        //         if (existingItem == null)
+        //         {
+        //             decimal pricePerServing = 0;
+
+        //             // Try to get price from database first
+        //             var dbRecipe = await _context.Recipes
+        //                 .FirstOrDefaultAsync(r => r.Id == recipeId);
+
+        //             if (dbRecipe != null)
+        //             {
+        //                 pricePerServing = dbRecipe.PricePerServing;
+        //             }
+        //             else
+        //             {
+        //                 // If not in database, get from API
+        //                 try
+        //                 {
+        //                     var apiKey = _spoonacularSettings.ApiKey;
+        //                     var apiUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey={apiKey}";
+        //                     var response = await _httpClient.GetStringAsync(apiUrl);
+        //                     var recipeData = JObject.Parse(response);
+        //                     pricePerServing = recipeData["pricePerServing"]?.Value<decimal>() ?? 0;
+        //                 }
+        //                 catch (Exception ex)
+        //                 {
+        //                     _logger.LogError(ex, "Error fetching recipe price from API");
+        //                 }
+        //             }
+
+        //             var shoppingItem = new ShoppingListItem
+        //             {
+        //                 UserId = userId,
+        //                 RecipeId = recipeId,
+        //                 Servings = servings,
+        //                 DateAdded = DateTime.Now,
+        //                 Purchased = false
+        //             };
+
+        //             _context.ShoppingList.Add(shoppingItem);
+        //             await _context.SaveChangesAsync();
+        //             TempData["Success"] = "Recipe added to shopping list!";
+        //         }
+        //         else
+        //         {
+        //             existingItem.Servings += servings;
+        //             _context.ShoppingList.Update(existingItem);
+        //             await _context.SaveChangesAsync();
+        //             TempData["Info"] = "Updated servings for existing recipe in shopping list.";
+        //         }
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogError(ex, "Error adding recipe to shopping list: {RecipeId}", recipeId);
+        //         TempData["Error"] = "An error occurred while adding recipe to shopping list.";
+        //     }
+
+        //     return RedirectToAction(nameof(RecipeDetails), new { id = recipeId });
+        // }
+
+       [HttpPost]
+[Authorize]
+public async Task<IActionResult> AddMissingIngredientsToList(int recipeId)
+{
+    try
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        int defaultServings = 1;
+
+        // Check if recipe already exists in shopping list
+        var existingItem = await _context.ShoppingList
+            .FirstOrDefaultAsync(i => i.UserId == userId && i.RecipeId == recipeId);
+
+        // Try to get recipe details from database first
+        var dbRecipe = await _context.Recipes
+            .FirstOrDefaultAsync(r => r.Id == recipeId);
+
+        if (dbRecipe != null)
         {
+            defaultServings = dbRecipe.Servings;
+        }
+        else
+        {
+            // If not in database, get from API
             try
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // Check if recipe already exists in shopping list
-                var existingItem = await _context.ShoppingList
-                    .FirstOrDefaultAsync(i => i.UserId == userId && i.RecipeId == recipeId);
-
-                if (existingItem == null)
-                {
-                    var shoppingItem = new ShoppingListItem
-                    {
-                        UserId = userId,
-                        RecipeId = recipeId
-                    };
-                    _context.ShoppingList.Add(shoppingItem);
-                    await _context.SaveChangesAsync();
-                    TempData["Success"] = "Recipe added to shopping list!";
-                }
-                else
-                {
-                    TempData["Info"] = "This recipe is already in your shopping list.";
-                }
+                var apiKey = _spoonacularSettings.ApiKey;
+                var apiUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey={apiKey}";
+                var response = await _httpClient.GetStringAsync(apiUrl);
+                var recipeData = JObject.Parse(response);
+                defaultServings = recipeData["servings"]?.Value<int>() ?? 1;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error adding recipe to shopping list: {RecipeId}", recipeId);
-                TempData["Error"] = "An error occurred while adding recipe to shopping list.";
+                _logger.LogError(ex, "Error fetching recipe details from API");
             }
-
-            return RedirectToAction(nameof(RecipeDetails), new { id = recipeId });
         }
-        //public async Task<IActionResult> AddMissingIngredientsToList(int recipeId)
-        //{
-        //    try
-        //    {
-        //        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //        var apiKey = _spoonacularSettings.ApiKey;
 
-        //        // Get recipe details from API
-        //        string apiUrl = $"https://api.spoonacular.com/recipes/{recipeId}/information?apiKey={apiKey}";
-        //        var response = await _httpClient.GetAsync(apiUrl);
+        if (existingItem == null)
+        {
+            var shoppingItem = new ShoppingListItem
+            {
+                UserId = userId,
+                RecipeId = recipeId,
+                Servings = defaultServings,
+                DateAdded = DateTime.Now,
+                Purchased = false
+            };
 
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            var content = await response.Content.ReadAsStringAsync();
-        //            var recipe = JObject.Parse(content);
-        //            var ingredients = recipe["extendedIngredients"];
+            _context.ShoppingList.Add(shoppingItem);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Recipe added to shopping list!";
+        }
+        else
+        {
+            existingItem.Servings += defaultServings;
+            _context.ShoppingList.Update(existingItem);
+            await _context.SaveChangesAsync();
+            TempData["Info"] = "Updated servings for existing recipe in shopping list.";
+        }
 
-        //            foreach (var ingredient in ingredients)
-        //            {
-        //                var ingredientName = ingredient["original"].ToString();
-
-        //                // Check if ingredient already exists in shopping list
-        //                var existingItem = await _context.ShoppingList
-        //                    .FirstOrDefaultAsync(i => i.UserId == userId &&
-        //                                            i.Ingredient.ToLower() == ingredientName.ToLower());
-
-        //                if (existingItem == null)
-        //                {
-        //                    var shoppingItem = new ShoppingListItem
-        //                    {
-        //                        UserId = userId,
-        //                        Ingredient = ingredientName,
-        //                        Purchased = false
-        //                    };
-        //                    _context.ShoppingList.Add(shoppingItem);
-        //                }
-        //            }
-
-        //            await _context.SaveChangesAsync();
-        //            TempData["Success"] = "Missing ingredients added to shopping list!";
-        //        }
-        //        else
-        //        {
-        //            TempData["Error"] = "Could not fetch recipe ingredients.";
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error adding missing ingredients for recipe: {RecipeId}", recipeId);
-        //        TempData["Error"] = "An error occurred while adding ingredients to shopping list.";
-        //    }
-
-        //    return RedirectToAction(nameof(RecipeDetails), new { id = recipeId });
-        //}
-
+        return RedirectToAction(nameof(ShoppingList));
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError(ex, "Error adding recipe to shopping list: {RecipeId}", recipeId);
+        TempData["Error"] = "An error occurred while adding recipe to shopping list.";
+        return RedirectToAction(nameof(ShoppingList));
+    }
+}
         [HttpGet]
 public async Task<IActionResult> GetSpellingSuggestions(string query)
 {

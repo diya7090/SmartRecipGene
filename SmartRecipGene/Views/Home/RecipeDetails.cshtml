@@ -578,13 +578,18 @@
                         }
                     </ul>
                     <div class="action-buttons">
+    <button type="button" class="btn btn-primary" onclick="addToShoppingList(@Model["id"])">
+        <i class="fas fa-shopping-cart"></i> Add All to Shopping List
+    </button>
+</div>
+                    <!-- <div class="action-buttons">
                         <form asp-action="AddMissingIngredientsToList" method="post">
                             <input type="hidden" name="recipeId" value="@Model["id"]" />
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-shopping-cart"></i> Add All to Shopping List
                             </button>
                         </form>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <!-- Instructions Section -->
@@ -686,7 +691,31 @@
         </div>
     </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+function addToShoppingList(recipeId) {
+            $.post('/Home/AddMissingIngredientsToList', { recipeId: recipeId })
+                .done(function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Added to Shopping List!',
+                        text: 'All ingredients have been added to your shopping list.',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        // Optional: redirect to shopping list after showing the message
+                        // window.location.href = '/Home/ShoppingList';
+                    });
+                })
+                .fail(function(error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Failed to add ingredients to shopping list. Please try again.',
+                    });
+                });
+        }
     $(document).ready(function() {
         // Check initial favorite status
         

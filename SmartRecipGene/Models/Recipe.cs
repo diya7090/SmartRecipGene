@@ -1,4 +1,6 @@
-﻿namespace SmartRecipGene.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SmartRecipGene.Models
 {
     public class Recipe
     {
@@ -19,7 +21,8 @@
         public string? DietType { get; set; }
         public string? Allergens { get; set; }
         public string? MealType { get; set; }
-       
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal PricePerServing { get; set; }
         public string? Equipment { get; set; }
         // public List<string>? StepByStepImages { get; set; }
         public ICollection<Review> Reviews { get; set; }

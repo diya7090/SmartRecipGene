@@ -23,6 +23,10 @@ namespace SmartRecipGene.Data
         public DbSet<UserActivity> UserActivities { get; set; }
 
         public DbSet<Contact> Contacts { get; set; }
+        
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<OrderItem> OrderItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,11 +35,32 @@ namespace SmartRecipGene.Data
             //modelBuilder.Entity<ApplicationUser>()
             //   .ToTable("AspNetUsers");
 
-            modelBuilder.Entity<ShoppingListItem>()
-               .HasKey(s => s.Id);
+             modelBuilder.Entity<ShoppingListItem>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+                entity.Property(s => s.DateAdded)
+                    .HasDefaultValueSql("GETDATE()");
+                entity.Property(s => s.UserId)
+                    .HasColumnType("nvarchar(450)");
+                entity.HasOne(r => r.User)
+                    .WithMany()
+                    .HasForeignKey(s => s.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+                // RecipeId is not a foreign key since we use external API
+                entity.Property(s => s.RecipeId)
+                    .IsRequired();
+            });
 
-            modelBuilder.Entity<Recipe>()
-                .HasIndex(r => r.Title);
+            modelBuilder.Entity<Recipe>(entity =>
+            {
+                entity.HasKey(r => r.Id);
+                entity.Property(r => r.PricePerServing)
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+                entity.HasIndex(r => r.Title);
+            });
+
+    
 
             modelBuilder.Entity<BlogPost>()
                 .HasIndex(b => b.Title);
@@ -52,11 +77,49 @@ namespace SmartRecipGene.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Review>()
-            .Property(r => r.CreatedAt)
-            .HasDefaultValueSql("GETDATE()");
+                .Property(r => r.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
+
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasKey(o => o.Id);
+                entity.Property(o => o.OrderNumber)
+                    .IsRequired();
+                entity.Property(o => o.TotalAmount)
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+                entity.Property(o => o.Status)
+                    .IsRequired();
+                entity.Property(o => o.DeliveryAddress)
+                    .IsRequired();
+                entity.Property(o => o.UserId)
+                    .HasColumnType("nvarchar(450)")
+                    .IsRequired();
+                entity.HasOne(o => o.User)
+                    .WithMany()
+                    .HasForeignKey(o => o.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.HasKey(oi => oi.Id);
+                entity.Property(oi => oi.RecipeId)
+                    .IsRequired();
+                entity.Property(oi => oi.PricePerServings)
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+                entity.Property(oi => oi.TotalPrice)
+                    .HasColumnType("decimal(18,2)")
+                    .IsRequired();
+                entity.HasOne(oi => oi.Order)
+                    .WithMany(o => o.OrderItems)
+                    .HasForeignKey(oi => oi.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+        
         }
 
     }
-
-    }
+}
 

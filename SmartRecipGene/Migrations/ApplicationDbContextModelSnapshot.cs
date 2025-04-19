@@ -359,6 +359,79 @@ namespace SmartRecipGene.Migrations
                     b.ToTable("FavoriteRecipes");
                 });
 
+            modelBuilder.Entity("SmartRecipGene.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DeliveryAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("SmartRecipGene.Models.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PricePerServings")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Servings")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
+                });
+
             modelBuilder.Entity("SmartRecipGene.Models.Recipe", b =>
                 {
                     b.Property<int>("Id")
@@ -403,6 +476,9 @@ namespace SmartRecipGene.Migrations
 
                     b.Property<int>("PreparationTime")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("PricePerServing")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ServingSize")
                         .HasColumnType("nvarchar(max)");
@@ -474,16 +550,26 @@ namespace SmartRecipGene.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("Purchased")
+                        .HasColumnType("bit");
 
                     b.Property<int>("RecipeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Servings")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ShoppingList");
                 });
@@ -606,6 +692,28 @@ namespace SmartRecipGene.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SmartRecipGene.Models.Order", b =>
+                {
+                    b.HasOne("SmartRecipGene.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartRecipGene.Models.OrderItem", b =>
+                {
+                    b.HasOne("SmartRecipGene.Models.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("SmartRecipGene.Models.Recipe", b =>
                 {
                     b.HasOne("SmartRecipGene.Models.ApplicationUser", null)
@@ -634,6 +742,17 @@ namespace SmartRecipGene.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SmartRecipGene.Models.ShoppingListItem", b =>
+                {
+                    b.HasOne("SmartRecipGene.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SmartRecipGene.Models.UserActivity", b =>
                 {
                     b.HasOne("SmartRecipGene.Models.ApplicationUser", "User")
@@ -643,6 +762,11 @@ namespace SmartRecipGene.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartRecipGene.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("SmartRecipGene.Models.Recipe", b =>
