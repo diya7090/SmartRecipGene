@@ -202,7 +202,15 @@
     <h4 class="text-end">
         Total Cart Value: $@(Model.Sum(r => (decimal)r.TotalPrice).ToString("F2"))
     </h4>
+     <div class="d-flex justify-content-end mt-3">
+        <form asp-action="Address" method="get">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-shopping-cart"></i> Proceed to Address
+            </button>
+        </form>
+    </div>
 </div>
+
 // ... existing code ...
 
                         @foreach (var recipe in Model)
@@ -211,27 +219,27 @@
                                 <div class="recipe-header d-flex justify-content-between align-items-center bg-light p-3 rounded">
                                     <h4 class="mb-0">@recipe.RecipeTitle</h4>
                                     <div class="recipe-meta">
-                                      <div class="price-info me-3" id="price-info-@recipe.RecipeId">
-    <span class="text-muted">Price per serving: ₹@recipe.PricePerServing.ToString("F2")</span>
-    <br />
-    <span class="text-primary total-price">Total: ₹@recipe.TotalPrice.ToString("F2")</span>
-</div>
-<div class="servings-control d-inline-flex align-items-center me-3">
-    <button class="btn btn-outline-secondary btn-sm serving-adjust"
+                                        <div class="price-info me-3" id="price-info-@recipe.RecipeId">
+                                            <span class="text-muted">Price per serving: ₹@recipe.PricePerServing.ToString("F2")</span>
+                                            <br />
+                                            <span class="text-primary total-price">Total: ₹@recipe.TotalPrice.ToString("F2")</span>
+                                        </div>
+                                        <div class="servings-control d-inline-flex align-items-center me-3">
+                                               <button class="btn btn-outline-secondary btn-sm serving-adjust"
             data-recipe-id="@recipe.RecipeId"
             data-price="@recipe.PricePerServing"
             data-action="decrease">-</button>
     <input type="number" class="form-control form-control-sm mx-2 servings-input"
            style="width: 60px"
            value="@recipe.DefaultServings"
-           min="@recipe.DefaultServings"
+           min="1"
            data-recipe-id="@recipe.RecipeId"
            data-price="@recipe.PricePerServing" />
     <button class="btn btn-outline-secondary btn-sm serving-adjust"
             data-recipe-id="@recipe.RecipeId"
             data-price="@recipe.PricePerServing"
             data-action="increase">+</button>
-</div>
+                                        </div>
                                         <small class="text-muted me-3">Added: @recipe.DateAdded.ToString("MMM dd, yyyy")</small>
                                         <form asp-action="RemoveFromShoppingList" method="post" class="d-inline">
                                             <input type="hidden" name="recipeId" value="@recipe.RecipeId" />
@@ -299,7 +307,7 @@
             });
 
             function updateGrandTotal() {
-                var grandTotal = 0;
+                var grandTotal = 0; 
                 $('.total-price').each(function() {
                     var price = parseFloat($(this).text().replace('Total: ₹', ''));
                     grandTotal += price;

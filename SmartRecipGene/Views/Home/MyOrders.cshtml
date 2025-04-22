@@ -1,0 +1,112 @@
+@* @model List<SmartRecipGene.Models.Order> *@
+    @model IEnumerable<dynamic>
+@{
+    ViewBag.Title = "My Orders";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">My Orders</h2>
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Order #</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+       
+<tbody>
+@foreach (var order in Model)
+{
+    <tr>
+        <td>@order.OrderNumber</td>
+        <td>@order.Status</td>
+        <td>₹@order.TotalAmount.ToString("F2")</td>
+        <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+        <td>
+            @if (order.Status == "Pending" || order.Status == "Processing")
+            {
+                <button class="btn btn-danger btn-sm cancel-order-btn" data-order-id="@order.Id">Cancel</button>
+            }
+            else
+            {
+                <span class="text-muted">N/A</span>
+            }
+        </td>
+    </tr>
+    <tr>
+        <td colspan="5">
+            <table class="table table-sm table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th>Recipe Image</th>
+                        <th>Recipe Title</th>
+                        <th>Servings</th>
+                        <th>Price per Serving</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in order.OrderItems)
+                {
+                    <tr>
+                        <td>
+                                            <img src="@item.RecipeImg" alt="Recipe Image" style="width:60px;height:60px;object-fit:cover;" />
+                                        </td>
+                                     
+                                        <td>@item.RecipeTitle</td>
+                                       
+                                        <td>@item.Servings</td>
+                        <td>₹@item.PricePerServing.ToString("F2")</td>
+                        <td>₹@item.TotalPrice.ToString("F2")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </td>
+    </tr>
+}
+
+       @*  <!-- @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderNumber</td>
+                <td>@order.Status</td>
+                <td>₹@order.TotalAmount.ToString("F2")</td>
+                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    @if (order.Status == "Pending" || order.Status == "Processing")
+                    {
+                        <button class="btn btn-danger btn-sm cancel-order-btn" data-order-id="@order.Id">Cancel</button>
+                    }
+                    else
+                    {
+                        <span class="text-muted">N/A</span>
+                    }
+                </td>
+            </tr>
+        } --> *@
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.cancel-order-btn').click(function() {
+                var orderId = $(this).data('order-id');
+                if (confirm('Are you sure you want to cancel this order?')) {
+                    $.post('@Url.Action("CancelOrder", "Home")', { orderId: orderId }, function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert(response.message);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

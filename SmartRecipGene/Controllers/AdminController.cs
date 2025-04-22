@@ -20,7 +20,7 @@ namespace SmartRecipGene.Controllers
         private readonly ISpoonacularService _spoonacularService; // ✅ Use the interface type
 
         public AdminController(
-            UserManager<ApplicationUser> userManager, 
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             ApplicationDbContext context, ISpoonacularService spoonacularService)
         {
@@ -37,48 +37,47 @@ namespace SmartRecipGene.Controllers
             var users = _userManager.Users.ToList();
             return View(users);
         }
-        //public async Task<IActionResult> Dashboard()
-        //{
-        //    var totalUsers = await _userManager.Users.CountAsync();
-        //    var totalRecipes = await _context.Recipes.CountAsync();
+        public async Task<IActionResult> OrderManagement()
+        {
+            var orders = await _context.Orders
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+            return View(orders);
+        }
 
-        //    var topRatedRecipes = await _context.Recipes
-        //        .OrderByDescending(r => r.Reviews.Average(rv => rv.Rating))
-        //        .Take(5)
-        //        .Select(r => new { r.Title, AvgRating = r.Reviews.Average(rv => rv.Rating) })
-        //        .ToListAsync();
+        // POST: Admin/UpdateOrderStatus
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, string status)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+            order.Status = status;
+            _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("OrderManagement");
+        }
 
-        //    var shoppingListUsers = await _context.UserActivities
-        //        .Where(a => a.ActivityType == "Shopping List Added")
-        //        .Select(a => a.UserId)
-        //        .Distinct()
-        //        .CountAsync();
-        //    var mostPopularIngredients = _context.Recipes
-        //        .AsEnumerable() // ✅ Moves execution to client-side
-        //        .SelectMany(r => r.Ingredients.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-        //            .Select(i => i.Trim())) // ✅ Splits ingredients and trims spaces
-        //        .GroupBy(i => i) // ✅ Groups by ingredient name
-        //        .OrderByDescending(g => g.Count()) // ✅ Orders by frequency
-        //        .Take(5) // ✅ Takes the top 5
-        //        .Select(g => new { Ingredient = g.Key, Count = g.Count() }) // ✅ Projects to an anonymous object
-        //        .ToList(); // ✅ Use ToList() instead of ToListAsync()
+        // GET: Admin/OrderDetails/5
+        public async Task<IActionResult> OrderDetails(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
+            if (order == null)
+            {
+                return NotFound();
+            }
 
+            // Optionally include user info if needed
+            // var user = await _context.Users.FindAsync(order.UserId);
 
+            return View(order);
+        }
 
-
-
-        //    var dashboardData = new
-        //    {
-        //        TotalUsers = totalUsers,
-        //        TotalRecipes = totalRecipes,
-        //        TopRatedRecipes = topRatedRecipes,
-        //        ShoppingListUsers = shoppingListUsers,
-        //        PopularIngredients = mostPopularIngredients
-        //    };
-
-        //    return View(dashboardData);
-        //}
 
         public async Task<IActionResult> Dashboard()
         {
@@ -105,7 +104,7 @@ namespace SmartRecipGene.Controllers
                 .Select(a => a.UserId)
                 .Distinct()
                 .CountAsync();
-            
+
             var dashboardData = new
             {
                 TotalUsers = totalUsers,
@@ -120,7 +119,7 @@ namespace SmartRecipGene.Controllers
 
 
 
-        
+
 
 
         // 🟢 2. Approve user accounts
@@ -199,4 +198,5 @@ namespace SmartRecipGene.Controllers
             return Json(new { success = false });
         }
     }
+
 }

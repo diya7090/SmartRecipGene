@@ -1,0 +1,80 @@
+@model UserProfileViewModel
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">My Profile</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateProfile" method="post">
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="form-label"></label>
+                            <input asp-for="UserName" class="form-control" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+
+                    <hr />
+
+                    <h4>Change Password</h4>
+                    <form asp-action="ChangePassword" method="post">
+                        <div class="mb-3">
+                            <label for="CurrentPassword" class="form-label">Current Password</label>
+                            <input type="password" name="CurrentPassword" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="NewPassword" class="form-label">New Password</label>
+                            <input type="password" name="NewPassword" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ConfirmPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" name="ConfirmPassword" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-warning">Change Password</button>
+                    </form>
+
+                    <hr />
+
+                    <h4>Shopping History</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Recipe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ShoppingHistory)
+                                {
+                                    <tr>
+                                        <td>@item.DateAdded.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <a asp-controller="Home" asp-action="RecipeDetails" 
+                                               asp-route-id="@item.RecipeId">View Recipe</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -28,6 +28,8 @@ namespace SmartRecipGene.Data
 
         public DbSet<OrderItem> OrderItems { get; set; }
 
+        public DbSet<Address> Addresses { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -90,8 +92,11 @@ namespace SmartRecipGene.Data
                     .IsRequired();
                 entity.Property(o => o.Status)
                     .IsRequired();
-                entity.Property(o => o.DeliveryAddress)
-                    .IsRequired();
+                entity.HasOne(o => o.DeliveryAddress)
+                    .WithMany()
+                    .IsRequired()
+                    .HasForeignKey(o => o.AddressId)
+                    .OnDelete(DeleteBehavior.Restrict);
                 entity.Property(o => o.UserId)
                     .HasColumnType("nvarchar(450)")
                     .IsRequired();

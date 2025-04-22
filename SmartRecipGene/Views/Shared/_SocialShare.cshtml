@@ -1,0 +1,149 @@
+@model Recipe
+
+<div class="social-share-wrapper">
+    <h4>Share this Recipe</h4>
+    <div class="share-buttons">
+        <button onclick="shareWhatsApp()" class="btn share-whatsapp">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </button>
+        
+        <button onclick="shareFacebook()" class="btn share-facebook">
+            <i class="fab fa-facebook"></i> Facebook
+        </button>
+        
+        <button onclick="shareInstagram()" class="btn share-instagram">
+            <i class="fab fa-instagram"></i> Instagram
+        </button>
+        
+        <button onclick="openEmailModal()" class="btn share-email">
+            <i class="fas fa-envelope"></i> Email
+        </button>
+    </div>
+</div>
+
+<!-- Email Share Modal -->
+<div class="modal fade" id="emailShareModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Share via Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Recipient's Email</label>
+                    <input type="email" id="recipientEmail" class="form-control" />
+                </div>
+                <div class="form-group mt-3">
+                    <label>Message (Optional)</label>
+                    <textarea id="emailMessage" class="form-control" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="sendEmail()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.social-share-wrapper {
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.share-buttons .btn {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.share-whatsapp {
+    background-color: #25D366;
+}
+
+.share-facebook {
+    background-color: #1877F2;
+}
+
+.share-instagram {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+.share-email {
+    background-color: #734060;
+}
+
+.share-buttons .btn:hover {
+    opacity: 0.9;
+}
+</style>
+<script>
+function shareWhatsApp() {
+    const title = document.title;
+    const url = window.location.href;
+    const text = `Check out this amazing recipe: ${title}\n${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+function shareFacebook() {
+    const url = window.location.href;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+}
+
+function shareInstagram() {
+    // Instagram doesn't support direct sharing via URL
+    alert('To share on Instagram:\n1. Screenshot the recipe\n2. Open Instagram\n3. Create a new post with the screenshot');
+    window.open('https://instagram.com', '_blank');
+}
+
+function openEmailModal() {
+    const modal = new bootstrap.Modal(document.getElementById('emailShareModal'));
+    modal.show();
+}
+
+async function sendEmail() {
+    const email = document.getElementById('recipientEmail').value;
+    const message = document.getElementById('emailMessage').value;
+    const recipeId = document.querySelector('[data-recipe-id]').dataset.recipeId;
+
+    try {
+        const response = await fetch('/api/recipe/share-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                recipeId: recipeId,
+                recipientEmail: email,
+                message: message
+            })
+        });
+
+        if (response.ok) {
+            alert('Recipe shared successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('emailShareModal')).hide();
+            document.getElementById('recipientEmail').value = '';
+            document.getElementById('emailMessage').value = '';
+        } else {
+            alert('Failed to share recipe. Please try again.');
+        }
+    } catch (error) {
+        console.error('Error sharing recipe:', error);
+        alert('An error occurred while sharing the recipe.');
+    }
+}
+</script>

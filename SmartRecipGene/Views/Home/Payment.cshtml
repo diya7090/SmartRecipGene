@@ -1,0 +1,9 @@
+
+<div class="container mt-4">
+    <h2>Payment</h2>
+    <p>Implement your payment gateway or instructions here.</p>
+    <form asp-action="Checkout" method="post">
+        <input type="hidden" name="addressId" value="@TempData["AddressId"]" />
+        <button type="submit" class="btn btn-primary">Pay & Place Order</button>
+    </form>
+</div>
