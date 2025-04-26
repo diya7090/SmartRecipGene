@@ -172,110 +172,123 @@
 
             @model List<dynamic>
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h2 class="mb-0">My Shopping List</h2>
-                    <span class="badge bg-light text-primary">@Model.Count recipes</span>
-                </div>
-                <div class="card-body">
-                    @if (!Model.Any())
-                    {
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i> Your shopping list is empty.
-                        </div>
-                    }
-                    else
-                    {
-                        @if (TempData["Success"] != null)
-                        {
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                @TempData["Success"]
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        }
-
-                       // ... existing code ...
-<div class="total-price-section mb-4">
-    <h4 class="text-end">
-        Total Cart Value: $@(Model.Sum(r => (decimal)r.TotalPrice).ToString("F2"))
-    </h4>
-     <div class="d-flex justify-content-end mt-3">
-        <form asp-action="Address" method="get">
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-shopping-cart"></i> Proceed to Address
-            </button>
-        </form>
+<div class="shopping-container mt-4">
+    <div class="recipe-hero">
+        <div class="hero-content">
+            <h1>My Shopping List</h1>
+            <p>Discover delicious possibilities with your shopping list.</p>
+        </div>
     </div>
-</div>
-
-// ... existing code ...
-
-                        @foreach (var recipe in Model)
-                        {
-                            <div class="recipe-card mb-4">
-                                <div class="recipe-header d-flex justify-content-between align-items-center bg-light p-3 rounded">
-                                    <h4 class="mb-0">@recipe.RecipeTitle</h4>
-                                    <div class="recipe-meta">
-                                        <div class="price-info me-3" id="price-info-@recipe.RecipeId">
-                                            <span class="text-muted">Price per serving: ₹@recipe.PricePerServing.ToString("F2")</span>
-                                            <br />
-                                            <span class="text-primary total-price">Total: ₹@recipe.TotalPrice.ToString("F2")</span>
-                                        </div>
-                                        <div class="servings-control d-inline-flex align-items-center me-3">
-                                               <button class="btn btn-outline-secondary btn-sm serving-adjust"
-            data-recipe-id="@recipe.RecipeId"
-            data-price="@recipe.PricePerServing"
-            data-action="decrease">-</button>
-    <input type="number" class="form-control form-control-sm mx-2 servings-input"
-           style="width: 60px"
-           value="@recipe.DefaultServings"
-           min="1"
-           data-recipe-id="@recipe.RecipeId"
-           data-price="@recipe.PricePerServing" />
-    <button class="btn btn-outline-secondary btn-sm serving-adjust"
-            data-recipe-id="@recipe.RecipeId"
-            data-price="@recipe.PricePerServing"
-            data-action="increase">+</button>
-                                        </div>
-                                        <small class="text-muted me-3">Added: @recipe.DateAdded.ToString("MMM dd, yyyy")</small>
-                                        <form asp-action="RemoveFromShoppingList" method="post" class="d-inline">
-                                            <input type="hidden" name="recipeId" value="@recipe.RecipeId" />
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash"></i> Remove
-                                            </button>
-                                        </form>
-                                    </div>
+    @* @Model.Count recipes *@
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Your shopping list is empty.
+        </div>
+    }
+    else
+    {
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        <div class="row">
+            <div class="col-lg-8">
+                @foreach (var recipe in Model)
+                {
+                    <div class="recipe-card mb-4">
+                        <div class="recipe-header d-flex justify-content-between align-items-center bg-light p-3 rounded">
+                            <h4 class="mb-0 d-flex flex-column">
+                                @recipe.RecipeTitle
+                                <a href="javascript:void(0);"
+                                   class="fs-6 fw-normal toggle-ingredients-link text-primary"
+                                   data-bs-toggle="collapse"
+                                   data-bs-target="#ingredients-@recipe.RecipeId"
+                                   aria-expanded="false"
+                                   aria-controls="ingredients-@recipe.RecipeId">
+                                    Show Ingredients
+                                </a>
+                            </h4>
+                            <div class="recipe-meta d-flex">
+                                <div class="servings-control d-inline-flex align-items-center me-3">
+                                    <button class="btn btn-outline-secondary btn-sm serving-adjust"
+                                            data-recipe-id="@recipe.RecipeId"
+                                            data-price="@recipe.PricePerServing"
+                                            data-action="decrease">
+                                        -
+                                    </button>
+                                    <input type="number" class="form-control form-control-sm mx-2 servings-input"
+                                           style="width: 60px"
+                                           value="@recipe.DefaultServings"
+                                           min="1"
+                                           data-recipe-id="@recipe.RecipeId"
+                                           data-price="@recipe.PricePerServing" />
+                                    <button class="btn btn-outline-secondary btn-sm serving-adjust"
+                                            data-recipe-id="@recipe.RecipeId"
+                                            data-price="@recipe.PricePerServing"
+                                            data-action="increase">
+                                        +
+                                    </button>
                                 </div>
-                                <div class="ingredients-list p-3">
-                                    <h5><i class="fas fa-list"></i> Ingredients:</h5>
-                                    <ul class="list-group">
-                                        @foreach (var ingredient in recipe.Ingredients)
-                                        {
-                                            <li class="list-group-item">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <i class="fas fa-check-circle text-success me-2"></i>
-                                                        @ingredient
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <input type="checkbox" class="form-check-input ingredient-check" 
-                                                               @(recipe.Purchased ? "checked" : "")>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        }
-                                    </ul>
+                                <div class="price-info me-3" id="price-info-@recipe.RecipeId">
+                                    <span class="text-muted">Price per serving: ₹@recipe.PricePerServing.ToString("F2")</span>
+                                    <br />
+                                    <span class="text-primary total-price">Total: ₹@recipe.TotalPrice.ToString("F2")</span>
                                 </div>
+                                
+                                <small class="text-muted me-3 d-none">Added: @recipe.DateAdded.ToString("MMM dd, yyyy")</small>
+                                <form asp-action="RemoveFromShoppingList" method="post" class="d-inline">
+                                    <input type="hidden" name="recipeId" value="@recipe.RecipeId" />
+                                    <button type="submit" class="btn btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
-                        }
-                    }
+                        </div>
+                        <div id="ingredients-@recipe.RecipeId" class="collapse">
+                            <div class="ingredients-list p-3">
+                                <h5><i class="fas fa-list"></i> Ingredients:</h5>
+                                <ul class="list-group">
+                                    @foreach (var ingredient in recipe.Ingredients)
+                                    {
+                                        <li class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                                    @ingredient
+                                                </div>
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input ingredient-check"
+                                                    @(recipe.Purchased ? "checked" : "")>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-4">
+                <div class="total-price-section mb-4">
+                    <h4 class="text-end">
+                        Total Cart Value: ₹@(Model.Sum(r => (decimal)r.TotalPrice).ToString("F2"))
+                    </h4>
+                    <div class="d-flex justify-content-end mt-3">
+                        <form asp-action="Address" method="get">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-shopping-cart"></i> Proceed to Address
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 </div>
 
 @section Scripts {
@@ -340,6 +353,15 @@
 }
 
 <style>
+    .shopping-container {
+        max-width: 1200px;
+        margin: 0px auto 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
     .recipe-card {
         border: 1px solid #dee2e6;
         border-radius: 8px;

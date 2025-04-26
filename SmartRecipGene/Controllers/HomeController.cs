@@ -533,7 +533,6 @@ public async Task<IActionResult> ShoppingList()
             .ToListAsync();
 
         var recipeDetails = new List<dynamic>();
-        decimal usdToInrRate = 83.0m;
 
         foreach (var item in shoppingList)
         {
@@ -562,7 +561,7 @@ public async Task<IActionResult> ShoppingList()
                     var recipe = JObject.Parse(response);
 
                     recipeTitle = recipe["title"]?.ToString() ?? "";
-                    pricePerServing = (recipe["pricePerServing"]?.Value<decimal>() ?? 0) * usdToInrRate;
+                    pricePerServing = recipe["pricePerServing"]?.Value<decimal>() ?? 0;
                     
                     var ingredientsList = recipe["extendedIngredients"]?.ToObject<JArray>();
                     if (ingredientsList != null)
@@ -930,7 +929,7 @@ public async Task<IActionResult> GetSpellingSuggestions(string query)
                 return Json(new { success = false, message = ex.Message });
             }
         }
-       [HttpGet]
+   [HttpGet]
 public async Task<IActionResult> IsFavorite(int recipeId)
 {
     if (!User.Identity.IsAuthenticated)
@@ -1007,73 +1006,6 @@ public async Task<IActionResult> IsFavorite(int recipeId)
             }
         }
       
-        //[HttpPost]
-        //[Authorize]
-        //// ... existing code ...
-        //// ... existing code ...
-        //public async Task<IActionResult> Checkout(int addressId)
-        //{
-        //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    var shoppingList = await _context.ShoppingList
-        //        .Where(s => s.UserId == userId)
-        //        .ToListAsync();
-
-        //    if (!shoppingList.Any())
-        //    {
-        //        TempData["Error"] = "Your shopping list is empty.";
-        //        return RedirectToAction("ShoppingList");
-        //    }
-
-        //    if (addressId == 0)
-        //    {
-        //        TempData["Error"] = "Delivery address is required.";
-        //        return RedirectToAction("ShoppingList");
-        //    }
-
-        //    // Create new order
-        //    var order = new Order
-        //    {
-        //        UserId = userId,
-        //        OrderDate = DateTime.Now,
-        //        AddressId = addressId,
-        //        TotalAmount = shoppingList.Sum(i =>
-        //        {
-        //            var recipe = _context.Recipes.FirstOrDefault(r => r.Id == i.RecipeId);
-        //            return (recipe != null ? recipe.PricePerServing : 0) * i.Servings;
-        //        }),
-        //        Status = "Pending",
-        //        OrderNumber = Guid.NewGuid().ToString().Substring(0, 8).ToUpper()
-        //    };
-        //    _context.Orders.Add(order);
-        //    await _context.SaveChangesAsync();
-
-        //    // Add order items
-        //    foreach (var item in shoppingList)
-        //    {
-        //        var recipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == item.RecipeId);
-        //        decimal pricePerServing = recipe != null ? recipe.PricePerServing : 0;
-
-        //        var orderItem = new OrderItem
-        //        {
-        //            OrderId = order.Id,
-        //            RecipeId = item.RecipeId,
-        //            Servings = item.Servings,
-        //            PricePerServings = pricePerServing,
-        //            TotalPrice = pricePerServing * item.Servings
-        //            // RecipeTitle = dbRecipe != null ? dbRecipe.Title : "Untitled Recipe"
-        //        };
-        //        _context.OrderItems.Add(orderItem);
-        //    }
-        //    await _context.SaveChangesAsync();
-
-        //    // Clear shopping list
-        //    _context.ShoppingList.RemoveRange(shoppingList);
-        //    await _context.SaveChangesAsync();
-
-        //    // Redirect to Order Summary
-        //    return RedirectToAction("OrderSummary", new { orderId = order.Id });
-        //}
-      
         [HttpGet]
 [Authorize]
 public IActionResult Address()
@@ -1145,10 +1077,7 @@ public IActionResult Address()
             }
             await _context.SaveChangesAsync();
 
-            // Clear shopping list
-            //_context.ShoppingList.RemoveRange(shoppingList);
-            //await _context.SaveChangesAsync();
-            // --- End: Order and OrderItems creation ---
+            
 
             TempData["AddressId"] = model.Id;
             // Redirect to OrderSummary with both addressId and orderId
@@ -1160,7 +1089,6 @@ public IActionResult Address()
         public async Task<IActionResult> OrderSummary(int addressId, int orderId)
         {
             var recipeDetails = new List<dynamic>();
-            decimal usdToInrRate = 83.0m;
 
             // Fetch order items for the given orderId
             var orderItems = await _context.OrderItems
@@ -1197,7 +1125,7 @@ public IActionResult Address()
 
                         recipeImg = recipe["image"]?.ToString() ?? "";
                         recipeTitle = recipe["title"]?.ToString() ?? "";
-                        pricePerServing = (recipe["pricePerServing"]?.Value<decimal>() ?? 0) * usdToInrRate;
+                        pricePerServing = recipe["pricePerServing"]?.Value<decimal>() ?? 0;
                         defaultServings = recipe["servings"]?.Value<int>() ?? 1;
                     }
                     catch (Exception ex)
@@ -1245,19 +1173,7 @@ public IActionResult Address()
 
             return Json(new { success = true, message = "Servings updated successfully." });
         }
-        // ... existing code ...
-// [Authorize]
-// public async Task<IActionResult> MyOrders()
-// {
-//     var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
-//     var orders = await _context.Orders
-//         .Where(o => o.UserId == userId)
-//         .OrderByDescending(o => o.OrderDate)
-//         .Include(o => o.OrderItems)
-//         .ToListAsync();
-//     return View(orders);
-// }
-// ... existing code ...
+       
 [Authorize]
 public async Task<IActionResult> MyOrders()
 {
@@ -1268,8 +1184,6 @@ public async Task<IActionResult> MyOrders()
         .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Recipe)
         .ToListAsync();
-
-    decimal usdToInrRate = 83.0m;
 
     // Build a view model with all required details
     var ordersVm = new List<dynamic>();
@@ -1301,7 +1215,7 @@ public async Task<IActionResult> MyOrders()
 
                     recipeImg = recipe["image"]?.ToString() ?? "";
                     recipeTitle = recipe["title"]?.ToString() ?? "";
-                    pricePerServing = (recipe["pricePerServing"]?.Value<decimal>() ?? 0) * usdToInrRate;
+                    pricePerServing = recipe["pricePerServing"]?.Value<decimal>() ?? 0;
                     servings = item.Servings;
                 }
                 catch (Exception ex)
@@ -1353,8 +1267,7 @@ public async Task<IActionResult> CancelOrder(int orderId)
 
     return Json(new { success = true, message = "Order cancelled successfully." });
 }
-// ... existing code ...
-        // ... existing code ...
+
         public IActionResult Privacy()
         {
             return View();

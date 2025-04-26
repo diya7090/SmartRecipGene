@@ -4,7 +4,6 @@
     ViewData["Title"] = "My Favorite Recipes";
 }
 
-<h2>My Favorite Recipes</h2>
 
 @if (!Model.Any())
 {
@@ -12,53 +11,181 @@
 }
 else
 {
-    <div class="row">
-        @foreach (var recipe in Model)
-        {
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="@recipe.ImageUrl" class="card-img-top" alt="@recipe.Title">
-                    <div class="card-body">
-                        <h5 class="card-title">@recipe.Title</h5>
-                        <a href="/Home/RecipeDetails?id=@recipe.RecipeId" class="btn btn-primary">View Recipe</a>
-
-                        <form method="post" asp-action="RemoveFromFavorites">
-                            <input type="hidden" name="id" value="@recipe.Id" />
-                            <button type="submit" class="btn btn-danger">❌ Remove</button>
-                        </form>
-                    </div>
-                </div>
+    <div class="recipe-container">
+        <div class="recipe-hero">
+            <div class="hero-content">
+                <h1>Favorite Recipes</h1>
+                <p>Discover your Favorite Recipes</p>
             </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="recipe-grid">
+                @foreach (var recipe in Model)
+                {
+                    <div class="recipe-card">
+                        <div class="recipe-image">
+                            <img src="@recipe.ImageUrl" alt="@recipe.Title" />
+                           
+                            <div class="recipe-overlay">
+                                <a href="/Home/RecipeDetails?id=@recipe.RecipeId" class="view-recipe-btn">
+                                    <i class="fas fa-eye"></i> View Recipe
+                                </a>
+                            </div>
+                        </div>
+                        <div class="recipe-content">
+                            <h3>@recipe.Title</h3>
+                            <form method="post" asp-action="RemoveFromFavorites">
+                                <input type="hidden" name="id" value="@recipe.Id" />
+                                <button type="submit" class="btn btn-danger">❌ Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+    @*         @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Recipe pagination">
+                    <ul class="pagination justify-content-center">
+                        @if (Model.HasPreviousPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-action="GetRecipes"
+                                   asp-route-page="@(Model.PageIndex - 1)"
+                                   asp-route-ingredients="@ViewBag.Ingredients">Previous</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">Previous</span>
+                            </li>
+                        }
+
+                        <li class="page-item active">
+                            <span class="page-link">
+                                Page @Model.PageIndex of @Model.TotalPages
+                            </span>
+                        </li>
+
+                        @if (Model.HasNextPage)
+                        {
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-action="GetRecipes"
+                                   asp-route-page="@(Model.PageIndex + 1)"
+                                   asp-route-ingredients="@ViewBag.Ingredients">Next</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item disabled">
+                                <span class="page-link">Next</span>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            } *@
         }
     </div>
+
+    
 }
+
+
 <style>
-    <style>
+    .favorite-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+        .favorite-icon i {
+            font-size: 1.2rem;
+            color: #ff4b4b;
+        }
+
+            .favorite-icon i.far {
+                color: #666;
+            }
+
+        .favorite-icon:hover i.far {
+            color: #ff4b4b;
+        }
+
+    .favorite-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        z-index: 1000;
+        display: none;
+    }
+
+        .favorite-toast.show {
+            display: block;
+            animation: fadeInOut 3s ease;
+        }
+
+    @@keyframes fadeInOut {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        10% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        90% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+    }
+
+    .fa-beat {
+        animation: heartBeat 0.5s ease;
+    }
+
+    @@keyframes heartBeat {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
     .recipe-container {
         max-width: 1200px;
-        margin: -50px auto 2rem;
+        margin: 0px auto 2rem;
         padding: 2rem;
         background: white;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         position: relative;
-    }
-
-    .recipe-hero {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
-    .hero-content h1 {
-        font-family: 'Merriweather', serif;
-        color: #333;
-        margin-bottom: 1rem;
-        font-size: 2.5rem;
-    }
-
-    .hero-content p {
-        color: #666;
-        font-size: 1.1rem;
     }
 
     .recipe-grid {
@@ -77,10 +204,10 @@ else
         height: 100%;
     }
 
-    .recipe-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
+        .recipe-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
 
     .recipe-image {
         position: relative;
@@ -88,12 +215,12 @@ else
         overflow: hidden;
     }
 
-    .recipe-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
+        .recipe-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
 
     .recipe-overlay {
         position: absolute;
@@ -127,94 +254,44 @@ else
         transition: all 0.3s ease;
     }
 
-    .view-recipe-btn:hover {
-        background: white;
-        color: var(--primary-color);
-    }
+        .view-recipe-btn:hover {
+            background: white;
+            color: var(--primary-color) !important;
+        }
 
     .recipe-content {
         padding: 1.5rem;
-        position: relative;
     }
 
-    .recipe-content h3 {
-        font-family: 'Merriweather', serif;
-        color: #333;
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-        line-height: 1.4;
-        height: 2.8em;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
+        .recipe-content h3 {
+            font-family: 'Merriweather', serif;
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            height: 2.8em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
 
-    .recipe-actions {
-        position: absolute;
-        bottom: 1rem;
-        right: 1rem;
-    }
-
-    .action-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: none;
+    .recipe-meta {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .remove-btn {
-        background: rgba(220, 53, 69, 0.9);
-    }
-
-    .remove-btn:hover {
-        background: #dc3545;
-        transform: scale(1.1);
-    }
-
-    .no-results {
-        text-align: center;
-        padding: 3rem 1rem;
-    }
-
-    .no-results i {
-        font-size: 3rem;
-        color: #dc3545;
-        margin-bottom: 1rem;
-    }
-
-    .no-results h2 {
-        color: #333;
-        margin-bottom: 1rem;
-    }
-
-    .no-results p {
+        justify-content: space-between;
         color: #666;
-        margin-bottom: 2rem;
+        font-size: 0.9rem;
     }
 
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.8rem 1.5rem;
-        background: var(--primary-color);
-        color: white;
-        text-decoration: none;
-        border-radius: 30px;
-        transition: all 0.3s ease;
-    }
+        .recipe-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    .back-button:hover {
-        background: var(--primary-color-dark);
-        transform: translateY(-2px);
-    }
+        .recipe-meta i {
+            color: var(--primary-color) !important;
+        }
 
     @@media (max-width: 768px) {
         .recipe-container {
@@ -227,5 +304,6 @@ else
             gap: 1.5rem;
         }
     }
-</style>
+
+    /* Keep your existing hero styles */
 </style>

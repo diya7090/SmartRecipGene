@@ -18,25 +18,9 @@
     @if (Model != null && Model.Items.Any())
     {
         <div class="recipe-grid">
-           @*  @foreach (var recipe in Model.Items)
-            {<div class="recipe-card">
-    <div class="recipe-image">
-        <img src="@recipe["image"]" alt="@recipe["title"]" />
-        @if (User.Identity.IsAuthenticated)
-        {
-           <div class="favorite-icon" onclick="toggleFavorite(@recipe["id"])">
-    <i id="fav-icon-@recipe["id"]" class="@((bool?)recipe["isFavorite"] == true ? "fas" : "far") fa-heart"></i>
-</div>
-        }
-        <div class="recipe-overlay">
-            <a href="@Url.Action("RecipeDetails", "Home", new { id = recipe["id"] })" class="view-recipe-btn">
-                <i class="fas fa-eye"></i> View Recipe
-            </a>
-        </div>
-    </div> *@
             @foreach (var recipe in Model.Items)
             {
-            <div class="recipe-card">
+                <div class="recipe-card">
                 <div class="recipe-image">
                     <img src="@recipe["image"]" alt="@recipe["title"]" />
                         @if (User.Identity.IsAuthenticated)
@@ -51,32 +35,14 @@
                         </a>
                     </div>
                 </div>
-    <div class="recipe-content">
-        <h3>@recipe["title"]</h3>
-        <div class="recipe-meta">
-            <span><i class="far fa-clock"></i> @recipe["readyInMinutes"] min</span>
-            <span><i class="fas fa-user-friends"></i> @recipe["servings"] servings</span>
-        </div>
-    </div>
-</div>
-                @* 
-                <div class="recipe-card">
-                    <div class="recipe-image">
-                        <img src="@recipe["image"]" alt="@recipe["title"]" />
-                        <div class="recipe-overlay">
-                            <a href="@Url.Action("RecipeDetails", "Home", new { id = recipe["id"] })" class="view-recipe-btn">
-                                <i class="fas fa-eye"></i> View Recipe
-                            </a>
-                        </div>
+                <div class="recipe-content">
+                    <h3>@recipe["title"]</h3>
+                    <div class="recipe-meta">
+                        <span><i class="far fa-clock"></i> @recipe["readyInMinutes"] min</span>
+                        <span><i class="fas fa-user-friends"></i> @recipe["servings"] servings</span>
                     </div>
-                    <div class="recipe-content">
-                        <h3>@recipe["title"]</h3>
-                        <div class="recipe-meta">
-                            <span><i class="far fa-clock"></i> @recipe["readyInMinutes"] min</span>
-                            <span><i class="fas fa-user-friends"></i> @recipe["servings"] servings</span>
-                        </div>
-                    </div>
-                </div> *@
+                </div>
+            </div>
             }
         </div>
         @if (Model.TotalPages > 1)
@@ -198,7 +164,7 @@
     }
     .recipe-container {
         max-width: 1200px;
-        margin: -50px auto 2rem;
+        margin: 0px auto 2rem;
         padding: 2rem;
         background: white;
         border-radius: 15px;

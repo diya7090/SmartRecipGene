@@ -2,6 +2,7 @@
 @Html.AntiForgeryToken()
 
                 @model IEnumerable<SmartRecipGene.Models.Recipe>
+<div class="container">
 
 <h2 class="mb-4">Recipe Management Dashboard</h2>
 
@@ -46,7 +47,6 @@
     <div class="col-md-6">
         <div class="search-container">
             <div class="search-box">
-                <i class="fas fa-search search-icon"></i>
                 <input type="text" id="searchInput" class="form-control" placeholder="Search recipes..." autocomplete="off" />
                 <div id="searchSuggestions" class="suggestions-box"></div>
             </div>
@@ -126,6 +126,7 @@
             }
         </tbody>
     </table>
+</div>
 </div>
 @* <style>
     /* Recipe Cards Layout - Addition to existing CSS */
@@ -1032,8 +1033,6 @@
     .search-box {
         background: var(--white);
         border-radius: 12px;
-        padding: 0.75rem;
-        box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
     }
 
     #searchInput {

@@ -15,6 +15,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Charm&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
 
     @await RenderSectionAsync("Styles", required: false)
 
@@ -131,18 +135,34 @@
 
                 <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
                     <ul class="navbar-nav mx-auto">
+                        @if (User.IsInRole("Admin"))
+                    {
+                       
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Profiles</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="AdminRecipe" asp-action="Index">Recipes</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="AllReviews">Reviews</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="ContactMessages">Contacts</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="OrderManagement">Orders</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blogs</a>
+                            </li>
+                           
+                        
+                    }
+                    else {
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Ingredients">Find Recipes by Ingredients</a>
                         </li>
-                        <li class="nav-item">
+                       @*  <li class="nav-item">
                             <a class="nav-link" asp-controller="Desserts" asp-action="Index">Desserts</a>
-                        </li>
+                        </li> *@
                         <li class="nav-item">
                            
-                            <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog Managemnet</a>
+                            <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blogs</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="About">About Us</a>
@@ -150,7 +170,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a>
                         </li>
+                        }
                     </ul>
+                    
 
                     <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)
@@ -167,55 +189,24 @@
                                 <span class="nav-link">Welcome, @User.Identity.Name!</span>
                             </li>
 
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-user-cog"></i>
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin Profile</a></li>
-                                        <li><a class="dropdown-item" asp-controller="AdminRecipe" asp-action="Index">Recipes Management</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="AllReviews">View All Reviews</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="ContactMessages">Contact Messages</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="OrderManagement">Order Details</a></li>
-
-@*                                             class="dropdown-item"<a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blog</a>
- *@                                        <li>
-                                            <a class="dropdown-item" asp-controller="BlogPost" asp-action="Index">Blog Managemnet</a>
-                                        </li>
-                                        
-                                            
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" asp-controller="UserProfile" asp-action="Index">Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="About">About Us</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Home" asp-action="MyOrders">My Orders</a> </li>
                                        
-                                        <li>
-                                            <form asp-area="Identity" asp-page="/Account/Logout" method="post">
-                                                <button type="submit" class="dropdown-item">Logout</button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-user"></i>
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                                        <li><a class="dropdown-item" asp-controller="UserProfile" asp-action="Index">Profile</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="About">About Us</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Home" asp-action="MyOrders">My Orders</a> </li>
-                                       
-                                        <li>
-                                            <form asp-area="Identity" asp-page="/Account/Logout" method="post">
-                                                <button type="submit" class="dropdown-item">Logout</button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </li>
-                            }
+                                    <li>
+                                        <form asp-area="Identity" asp-page="/Account/Logout" method="post">
+                                            <button type="submit" class="dropdown-item">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                            
                         }
                         else
                         {

@@ -267,6 +267,13 @@
                                 </div>
                             </div>
 
+                            <!-- Razorpay Payment Button (hidden by default) -->
+                            <div id="razorpay-section" style="display:none;">
+                                <button type="button" id="rzp-button1" class="btn btn-primary btn-lg w-100 mb-2">
+                                    <i class="fas fa-credit-card me-2"></i> Pay with Razorpay
+                                </button>
+                            </div>
+
                             <button type="submit" class="btn btn-lg w-100 text-white fw-bold" style="background-color: #e74c3c;">
                                 <i class="fas fa-check-circle me-2"></i> Confirm & Place Order
                             </button>
@@ -337,4 +344,45 @@
             box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
         }
     </style>
+}
+
+@section Scripts {
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Show/hide Razorpay button based on payment method
+        $('input[name="paymentMethod"]').change(function () {
+            if ($('#onlinePayment').is(':checked')) {
+                $('#razorpay-section').show();
+            } else {
+                $('#razorpay-section').hide();
+            }
+        });
+
+        // Razorpay options
+        var options = {
+            "key": "rzp_test_6Wxdnw2HPXVKnn", // Replace with your Razorpay Key ID
+            "amount": @((int)((Model.Item1.Sum(r => (decimal)((dynamic)r).TotalPrice) + 40 + (Model.Item1.Sum(r => (decimal)((dynamic)r).TotalPrice) * 0.05m)) * 100)), // Amount in paise
+            "currency": "INR",
+            "name": "ChefSync",
+            "description": "Order Payment",
+            "handler": function (response) {
+                // TODO: Send response.razorpay_payment_id to your server for verification and order placement
+                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                // Optionally, submit a hidden form or redirect to a success page
+            },
+            "prefill": {
+                "name": "",
+                "email": "",
+                "contact": ""
+            },
+            "theme": {
+                "color": "#e74c3c"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button1').onclick = function (e) {
+            rzp1.open();
+            e.preventDefault();
+        };
+    </script>
 }
