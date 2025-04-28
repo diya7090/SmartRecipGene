@@ -2,7 +2,7 @@
     ViewData["Title"] = "About Us";
 }
 
-<style>
+@* <style>
     .about-section {
         max-width: 1200px;
         margin: 40px auto;
@@ -85,9 +85,701 @@
             grid-template-columns: 1fr;
         }
     }
-</style>
+</style> *@
 
 <div class="about-section">
+    <!-- Hero Section with Background Food Image -->
+    <div class="hero-banner">
+        <div class="welcome-text">Welcome to ChefSync</div>
+        <div class="hero-content">
+            <h1>Welcome to ChefSync</h1>
+            <p class="lead">Discover the Art of Smart Cooking</p>
+            <a href="#explore" class="btn">Explore Now</a>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll Down</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="container">
+        <div class="mission-section fade-in">
+            <div class="blob blob-1"></div>
+            <h2 class="section-title">Our Mission</h2>
+            <p class="lead text-center">
+                At ChefSync, we're passionate about making cooking accessible, enjoyable, and innovative for everyone.
+                Our platform combines traditional recipes with modern technology to create a unique culinary experience.
+            </p>
+        </div>
+
+        <!-- Feature Grid Section -->
+        <div class="feature-grid" id="explore">
+            <div class="feature-card fade-in fade-in-1">
+                <div class="feature-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h3>Smart Recipes</h3>
+                <p>Discover AI-powered recipe recommendations tailored to your preferences and dietary needs.</p>
+            </div>
+            <div class="feature-card fade-in fade-in-2">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Community</h3>
+                <p>Join our growing community of food enthusiasts sharing recipes and cooking tips.</p>
+            </div>
+            <div class="feature-card fade-in fade-in-3">
+                <div class="feature-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3>Innovation</h3>
+                <p>Experience cutting-edge features that make meal planning and cooking easier than ever.</p>
+            </div>
+        </div>
+
+        <!-- Why Choose Us Section -->
+        <div class="team-section">
+            <div class="blob blob-2"></div>
+            <div class="food-accent food-accent-1"></div>
+            <div class="food-accent food-accent-2"></div>
+            <h2 class="section-title fade-in">Why Choose Us?</h2>
+            <div class="row">
+                <div class="col-md-8 mx-auto fade-in">
+                    <p class="lead">
+                        We combine the power of artificial intelligence with traditional cooking wisdom to create
+                        a unique platform that helps you discover, create, and share amazing recipes. Our smart
+                        recipe generation system ensures that you always find the perfect dish for any occasion.
+                    </p>
+                    <div class="commitment-list fade-in">
+                        <h4>Our Commitment</h4>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success"></i> Quality-tested recipes</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Regular updates and new features</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Community-driven improvements</li>
+                            <li><i class="fas fa-check-circle text-success"></i> 24/7 recipe accessibility</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* ChefSync Trendy About Us Page CSS */
+
+/* Import Fonts */
+@@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Base Styles */
+:root {
+  --primary: #ff7a00;
+  --primary-light: #ff9a40;
+  --secondary: #2a3990;
+  --text-dark: #1c1c1c;
+  --text-light: #666666;
+  --background: #faf7f2;
+  --white: #ffffff;
+  --black: #000000;
+  --gray-light: #f3f3f3;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background);
+  color: var(--text-dark);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 4.5rem;
+  font-weight: 900;
+}
+
+h2 {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  margin-bottom: 1.5rem;
+}
+
+.lead {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-light);
+}
+
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Hero Section with Food Background */
+.hero-banner {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--white);
+  overflow: hidden;
+  margin-bottom: 6rem;
+}
+
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
+              url('/api/placeholder/1920/1080') no-repeat center center;
+  background-size: cover;
+  z-index: -1;
+  transform: scale(1.05);
+  animation: zoom-background 20s infinite alternate ease-in-out;
+}
+
+@@keyframes zoom-background {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.hero-content {
+  max-width: 900px;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-content h1 {
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fade-in 1s ease 0.2s forwards;
+}
+
+.hero-content p.lead {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  color: var(--white);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fade-in 1s ease 0.6s forwards;
+}
+
+.welcome-text {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Mission Section */
+.mission-section {
+  position: relative;
+  padding: 6rem 0;
+  text-align: center;
+  background-color: var(--white);
+  border-radius: 20px;
+  box-shadow: var(--box-shadow);
+  margin-bottom: 6rem;
+  overflow: hidden;
+}
+
+.mission-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.section-title {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 2.5rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -15px;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 5px;
+  background-color: var(--primary);
+  border-radius: 5px;
+}
+
+/* Feature Cards with Trendy Design */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  margin: 5rem 0;
+  padding: 0 1rem;
+}
+
+.feature-card {
+  position: relative;
+  background-color: var(--white);
+  border-radius: 15px;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: all 0.4s ease;
+  box-shadow: var(--box-shadow);
+  z-index: 1;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: linear-gradient(to bottom, var(--primary-light) 0%, transparent 100%);
+  opacity: 0.1;
+  transition: height 0.4s ease;
+  z-index: -1;
+}
+
+.feature-card:hover {
+  transform: translateY(-15px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card:hover::before {
+  height: 100%;
+}
+
+.feature-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary);
+  color: var(--white);
+  font-size: 2rem;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1);
+  background-color: var(--secondary);
+  box-shadow: 0 10px 25px rgba(42, 57, 144, 0.3);
+}
+
+.feature-card h3 {
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+.feature-card:hover h3 {
+  color: var(--primary);
+}
+
+.feature-card p {
+  color: var(--text-light);
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+/* Team/Why Choose Us Section with Modern Style */
+.team-section {
+  position: relative;
+  background-color: var(--white);
+  padding: 6rem 3rem;
+  border-radius: 20px;
+  box-shadow: var(--box-shadow);
+  margin: 6rem 0;
+  overflow: hidden;
+}
+
+.team-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 100%;
+  background-color: var(--gray-light);
+  z-index: 0;
+  clip-path: polygon(0 0, 100% 0, 80% 100%, 0 100%);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.col-md-8 {
+  width: 66.666667%;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mt-4 {
+  margin-top: 2.5rem;
+}
+
+.commitment-list {
+  background-color: var(--white);
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-top: 3rem;
+}
+
+.list-unstyled {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.list-unstyled li {
+  margin-bottom: 1.2rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.list-unstyled li:hover {
+  transform: translateX(10px);
+}
+
+.text-success {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+  border-radius: 50%;
+  margin-right: 15px;
+  font-size: 0.9rem;
+}
+
+/* Decorative Elements */
+.blob {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background-color: rgba(255, 122, 0, 0.05);
+  border-radius: 50%;
+  filter: blur(40px);
+  z-index: 0;
+}
+
+.blob-1 {
+  top: -150px;
+  right: -150px;
+}
+
+.blob-2 {
+  bottom: -150px;
+  left: -150px;
+}
+
+/* Food-themed Decorative Accents */
+.food-accent {
+  position: absolute;
+  opacity: 0.07;
+  transform: rotate(20deg);
+  z-index: 0;
+}
+
+.food-accent-1 {
+  top: 10%;
+  right: 5%;
+  width: 150px;
+  height: 150px;
+}
+
+.food-accent-2 {
+  bottom: 10%;
+  left: 5%;
+  width: 120px;
+  height: 120px;
+}
+
+/* Trendy Button Styles */
+.btn {
+  display: inline-block;
+  padding: 15px 40px;
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 10px 20px rgba(255, 122, 0, 0.2);
+  margin-top: 1.5rem;
+}
+
+.btn:hover {
+  background-color: var(--secondary);
+  box-shadow: 0 15px 25px rgba(42, 57, 144, 0.3);
+  transform: translateY(-5px);
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--white);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-indicator:hover {
+  opacity: 1;
+}
+
+.scroll-arrow {
+  width: 30px;
+  height: 30px;
+  margin-top: 10px;
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  position: relative;
+  animation: bounce 2s infinite;
+}
+
+.scroll-arrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--white);
+  border-bottom: 2px solid var(--white);
+}
+
+@@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Animations */
+@@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fade-in 1s ease forwards;
+}
+
+.fade-in-1 {
+  animation-delay: 0.2s;
+}
+
+.fade-in-2 {
+  animation-delay: 0.4s;
+}
+
+.fade-in-3 {
+  animation-delay: 0.6s;
+}
+
+/* Responsive Design */
+@@media (max-width: 1200px) {
+  h1 {
+    font-size: 3.5rem;
+  }
+  
+  h2 {
+    font-size: 3rem;
+  }
+  
+  .welcome-text {
+    font-size: 7rem;
+  }
+}
+
+@@media (max-width: 992px) {
+  h1 {
+    font-size: 3rem;
+  }
+  
+  h2 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-content p.lead {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-text {
+    font-size: 5rem;
+  }
+  
+  .col-md-8 {
+    width: 80%;
+  }
+}
+
+@@media (max-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  .hero-banner {
+    height: 80vh;
+  }
+  
+  .hero-content p.lead {
+    font-size: 1.2rem;
+  }
+  
+  .welcome-text {
+    font-size: 3.5rem;
+    top: 25%;
+  }
+  
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .col-md-8 {
+    width: 100%;
+  }
+  
+  .team-section::before {
+    display: none;
+  }
+  
+  .team-section {
+    padding: 4rem 1.5rem;
+  }
+}
+
+@@media (max-width: 576px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+  }
+  
+  .hero-content p.lead {
+    font-size: 1rem;
+  }
+  
+  .welcome-text {
+    font-size: 2.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .mission-section, .team-section {
+    padding: 3rem 1rem;
+  }
+  
+  .btn {
+    padding: 12px 30px;
+    font-size: 0.9rem;
+  }
+}
+</style>
+@* <div class="about-section">
     <div class="hero-banner">
         <div class="hero-content">
             <h1>Welcome to ChefSync </h1>
@@ -142,4 +834,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@

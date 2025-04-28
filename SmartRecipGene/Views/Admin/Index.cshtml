@@ -1,8 +1,8 @@
 ﻿@using SmartRecipGene.Models
 @model List<ApplicationUser>
 
-    <div class="container" >
-<h2>User Management</h2>
+    <div class=" container profile-container" >
+<h2 class="text-center">User Management</h2>
 
 <table class="table">
     <thead>
@@ -15,20 +15,137 @@
     <tbody>
         @foreach (var user in Model)
         {
-            <tr>
-                <td>@user.Email</td>
-                <td>
-                    @(user.EmailConfirmed ? "Approved" : "Pending")
-                </td>
-                <td>
-                    @if (!user.EmailConfirmed)
-                    {
-                        <a asp-action="Approve" asp-route-id="@user.Id" class="btn btn-success">Approve</a>
-                    }
-                    <a asp-action="Suspend" asp-route-id="@user.Id" class="btn btn-danger">Suspend</a>
-                </td>
-            </tr>
+                <tr>
+                    <td data-label="Email">@user.Email</td>
+                    <td data-label="Status">@(user.EmailConfirmed ? "Approved" : "Pending")</td>
+                    <td data-label="Actions">
+                        @if (!user.EmailConfirmed)
+                        {
+                            <a asp-action="Approve" asp-route-id="@user.Id" class="btn btn-success">Approve</a>
+                        }
+                        <a asp-action="Suspend" asp-route-id="@user.Id" class="btn btn-danger">Suspend</a>
+                    </td>
+                </tr>
+
         }
     </tbody>
 </table>
 </div>
+<style>
+    .profile-container {
+/*   max-width: 900px;
+ */  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px 24px;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 24px;
+  letter-spacing: 0.5px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #f9fafb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.table thead {
+  background: #2563eb;
+  color: #fff;
+}
+
+.table th, .table td {
+  padding: 16px 14px;
+  text-align: left;
+  font-size: 1rem;
+}
+
+.table th {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+  background: #e0e7ff;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+  margin-right: 8px;
+}
+
+.btn-success {
+  background: #22c55e;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background: #16a34a;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+@@media (max-width: 700px) {
+  .container {
+    padding: 16px 4px;
+  }
+  .table, .table thead, .table tbody, .table tr, .table th, .table td {
+    display: block;
+    width: 100%;
+  }
+  .table thead {
+    display: none;
+  }
+  .table tr {
+    margin-bottom: 18px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .table td {
+    padding: 12px 10px;
+    text-align: right;
+    position: relative;
+  }
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    top: 12px;
+    font-weight: 600;
+    color: #2563eb;
+    text-align: left;
+  }
+}
+
+</style>

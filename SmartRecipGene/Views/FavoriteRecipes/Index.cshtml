@@ -44,58 +44,371 @@ else
                     </div>
                 }
             </div>
-    @*         @if (Model.TotalPages > 1)
-            {
-                <nav aria-label="Recipe pagination">
-                    <ul class="pagination justify-content-center">
-                        @if (Model.HasPreviousPage)
-                        {
-                            <li class="page-item">
-                                <a class="page-link"
-                                   asp-action="GetRecipes"
-                                   asp-route-page="@(Model.PageIndex - 1)"
-                                   asp-route-ingredients="@ViewBag.Ingredients">Previous</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="page-item disabled">
-                                <span class="page-link">Previous</span>
-                            </li>
-                        }
-
-                        <li class="page-item active">
-                            <span class="page-link">
-                                Page @Model.PageIndex of @Model.TotalPages
-                            </span>
-                        </li>
-
-                        @if (Model.HasNextPage)
-                        {
-                            <li class="page-item">
-                                <a class="page-link"
-                                   asp-action="GetRecipes"
-                                   asp-route-page="@(Model.PageIndex + 1)"
-                                   asp-route-ingredients="@ViewBag.Ingredients">Next</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="page-item disabled">
-                                <span class="page-link">Next</span>
-                            </li>
-                        }
-                    </ul>
-                </nav>
-            } *@
+   
         }
     </div>
 
     
 }
-
-
 <style>
+    /* ChefSync Favorite Recipes Page CSS */
+
+/* Import Fonts */
+@@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Base Styles */
+:root {
+  --primary: #ff7a00;
+  --primary-light: #ff9a40;
+  --primary-dark: #e86d00;
+  --secondary: #2a3990;
+  --text-dark: #1c1c1c;
+  --text-light: #666666;
+  --background: #faf7f2;
+  --white: #ffffff;
+  --black: #000000;
+  --gray-light: #f3f3f3;
+  --danger: #e74c3c;
+  --danger-dark: #c0392b;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background);
+  color: var(--text-dark);
+  line-height: 1.7;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-family: 'Playfair Display', serif;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+p {
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}
+
+/* Recipe Container */
+.recipe-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Hero Section */
+.recipe-hero {
+  position: relative;
+  height: 300px;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+              url('/api/placeholder/1200/600') no-repeat center center;
+  background-size: cover;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 50px;
+  border-radius: 20px;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.recipe-hero::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 122, 0, 0.2);
+  mix-blend-mode: overlay;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 0 20px;
+  max-width: 800px;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* No Favorites Message */
+.recipe-container > p {
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--text-light);
+  margin: 6rem 0;
+  padding: 3rem;
+  background-color: var(--white);
+  border-radius: 15px;
+  box-shadow: var(--box-shadow);
+}
+
+/* Recipe Grid */
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+/* Recipe Card */
+.recipe-card {
+  background-color: var(--white);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  transition: var(--transition);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.recipe-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-card:hover h3 {
+  color: var(--primary);
+}
+
+/* Recipe Image */
+.recipe-image {
+  position: relative;
+  overflow: hidden;
+  padding-top: 65%; /* Aspect ratio 16:10 */
+}
+
+.recipe-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.recipe-card:hover .recipe-image img {
+  transform: scale(1.05);
+}
+
+/* Recipe Overlay */
+.recipe-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.recipe-card:hover .recipe-overlay {
+  opacity: 1;
+}
+
+/* View Recipe Button */
+.view-recipe-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 25px;
+  background-color: var(--primary);
+  color: var(--white);
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: var(--transition);
+  transform: translateY(20px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.view-recipe-btn i {
+  margin-right: 8px;
+}
+
+.recipe-card:hover .view-recipe-btn {
+  transform: translateY(0);
+}
+
+.view-recipe-btn:hover {
+  background-color: var(--white);
+  color: var(--primary);
+}
+
+/* Recipe Content */
+.recipe-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+/* Remove Button */
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 15px;
+  margin-top: 10px;
+  background-color: var(--danger);
+  color: var(--white);
+  border: none;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-danger:hover {
+  background-color: var(--danger-dark);
+}
+
+/* Animations */
+@@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recipe-hero, .recipe-card {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.recipe-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.recipe-card:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.recipe-card:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.recipe-card:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* Responsive Design */
+@@media (max-width: 992px) {
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  
+  .recipe-hero {
+    height: 250px;
+  }
+  
+  h1 {
+    font-size: 3rem;
+  }
+}
+
+@@media (max-width: 768px) {
+  .recipe-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  
+  .recipe-hero {
+    height: 200px;
+    margin-bottom: 30px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+  }
+}
+
+@@media (max-width: 576px) {
+  .recipe-grid {
+    grid-template-columns: 1fr;
+    max-width: 350px;
+    margin: 0 auto 40px;
+  }
+  
+  .recipe-hero {
+    height: 180px;
+    border-radius: 15px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .recipe-container > p {
+    margin: 3rem 0;
+    padding: 2rem;
+  }
+}
+
+/* Empty State Styling */
+.recipe-container > p {
+  position: relative;
+  overflow: hidden;
+}
+
+.recipe-container > p::before {
+  content: '🍽️';
+  font-size: 5rem;
+  position: absolute;
+  opacity: 0.1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+
+
+@* <style>
     .favorite-icon {
         position: absolute;
         top: 10px;
@@ -306,4 +619,4 @@ else
     }
 
     /* Keep your existing hero styles */
-</style>
+</style> *@

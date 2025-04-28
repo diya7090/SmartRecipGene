@@ -1,8 +1,10 @@
 @* @model List<SmartRecipGene.Models.Order> *@
-    @model IEnumerable<dynamic>
+@*     @model IEnumerable<dynamic>
 @{
     ViewBag.Title = "My Orders";
 }
+
+
 
 <div class="container mt-5">
     <h2 class="mb-4">My Orders</h2>
@@ -53,7 +55,7 @@
                 {
                     <tr>
                         <td>
-                                            <img src="@item.RecipeImg" alt="Recipe Image" style="width:60px;height:60px;object-fit:cover;" />
+                          <img src="@item.RecipeImg" alt="Recipe Image" style="width:60px;height:60px;object-fit:cover;" />
                                         </td>
                                      
                                         <td>@item.RecipeTitle</td>
@@ -69,31 +71,394 @@
     </tr>
 }
 
-       @*  <!-- @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.OrderNumber</td>
-                <td>@order.Status</td>
-                <td>₹@order.TotalAmount.ToString("F2")</td>
-                <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
-                <td>
-                    @if (order.Status == "Pending" || order.Status == "Processing")
-                    {
-                        <button class="btn btn-danger btn-sm cancel-order-btn" data-order-id="@order.Id">Cancel</button>
-                    }
-                    else
-                    {
-                        <span class="text-muted">N/A</span>
-                    }
-                </td>
-            </tr>
-        } --> *@
         </tbody>
     </table>
 </div>
 
+<style>
+    /* Modern Variables */
+:root {
+  --primary-color: #4a6fdc;
+  --primary-hover: #3a5fc9;
+  --secondary-color: #f8f9fa;
+  --accent-color: #34c759;
+  --danger-color: #ff3b30;
+  --danger-hover: #e02e23;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-radius: 10px;
+  --border-radius-sm: 6px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --transition: all 0.3s ease;
+}
+
+/* Container */
+.container {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Page Title */
+h2 {
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), #6c8dff);
+  border-radius: 2px;
+}
+
+/* Main Table */
+.table {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: none;
+  margin-bottom: 40px;
+}
+
+.table-bordered {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-dark {
+  background: linear-gradient(90deg, var(--primary-color), #6c8dff);
+  border: none;
+}
+
+.table-dark th {
+  border: none;
+  padding: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.table-dark th::after {
+  content: "⇅";
+  opacity: 0.7;
+  margin-left: 6px;
+  font-size: 0.85em;
+}
+
+.table-dark th.sort-asc::after {
+  content: "↑";
+  opacity: 1;
+}
+
+.table-dark th.sort-desc::after {
+  content: "↓";
+  opacity: 1;
+}
+
+/* Table Body */
+tbody tr:nth-of-type(odd) > * {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+tbody > tr:first-child > td {
+  border-top: none;
+}
+
+tbody > tr > td {
+  padding: 16px;
+  vertical-align: middle;
+  border-color: rgba(0, 0, 0, 0.05);
+  font-weight: 500;
+}
+
+/* Order Status Styles */
+tbody td:nth-child(2) {
+  position: relative;
+  padding-left: 16px;
+}
+
+tbody td:nth-child(2)::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* Status Colors */
+tbody tr td:nth-child(2):contains("Pending")::before {
+  background-color: #ffc107;
+}
+
+tbody tr td:nth-child(2):contains("Processing")::before {
+  background-color: var(--primary-color);
+}
+
+tbody tr td:nth-child(2):contains("Delivered")::before {
+  background-color: var(--accent-color);
+}
+
+tbody tr td:nth-child(2):contains("Cancelled")::before {
+  background-color: var(--danger-color);
+}
+
+/* Order Date */
+tbody td:nth-child(4) {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+
+/* Action Buttons */
+.btn-danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition);
+  padding: 6px 12px;
+}
+
+.btn-danger:hover {
+  background-color: var(--danger-hover);
+  border-color: var(--danger-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 59, 48, 0.2);
+}
+
+.text-muted {
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+/* Order Details Nested Table */
+.table-sm {
+  margin-bottom: 0;
+  background-color: #f9fafb;
+  border-top: none;
+}
+
+.table-sm thead {
+  background-color: rgba(74, 111, 220, 0.05);
+}
+
+.table-sm th {
+  font-weight: 600;
+  font-size: 0.9em;
+  padding: 12px;
+  color: var(--text-primary);
+}
+
+.table-sm td {
+  padding: 12px;
+  vertical-align: middle;
+  font-size: 0.95em;
+}
+
+/* Recipe Image */
+.table-sm td img {
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.table-sm td img:hover {
+  transform: scale(1.05);
+}
+
+/* Highlight Current Order */
+tbody > tr.highlighted-row > td {
+  background-color: rgba(74, 111, 220, 0.05);
+}
+
+/* Expand/Collapse Order Items */
+tbody > tr:nth-child(odd) {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+tbody > tr:nth-child(odd):hover {
+  background-color: rgba(74, 111, 220, 0.05);
+}
+
+tbody > tr:nth-child(even) {
+  display: none;
+}
+
+tbody > tr:nth-child(even).expanded {
+  display: table-row;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Pricing Info */
+tbody td:nth-child(3) {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* Animations */
+@@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(74, 111, 220, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(74, 111, 220, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 111, 220, 0); }
+}
+
+/* No Orders Message */
+.no-orders-message {
+  text-align: center;
+  padding: 40px;
+  background-color: var(--secondary-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.no-orders-message i {
+  font-size: 3em;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.no-orders-message p {
+  font-size: 1.2em;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* Order Detail Rows Animation */
+tbody > tr:nth-child(even).expanded td {
+  animation: slideDown 0.5s ease;
+}
+
+@@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Sorting Animation */
+.table th.sorting:after {
+  animation: rotateSort 0.5s ease;
+}
+
+@@keyframes rotateSort {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
 @section Scripts {
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Toggle order details
+            document.querySelectorAll('tbody > tr:nth-child(odd)').forEach(row => {
+                row.addEventListener('click', function () {
+                    const detailRow = this.nextElementSibling;
+                    detailRow.classList.toggle('expanded');
+
+                    // Reset other rows
+                    document.querySelectorAll('tbody > tr:nth-child(odd)').forEach(r => {
+                        if (r !== this) r.classList.remove('highlighted-row');
+                    });
+
+                    this.classList.toggle('highlighted-row');
+                });
+            });
+
+            // Sort by date (default)
+            sortTableByDate();
+
+            // Add sort functionality
+            document.querySelectorAll('thead th').forEach((th, index) => {
+                th.addEventListener('click', function () {
+                    sortTable(index);
+
+                    // Reset other headers
+                    document.querySelectorAll('thead th').forEach(header => {
+                        if (header !== this) {
+                            header.classList.remove('sort-asc', 'sort-desc', 'sorting');
+                        }
+                    });
+
+                    // Toggle sort direction
+                    if (this.classList.contains('sort-asc')) {
+                        this.classList.remove('sort-asc');
+                        this.classList.add('sort-desc');
+                    } else {
+                        this.classList.remove('sort-desc');
+                        this.classList.add('sort-asc', 'sorting');
+                    }
+                });
+            });
+        });
+
+        // Function to sort table by date (latest first)
+        function sortTableByDate() {
+            const table = document.querySelector('table');
+            const rows = Array.from(table.querySelectorAll('tbody > tr:nth-child(odd)'));
+
+            rows.sort((a, b) => {
+                const dateA = new Date(a.cells[3].textContent);
+                const dateB = new Date(b.cells[3].textContent);
+                return dateB - dateA; // newest first
+            });
+
+            // Rearrange table rows
+            rows.forEach(row => {
+                const detailRow = row.nextElementSibling;
+                table.querySelector('tbody').appendChild(row);
+                table.querySelector('tbody').appendChild(detailRow);
+            });
+
+            // Highlight date column as sorted
+            document.querySelector('thead th:nth-child(4)').classList.add('sort-desc');
+        }
+
+        // General sort function
+        function sortTable(columnIndex) {
+            const table = document.querySelector('table');
+            const rows = Array.from(table.querySelectorAll('tbody > tr:nth-child(odd)'));
+            const isAscending = !document.querySelector(`thead th:nth-child(${columnIndex + 1})`).classList.contains('sort-asc');
+
+            rows.sort((a, b) => {
+                let valueA = a.cells[columnIndex].textContent.trim();
+                let valueB = b.cells[columnIndex].textContent.trim();
+
+                // Special handling for date or numerical values
+                if (columnIndex === 3) { // Date column
+                    valueA = new Date(valueA);
+                    valueB = new Date(valueB);
+                } else if (columnIndex === 2) { // Total column (remove currency symbol)
+                    valueA = parseFloat(valueA.replace(/[₹,]/g, ''));
+                    valueB = parseFloat(valueB.replace(/[₹,]/g, ''));
+                }
+
+                if (valueA < valueB) return isAscending ? -1 : 1;
+                if (valueA > valueB) return isAscending ? 1 : -1;
+                return 0;
+            });
+
+            // Rearrange table rows
+            rows.forEach(row => {
+                const detailRow = row.nextElementSibling;
+                table.querySelector('tbody').appendChild(row);
+                table.querySelector('tbody').appendChild(detailRow);
+            });
+        }
         $(document).ready(function() {
             $('.cancel-order-btn').click(function() {
                 var orderId = $(this).data('order-id');
@@ -109,4 +474,724 @@
             });
         });
     </script>
+} *@
+
+  @model IEnumerable<dynamic>
+@{
+    ViewBag.Title = "My Orders";
 }
+
+<div class="container">
+    <h2>My Orders</h2>
+
+    <!-- Filter and Sort Controls -->
+    <div class="filter-controls">
+        <div class="filter-group">
+            <span class="filter-label">Filter:</span>
+            <div class="status-filters">
+                <button class="status-filter active" data-status="all">All</button>
+                <button class="status-filter" data-status="pending">Pending</button>
+                <button class="status-filter" data-status="processing">Processing</button>
+                <button class="status-filter" data-status="delivered">Delivered</button>
+                <button class="status-filter" data-status="cancelled">Cancelled</button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <span class="filter-label">Sort by:</span>
+            <select class="sort-control">
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="total-desc">Price: High to Low</option>
+                <option value="total-asc">Price: Low to High</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Orders Grid -->
+    <div class="orders-grid">
+        @foreach (var order in Model)
+        {
+            <!-- Order Card -->
+            <div class="order-card" data-order-id="@order.Id" data-status="@order.Status.ToLower()" data-date="@order.OrderDate" data-total="@order.TotalAmount">
+                <div class="order-header">
+                    <div class="order-status status-@order.Status.ToLower()">@order.Status</div>
+                    <div class="order-number">Order #@order.OrderNumber</div>
+                    <div class="order-date">@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</div>
+                    <div class="order-total">₹@order.TotalAmount.ToString("F2")</div>
+                </div>
+
+                <div class="order-actions">
+                    @if (order.Status == "Pending" || order.Status == "Processing")
+                    {
+                        <button class="btn-cancel" data-order-id="@order.Id">Cancel Order</button>
+                    }
+                    else
+                    {
+                        <span></span>
+                    }
+
+                    <button class="btn-details">
+                        <span>View Details</span>
+                        <span class="arrow">↓</span>
+                    </button>
+                </div>
+
+                <div class="order-items">
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <div class="order-item">
+                            <img src="@item.RecipeImg" alt="@item.RecipeTitle" class="item-image">
+                            <div class="item-details">
+                                <div class="item-title">@item.RecipeTitle</div>
+                                <div class="item-meta">
+                                    <span>Servings: @item.Servings</span>
+                                    <span>Price per serving: ₹@item.PricePerServing.ToString("F2")</span>
+                                </div>
+                            </div>
+                            <div class="item-price">₹@item.TotalPrice.ToString("F2")</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- No Orders Message (shown if Model is empty) -->
+    @if (!Model.Any())
+    {
+        <div class="no-orders-message">
+            <div class="no-orders-icon">📦</div>
+            <p class="no-orders-text">You haven't placed any orders yet.</p>
+            <button class="btn-shop">Browse Recipes</button>
+        </div>
+    }
+
+    <!-- Cancel Order Modal -->
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Cancel Order</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-text">Are you sure you want to cancel <span id="modal-order-number"></span>? This action cannot be undone.</p>
+                <div class="modal-actions">
+                    <button class="btn-details modal-close">No, Keep Order</button>
+                    <button class="btn-cancel" id="confirm-cancel">Yes, Cancel Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    :root {
+  --primary-color: #4a6fdc;
+  --primary-hover: #3a5fc9;
+  --secondary-color: #f8f9fa;
+  --accent-color: #34c759;
+  --danger-color: #ff3b30;
+  --danger-hover: #e02e23;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-radius: 10px;
+  --border-radius-sm: 6px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --transition: all 0.3s ease;
+  --pending-color: #ffc107;
+  --processing-color: #4a6fdc;
+  --delivered-color: #34c759;
+  --cancelled-color: #ff3b30;
+}
+
+/* Container */
+.container {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Page Title */
+h2 {
+  font-weight: 700;
+  color: var(--text-primary);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+}
+
+h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), #6c8dff);
+  border-radius: 2px;
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.status-filters {
+  display: flex;
+  gap: 10px;
+}
+
+.status-filter {
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  background-color: var(--secondary-color);
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+
+.status-filter:hover {
+  background-color: rgba(74, 111, 220, 0.1);
+}
+
+.status-filter.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.sort-control {
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.sort-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(74, 111, 220, 0.2);
+}
+
+/* Cards Grid */
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+/* Order Card */
+.order-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition);
+  cursor: pointer;
+  position: relative;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.order-status {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.order-status::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-pending {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: var(--pending-color);
+}
+
+.status-pending::before {
+  background-color: var(--pending-color);
+}
+
+.status-processing {
+  background-color: rgba(74, 111, 220, 0.1);
+  color: var(--processing-color);
+}
+
+.status-processing::before {
+  background-color: var(--processing-color);
+}
+
+.status-delivered {
+  background-color: rgba(52, 199, 89, 0.1);
+  color: var(--delivered-color);
+}
+
+.status-delivered::before {
+  background-color: var(--delivered-color);
+}
+
+.status-cancelled {
+  background-color: rgba(255, 59, 48, 0.1);
+  color: var(--cancelled-color);
+}
+
+.status-cancelled::before {
+  background-color: var(--cancelled-color);
+}
+
+.order-number {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.order-date {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
+.order-total {
+  font-weight: 700;
+  font-size: 1.3em;
+  color: var(--primary-color);
+  margin-top: 10px;
+}
+
+.order-body {
+  padding: 20px;
+}
+
+.order-actions {
+  padding: 15px 20px;
+  background-color: var(--secondary-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-cancel {
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-cancel:hover {
+  background-color: var(--danger-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 59, 48, 0.2);
+}
+
+.btn-details {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-details:hover {
+  background-color: rgba(74, 111, 220, 0.05);
+  transform: translateY(-2px);
+}
+
+.btn-details .arrow {
+  transition: var(--transition);
+}
+
+.btn-details.expanded .arrow {
+  transform: rotate(180deg);
+}
+
+/* Order Items */
+.order-items {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+  background-color: #f9fafb;
+}
+
+.order-items.expanded {
+  max-height: 1000px;
+}
+
+.order-item {
+  display: flex;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  align-items: center;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.item-image {
+  width: 70px;
+  height: 70px;
+  border-radius: var(--border-radius-sm);
+  object-fit: cover;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.item-image:hover {
+  transform: scale(1.05);
+}
+
+.item-details {
+  margin-left: 15px;
+  flex-grow: 1;
+}
+
+.item-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+
+.item-meta {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.item-price {
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-left: auto;
+  padding-left: 15px;
+  flex-shrink: 0;
+}
+
+/* No Orders Message */
+.no-orders-message {
+  text-align: center;
+  padding: 60px 40px;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin: 40px auto;
+  max-width: 500px;
+}
+
+.no-orders-icon {
+  font-size: 3em;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.no-orders-text {
+  font-size: 1.2em;
+  color: var(--text-secondary);
+  margin-bottom: 25px;
+}
+
+.btn-shop {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-shop:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(74, 111, 220, 0.2);
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 500px;
+  transform: translateY(-20px);
+  transition: var(--transition);
+}
+
+.modal-backdrop.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--danger-color);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-text {
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+  .orders-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .status-filters {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  
+  .sort-control {
+    width: 100%;
+  }
+}
+
+/* Animation Keyframes */
+@@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toggle order details
+        document.querySelectorAll('.btn-details').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const card = this.closest('.order-card');
+                const items = card.querySelector('.order-items');
+
+                items.classList.toggle('expanded');
+                this.classList.toggle('expanded');
+
+                // Update button text
+                const buttonText = this.querySelector('span');
+                buttonText.textContent = items.classList.contains('expanded') ? 'Hide Details' : 'View Details';
+            });
+        });
+
+        // Filter by status
+        document.querySelectorAll('.status-filter').forEach(filter => {
+            filter.addEventListener('click', function () {
+                // Toggle active state
+                document.querySelectorAll('.status-filter').forEach(f => {
+                    f.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                const status = this.dataset.status;
+                const cards = document.querySelectorAll('.order-card');
+
+                cards.forEach(card => {
+                    if (status === 'all' || card.dataset.status === status) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Sort orders
+        document.querySelector('.sort-control').addEventListener('change', function () {
+            const sortBy = this.value;
+            const grid = document.querySelector('.orders-grid');
+            const cards = Array.from(document.querySelectorAll('.order-card'));
+
+            cards.sort((a, b) => {
+                if (sortBy === 'date-desc') {
+                    return new Date(b.dataset.date) - new Date(a.dataset.date);
+                } else if (sortBy === 'date-asc') {
+                    return new Date(a.dataset.date) - new Date(b.dataset.date);
+                } else if (sortBy === 'total-desc') {
+                    return parseFloat(b.dataset.total) - parseFloat(a.dataset.total);
+                } else if (sortBy === 'total-asc') {
+                    return parseFloat(a.dataset.total) - parseFloat(b.dataset.total);
+                }
+                return 0;
+            });
+
+            // Re-append sorted cards
+            cards.forEach(card => {
+                grid.appendChild(card);
+            });
+        });
+
+        // Cancel order modal
+        document.querySelectorAll('.btn-cancel').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const orderId = this.dataset.orderId;
+                const orderNumber = this.closest('.order-card').querySelector('.order-number').textContent;
+
+                const modal = document.querySelector('.modal-backdrop');
+                const modalOrderNumber = document.getElementById('modal-order-number');
+                const confirmBtn = document.getElementById('confirm-cancel');
+
+                modalOrderNumber.textContent = orderNumber;
+                confirmBtn.dataset.orderId = orderId;
+
+                modal.classList.add('active');
+            });
+        });
+
+        // Close modal
+        document.querySelector('.modal-close').addEventListener('click', function () {
+            document.querySelector('.modal-backdrop').classList.remove('active');
+        });
+
+        // Click outside to close modal
+        document.querySelector('.modal-backdrop').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        // Confirm order cancellation
+        document.getElementById('confirm-cancel').addEventListener('click', function () {
+            const orderId = this.dataset.orderId;
+
+            // Here you would typically call an API to cancel the order
+            console.log(`Cancelling order ${orderId}`);
+
+            // Update the UI
+            const card = document.querySelector(`.order-card[data-order-id="${orderId}"]`);
+            card.dataset.status = 'cancelled';
+            card.querySelector('.order-status').className = 'order-status status-cancelled';
+            card.querySelector('.order-status').textContent = 'Cancelled';
+            card.querySelector('.btn-cancel').style.display = 'none';
+
+            // Close the modal
+            document.querySelector('.modal-backdrop').classList.remove('active');
+        });
+    });
+</script>

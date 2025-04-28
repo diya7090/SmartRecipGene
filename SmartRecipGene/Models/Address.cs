@@ -18,6 +18,7 @@ namespace SmartRecipGene.Models
         [Required]
         [StringLength(200)]
         public string StreetAddress { get; set; }
+        
 
 
 

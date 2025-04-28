@@ -7,7 +7,41 @@
 <h2 class="mb-4">Recipe Management Dashboard</h2>
 
 <!-- Stats Cards -->
-<div class="row mb-4">
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5>Total Recipes</h5>
+                    <h2>@(Model?.Count() ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h5>Vegetarian</h5>
+                    <h2>@(Model?.Count(r => r.DietType?.Contains("Vegetarian") ?? false) ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <h5>Quick Recipes</h5>
+                    <h2>@(Model?.Count(r => r.CookingTime <= 30) ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <h5>Cuisine Types</h5>
+                    <h2>@(Model?.Select(r => r.CusineType).Distinct().Count() ?? 0)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+@* <div class="row mb-4">
     <div class="col-xl-3 col-md-6">
         <div class="card bg-primary text-white mb-4">
             <div class="card-body">
@@ -40,10 +74,41 @@
             </div>
         </div>
     </div>
-</div>
+</div> *@
 
 <!-- Search and Filter Section -->
-<div class="row mb-4">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search recipes..." autocomplete="off" />
+                    <div id="searchSuggestions" class="suggestions-box"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end">
+                <select id="cuisineFilter" class="form-control mr-2" style="width: auto;">
+                    <option value="">All Cuisines</option>
+                    @foreach (var cuisine in Model?.Select(r => r.CusineType).Distinct().OrderBy(c => c) ?? Enumerable.Empty<string>())
+                    {
+                        <option value="@cuisine">@cuisine</option>
+                    }
+                </select>
+                <select id="dietFilter" class="form-control mr-2" style="width: auto;">
+                    <option value="">All Diets</option>
+                    @foreach (var diet in Model?.Select(r => r.DietType).Distinct().OrderBy(d => d) ?? Enumerable.Empty<string>())
+                    {
+                        <option value="@diet">@diet</option>
+                    }
+                </select>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Recipe
+                </a>
+            </div>
+        </div>
+    </div>
+@* <div class="row mb-4">
     <div class="col-md-6">
         <div class="search-container">
             <div class="search-box">
@@ -73,898 +138,325 @@
             </a>
         </div>
     </div>
-</div>
-<div class="bulk-actions mb-2" style="display: none;">
+</div> *@
+    <div class="bulk-actions mb-2" style="display: none;">
+        <button class="btn btn-danger" onclick="bulkDelete()">
+            <i class="fas fa-trash"></i> Delete Selected
+        </button>
+    </div>
+@* <div class="bulk-actions mb-2" style="display: none;">
     <button class="btn btn-danger" onclick="bulkDelete()">
         <i class="fas fa-trash"></i> Delete Selected
     </button>
-</div>
+</div> *@
 <!-- Recipe Table -->
-<div class="table-responsive">
-    <table class="table table-hover table-bordered" id="recipeTable">
-        <thead class="thead-dark">
-            <tr>
-                <th>
-                    <input type="checkbox" id="selectAll" />
-                </th>
-                <th onclick="sortTable(0)" style="cursor: pointer;">Title <i class="fas fa-sort"></i></th>
-                <th onclick="sortTable(1)" style="cursor: pointer;">Cuisine Type <i class="fas fa-sort"></i></th>
-                <th onclick="sortTable(2)" style="cursor: pointer;">Diet Type <i class="fas fa-sort"></i></th>
-                <th onclick="sortTable(3)" style="cursor: pointer;">Cooking Time <i class="fas fa-sort"></i></th>
-                <th onclick="sortTable(4)" style="cursor: pointer;">Servings <i class="fas fa-sort"></i></th>
-                <th onclick="sortTable(5)" style="cursor: pointer;">Difficulty <i class="fas fa-sort"></i></th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var recipe in Model ?? Enumerable.Empty<SmartRecipGene.Models.Recipe>())
-            {
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered" id="recipeTable">
+            <thead class="thead-dark">
                 <tr>
-                    <td>
-                        <input type="checkbox" class="recipe-checkbox" value="@recipe.Id" />
-                    </td>
-                    <td>@recipe.Title</td>
-                    <td>@recipe.CusineType</td>
-                    <td>@recipe.DietType</td>
-                    <td>@recipe.CookingTime minutes</td>
-                    <td>@recipe.Servings</td>
-                    <td>@recipe.DifficultyLevel</td>
-                    <td>
-                        <div class="btn-group">
-                            <a asp-action="Edit" asp-route-id="@recipe.Id" class="btn btn-sm btn-primary">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a asp-action="Details" asp-route-id="@recipe.Id" class="btn btn-sm btn-info">
-                                <i class="fas fa-info-circle"></i>
-                            </a>
-                            <button onclick="confirmDelete(@recipe.Id)" class="btn btn-sm btn-danger">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
+                    <th>
+                        <input type="checkbox" id="selectAll" />
+                    </th>
+                    <th onclick="sortTable(0)" style="cursor: pointer;">Title <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(1)" style="cursor: pointer;">Cuisine Type <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(2)" style="cursor: pointer;">Diet Type <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(3)" style="cursor: pointer;">Cooking Time <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(4)" style="cursor: pointer;">Servings <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(5)" style="cursor: pointer;">Difficulty <i class="fas fa-sort"></i></th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var recipe in Model ?? Enumerable.Empty<SmartRecipGene.Models.Recipe>())
+                {
+                    <tr>
+                        <td data-label="Select">
+                            <input type="checkbox" class="recipe-checkbox" value="@recipe.Id" />
+                        </td>
+                        <td data-label="Title">@recipe.Title</td>
+                        <td data-label="Cuisine Type">@recipe.CusineType</td>
+                        <td data-label="Diet Type">@recipe.DietType</td>
+                        <td data-label="Cooking Time">@recipe.CookingTime minutes</td>
+                        <td data-label="Servings">@recipe.Servings</td>
+                        <td data-label="Difficulty">@recipe.DifficultyLevel</td>
+                        <td data-label="Actions">
+                            <div class="btn-group">
+                                <a asp-action="Edit" asp-route-id="@recipe.Id" class="btn btn-sm btn-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Details" asp-route-id="@recipe.Id" class="btn btn-sm btn-info" title="Details">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                                <button onclick="confirmDelete(@recipe.Id)" class="btn btn-sm btn-danger" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
-</div>
-@* <style>
-    /* Recipe Cards Layout - Addition to existing CSS */
-
-    /* Recipe Cards Container */
-    .recipe-cards-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    /* Recipe Card */
-    .recipe-card {
-        background-color: var(--white);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        transition: var(--transition);
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        text-align: center;
-    }
-
-        .recipe-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-    /* Recipe Image Container */
-    .recipe-image-container {
-        position: relative;
-        padding-top: 60%; /* 3:5 aspect ratio */
-        background-color: var(--background-medium);
-        overflow: hidden;
-    }
-
-    .recipe-image {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: var(--transition);
-    }
-
-    .recipe-card:hover .recipe-image {
-        transform: scale(1.05);
-    }
-
-    /* Recipe Status Badge */
-    .recipe-status {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        z-index: 10;
-    }
-
-    /* Recipe Card Content */
-    .recipe-card-content {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        flex-grow: 1;
-    }
-
-    .recipe-card-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        color: var(--text-dark);
-        text-decoration: none;
-        transition: var(--transition);
-        text-align: center;
-    }
-
-        .recipe-card-title:hover {
-            color: var(--primary-color);
-        }
-
-    .recipe-card-meta {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        width: 100%;
-    }
-
-    .recipe-meta-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        color: var(--text-dark);
-        opacity: 0.7;
-        font-size: 0.85rem;
-    }
-
-    .meta-value {
-        font-weight: 600;
-        font-size: 1rem;
-        color: var(--text-dark);
-    }
-
-    .recipe-card-description {
-        margin-bottom: 1.5rem;
-        color: var(--text-dark);
-        opacity: 0.8;
-        flex-grow: 1;
-        text-align: center;
-    }
-
-    /* Recipe Card Tags */
-    .recipe-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-    }
-
-    .recipe-tag {
-        background-color: rgba(230, 126, 34, 0.1);
-        color: var(--primary-color);
-        padding: 0.25rem 0.75rem;
-        border-radius: 30px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
-    /* Recipe Card Actions */
-    .recipe-card-actions {
-        display: flex;
-        justify-content: center;
-        gap: 0.75rem;
-    }
-
-    .card-btn {
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        font-weight: 500;
-        font-size: 0.9rem;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .card-btn-view {
-        background-color: var(--info);
-        color: var(--white);
-    }
-
-        .card-btn-view:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-    .card-btn-edit {
-        background-color: var(--accent-color);
-        color: var(--white);
-    }
-
-        .card-btn-edit:hover {
-            background-color: #0e6655;
-            transform: translateY(-2px);
-        }
-
-    /* Empty State for No Recipes */
-    .no-recipes {
-        grid-column: 1 / -1;
-        padding: 3rem;
-        text-align: center;
-        background-color: var(--white);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-    }
-
-    .no-recipes-icon {
-        font-size: 3rem;
-        color: var(--background-medium);
-        margin-bottom: 1rem;
-    }
-
-    /* Toggle View Buttons */
-    .view-toggle {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .view-toggle-btn {
-        background-color: var(--white);
-        border: 1px solid var(--background-medium);
-        padding: 0.5rem;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: var(--transition);
-    }
-
-        .view-toggle-btn:hover {
-            background-color: var(--background-medium);
-        }
-
-        .view-toggle-btn.active {
-            background-color: var(--primary-color);
-            color: var(--white);
-            border-color: var(--primary-color);
-        }
-
-    /* Responsive Adjustments */
-    @@media (max-width: 768px) {
-        .recipe-cards-container {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        }
-    }
-
-    @@media (max-width: 576px) {
-        .recipe-cards-container {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    /* Animation for Card Loading */
-    @@keyframes cardFadeIn {
-        0% {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .recipe-card {
-        animation: cardFadeIn 0.5s ease-out forwards;
-    }
-
-        /* Staggered animation for cards */
-        .recipe-card:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .recipe-card:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .recipe-card:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .recipe-card:nth-child(4) {
-            animation-delay: 0.4s;
-        }
-
-        .recipe-card:nth-child(5) {
-            animation-delay: 0.5s;
-        }
-
-        .recipe-card:nth-child(6) {
-            animation-delay: 0.6s;
-        }
-    /* Recipe Management Dashboard - Professional & Unique Design */
-
-    /* Main Colors and Variables */
-    :root {
-        --primary-color: #E67E22; /* Orange */
-        --primary-dark: #d35400;
-        --primary-light: #f39c12;
-        --secondary-color: #1A365D; /* Deep Navy Blue */
-        --accent-color: #148F77; /* Teal */
-        --text-dark: #2C3E50; /* Charcoal */
-        --text-light: #F7F9FA; /* Light Gray */
-        --background-light: #F7F9FA;
-        --background-medium: #EDF2F7;
-        --danger: #e74c3c;
-        --success: #27ae60;
-        --warning: #f1c40f;
-        --info: #3498db;
-        --white: #ffffff;
-        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-        --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-        --border-radius: 8px;
-        --transition: all 0.3s ease;
-    }
-
-    /* Base Styles */
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: var(--text-dark);
-        background-color: var(--background-light);
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* Container Padding */
-    .container {
-        padding-left: 2rem;
-        padding-right: 2rem;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    @@media (min-width: 992px) {
-        .container {
-            padding-left: 3rem;
-            padding-right: 3rem;
-        }
-    }
-
-    @@media (max-width: 768px) {
-        .container {
-            padding-left: 1.25rem;
-            padding-right: 1.25rem;
-        }
-    }
-
-    /* Typography */
-    h1, h2, h3, h4, h5, h6 {
-        margin-top: 0;
-        color: var(--secondary-color);
-    }
-
-    h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        position: relative;
-    }
-
-        h1::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-    h2 {
-        font-size: 1.8rem;
-        font-weight: 600;
-        position: relative;
-        padding-left: 15px;
-        margin-bottom: 1.5rem;
-    }
-
-        h2::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-    p {
-        margin-bottom: 1.5rem;
-    }
-
-    /* Header Styling */
-    .site-header {
-        background-color: var(--secondary-color);
-        padding: 1rem 0;
-        box-shadow: var(--shadow);
-    }
-
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo {
-        color: var(--white);
-        font-size: 1.5rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-    }
-
-        .logo i {
-            margin-right: 10px;
-            color: var(--primary-color);
-        }
-
-    .nav-links {
-        display: flex;
-        gap: 1.5rem;
-    }
-
-    .nav-link {
-        color: var(--text-light);
-        text-decoration: none;
-        transition: var(--transition);
-        padding: 0.5rem 0;
-        position: relative;
-    }
-
-        .nav-link::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary-color);
-            transition: var(--transition);
-        }
-
-        .nav-link:hover {
-            color: var(--primary-color);
-        }
-
-            .nav-link:hover::after {
-                width: 100%;
-            }
-
-        .nav-link.active {
-            color: var(--primary-color);
-        }
-
-            .nav-link.active::after {
-                width: 100%;
-            }
-
-    /* Main Content Area */
-    .main-content {
-        padding: 2rem 0;
-    }
-
-    .page-header {
-        margin-bottom: 2rem;
-    }
-
-    /* Stats Cards Styling */
-    .stats-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .stat-card {
-        background-color: var(--white);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        transition: var(--transition);
-        position: relative;
-    }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background-color: var(--primary-color);
-        }
-
-        .stat-card:nth-child(2)::before {
-            background-color: var(--accent-color);
-        }
-
-        .stat-card:nth-child(3)::before {
-            background-color: var(--info);
-        }
-
-        .stat-card:nth-child(4)::before {
-            background-color: var(--secondary-color);
-        }
-
-    .stat-card-body {
-        padding: 1.5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .stat-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(230, 126, 34, 0.1);
-        color: var(--primary-color);
-        font-size: 1.5rem;
-    }
-
-    .stat-card:nth-child(2) .stat-icon {
-        background-color: rgba(20, 143, 119, 0.1);
-        color: var(--accent-color);
-    }
-
-    .stat-card:nth-child(3) .stat-icon {
-        background-color: rgba(52, 152, 219, 0.1);
-        color: var(--info);
-    }
-
-    .stat-card:nth-child(4) .stat-icon {
-        background-color: rgba(26, 54, 93, 0.1);
-        color: var(--secondary-color);
-    }
-
-    .stat-content {
-        text-align: right;
-    }
-
-    .stat-title {
-        font-size: 0.9rem;
-        color: var(--text-dark);
-        opacity: 0.7;
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: var(--text-dark);
-        margin: 0;
-    }
-
-    /* Search and Filter Section */
-    .controls-container {
-        background-color: var(--white);
-        border-radius: var(--border-radius);
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: var(--shadow);
-    }
-
-    .search-filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .search-container {
-        flex: 1;
-        min-width: 280px;
-        position: relative;
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--primary-color);
-        z-index: 2;
-    }
-
-    #searchInput {
-        width: 100%;
-        padding: 0.75rem 1rem 0.75rem 40px;
-        border-radius: 30px;
-        border: 1px solid var(--background-medium);
-        box-shadow: var(--shadow-sm);
-        font-size: 0.95rem;
-        transition: var(--transition);
-    }
-
-        #searchInput:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
-        }
-
-    .filters-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: center;
-    }
-
-    select.filter-select {
-        padding: 0.75rem 1rem;
-        border-radius: var(--border-radius);
-        border: 1px solid var(--background-medium);
-        background-color: var(--white);
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232C3E50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 16px;
-        min-width: 140px;
-        transition: var(--transition);
-    }
-
-        select.filter-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
-        }
-
-    .btn {
-        padding: 0.75rem 1.25rem;
-        border-radius: var(--border-radius);
-        font-weight: 500;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        border: none;
-    }
-
-    .btn-icon {
-        margin-right: 0.5rem;
-    }
-
-    .btn-primary {
-        background-color: var(--primary-color);
-        color: var(--white);
-        box-shadow: 0 2px 5px rgba(230, 126, 34, 0.3);
-    }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(230, 126, 34, 0.4);
-        }
-
-    .btn-accent {
-        background-color: var(--accent-color);
-        color: var(--white);
-        box-shadow: 0 2px 5px rgba(20, 143, 119, 0.3);
-    }
-
-        .btn-accent:hover {
-            background-color: #0e6655;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(20, 143, 119, 0.4);
-        }
-
-    .btn-secondary {
-        background-color: var(--secondary-color);
-        color: var(--white);
-        box-shadow: 0 2px 5px rgba(26, 54, 93, 0.3);
-    }
-
-        .btn-secondary:hover {
-            background-color: #142b4c;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(26, 54, 93, 0.4);
-        }
-
-    .btn-outline {
-        background-color: transparent;
-        border: 1px solid var(--primary-color);
-        color: var(--primary-color);
-    }
-
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: var(--white);
-        }
-
-    /* Table Styling */
-    .table-container {
-        background-color: var(--white);
-        border-radius: var(--border-radius);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-        margin-bottom: 2rem;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-    }
-
-        .table thead th {
-            background-color: var(--secondary-color);
-            color: var(--white);
-            padding: 1rem 1.5rem;
-            text-align: left;
-            font-weight: 600;
-            position: relative;
-        }
-
-            .table thead th:after {
-                content: "";
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: 2px;
-                background-color: var(--primary-color);
-            }
-
-    th.sortable {
-        cursor: pointer;
-        user-select: none;
-    }
-
-        th.sortable:hover {
-            background-color: #142b4c;
-        }
-
-    .sort-icon {
-        margin-left: 5px;
-        transition: var(--transition);
-        display: inline-block;
-    }
-
-    .table tbody tr {
-        transition: var(--transition);
-        border-bottom: 1px solid var(--background-medium);
-    }
-
-        .table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .table tbody tr:hover {
-            background-color: rgba(230, 126, 34, 0.05);
-        }
-
-    .table td {
-        padding: 1rem 1.5rem;
-        vertical-align: middle;
-    }
-
-    .table-checkbox {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        border: 2px solid var(--primary-color);
-        border-radius: 3px;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        position: relative;
-        display: inline-block;
-        vertical-align: middle;
-        transition: var(--transition);
-    }
-
-        .table-checkbox:checked {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-            .table-checkbox:checked::after {
-                content: '\2713';
-                font-size: 14px;
-                color: white;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
-
-    .status-badge {
-        display: inline-block;
-        padding: 0.3rem 0.8rem;
-        border-radius: 30px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
-        .status-badge.published {
-            background-color: rgba(39, 174, 96, 0.1);
-            color: var(--success);
-        }
-
-        .status-badge.draft {
-            background-color: rgba(241, 196, 15, 0.1);
-            color: var(--warning);
-        }
-
-        .status-badge.archived {
-            background-color: rgba(231, 76, 60, 0.1);
-            color: var(--danger);
-        }
-
-    .recipe-title {
-        font-weight: 600;
-        color: var(--text-dark);
-        text-decoration: none;
-        transition: var(--transition);
-    }
-
-        .recipe-title:hover {
-            color: var(--primary-color);
-        }
-
-    .action-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .btn-action {
-        width: 32px;
-        height: 32px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--white);
-        font-size: 0.9rem;
-        transition: var(--transition);
-    }
-
-    .btn-view {
-        background-color: var(--info);
-    }
-
-        .btn-view:hover {
-            background-color: #2980b9;
-            transform: trans
-</style> *@
 <style>
+    .card {
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin-bottom: 24px;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+.card-body h5 {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+.card-body h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+.bg-primary { background: linear-gradient(90deg, #2563eb 70%, #1e40af 100%) !important; }
+.bg-success { background: linear-gradient(90deg, #22c55e 70%, #15803d 100%) !important; }
+.bg-warning { background: linear-gradient(90deg, #f59e42 70%, #d97706 100%) !important; }
+.bg-info { background: linear-gradient(90deg, #38bdf8 70%, #0ea5e9 100%) !important; }
+.text-white { color: #fff !important; }
+
+/* --- Search & Filter Section --- */
+.search-container {
+  width: 100%;
+  position: relative;
+}
+.search-box {
+  position: relative;
+}
+.search-box input[type="text"] {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 10px 16px;
+  font-size: 1rem;
+  transition: border 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.search-box input[type="text"]:focus {
+  outline: none;
+  border: 1.5px solid #2563eb;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+.suggestions-box {
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  z-index: 10;
+}
+.suggestions-box.active { display: block; }
+.suggestions-box div {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.suggestions-box div:hover {
+  background: #e0e7ff;
+}
+
+/* --- Filter Dropdowns --- */
+select.form-control {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  padding: 8px 16px;
+  margin-right: 10px;
+  min-width: 140px;
+  transition: border 0.2s;
+}
+select.form-control:focus {
+  border: 1.5px solid #2563eb;
+  outline: none;
+}
+
+/* --- Add Recipe Button --- */
+.btn-primary {
+  background: linear-gradient(90deg, #2563eb 70%, #1e40af 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #1e40af 70%, #2563eb 100%);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.16);
+}
+
+/* --- Bulk Actions --- */
+.bulk-actions {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 10px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn-danger {
+  background: linear-gradient(90deg, #ef4444 70%, #b91c1c 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.btn-danger:hover {
+  background: linear-gradient(90deg, #b91c1c 70%, #ef4444 100%);
+  box-shadow: 0 4px 16px rgba(239,68,68,0.14);
+}
+
+/* --- Table Styles --- */
+.table-responsive {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  background: #fff;
+}
+.table {
+  width: 100%;
+  margin-bottom: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.table thead.thead-dark {
+  background: #1e293b;
+  color: #fff;
+}
+.table th, .table td {
+  padding: 14px 16px;
+  font-size: 1rem;
+  vertical-align: middle;
+}
+.table th {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-bottom: 2px solid #e5e7eb;
+  background: #1e293b;
+}
+.table td {
+  border-bottom: 1px solid #e5e7eb;
+}
+.table-hover tbody tr:hover {
+  background: #e0e7ff;
+  transition: background 0.16s;
+}
+.table-bordered {
+  border: none;
+}
+.table-bordered th, .table-bordered td {
+  border: none;
+}
+.table th i.fas.fa-sort {
+  color: #9ca3af;
+  margin-left: 4px;
+  font-size: 0.95em;
+  transition: color 0.15s;
+}
+.table th:hover i.fas.fa-sort {
+  color: #2563eb;
+}
+
+/* --- Checkbox Styles --- */
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+/* --- Action Buttons --- */
+.btn-group .btn {
+  margin-right: 6px;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 1rem;
+  transition: background 0.15s;
+  border: none;
+}
+.btn-sm.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+.btn-sm.btn-primary:hover {
+  background: #1e40af;
+}
+.btn-sm.btn-info {
+  background: #38bdf8;
+  color: #fff;
+}
+.btn-sm.btn-info:hover {
+  background: #0ea5e9;
+}
+.btn-sm.btn-danger {
+  background: #ef4444;
+  color: #fff;
+}
+.btn-sm.btn-danger:hover {
+  background: #b91c1c;
+}
+
+/* --- Responsive Design --- */
+@@media (max-width: 991px) {
+  .card-body h2 { font-size: 1.5rem; }
+  .table th, .table td { font-size: 0.95rem; padding: 10px 8px; }
+  .search-box input[type="text"], select.form-control { font-size: 0.95rem; }
+}
+@@media (max-width: 700px) {
+  .row { flex-direction: column; }
+  .col-xl-3, .col-md-6 { width: 100%; margin-bottom: 18px; }
+  .table-responsive { box-shadow: none; }
+  .table, .table thead, .table tbody, .table th, .table td, .table tr {
+    display: block;
+    width: 100%;
+  }
+  .table thead { display: none; }
+  .table tr { margin-bottom: 18px; background: #f3f4f6; border-radius: 8px; }
+  .table td {
+    padding: 12px 10px;
+    text-align: right;
+    position: relative;
+    border: none;
+  }
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    top: 12px;
+    font-weight: 600;
+    color: #2563eb;
+    text-align: left;
+  }
+  .btn-group .btn { margin-bottom: 6px; }
+}
+</style>
+@* <style>
     :root {
         --primary: #6366f1;
         --primary-light: #818cf8;
@@ -1140,7 +632,7 @@
         box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
     }
 </style>
-
+ *@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // DOM Elements

@@ -1,4 +1,4 @@
-﻿@model SmartRecipGene.Models.BlogPost
+﻿@* @model SmartRecipGene.Models.BlogPost
 
 @{
     ViewData["Title"] = "Blog Post Details";
@@ -246,3 +246,521 @@
             </div>
     </div>
 </div>
+ *@
+
+                    @model SmartRecipGene.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Blog Post Details";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+    /* Base Styles */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Playfair Display', serif;
+    }
+
+    /* Modern Blog Post Container */
+    .blog-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s ease forwards;
+    }
+
+    @@keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .blog-post {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .blog-post:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+
+    /* Hero Section with Parallax Effect */
+    .hero-section {
+        position: relative;
+        height: 70vh;
+        min-height: 500px;
+        max-height: 800px;
+        overflow: hidden;
+    }
+
+    .blog-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scale(1.05);
+        transition: transform 0.8s ease;
+    }
+
+    .blog-post:hover .blog-image {
+        transform: scale(1);
+    }
+
+    .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.8));
+        padding: 150px 50px 50px;
+        color: white;
+    }
+
+    .blog-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 20px;
+        line-height: 1.2;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s ease 0.3s forwards;
+    }
+
+    .blog-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 25px;
+        font-size: 1.1rem;
+        align-items: center;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s ease 0.5s forwards;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .meta-item:hover {
+        transform: translateY(-3px);
+    }
+
+    .meta-item i {
+        font-size: 1.2rem;
+    }
+
+    .category-badge {
+        background: #ffc107;
+        color: #000;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .category-badge:hover {
+        background: #e0a800;
+        transform: scale(1.05);
+    }
+
+    /* Content Wrapper with Scroll Animations */
+    .content-wrapper {
+        padding: 50px 60px;
+        background: white;
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+
+    /* ScrollReveal Animation Classes */
+    .reveal-section {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal-section.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Stylish Headings */
+    .content-wrapper h2 {
+        font-size: 2.2rem;
+        color: #222;
+        margin: 35px 0 20px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    .content-wrapper h2:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: #ffc107;
+        transition: width 0.4s ease;
+    }
+
+    .content-wrapper h2:hover:after {
+        width: 120px;
+    }
+
+    .content-wrapper h3 {
+        font-size: 1.8rem;
+        color: #333;
+        margin: 30px 0 15px;
+    }
+
+    /* Recipe Section Styling */
+    .recipe-section {
+        background: #f9f9f9;
+        padding: 30px;
+        margin: 30px 0;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .recipe-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .ingredients-list {
+        columns: 2;
+        margin: 20px 0;
+        gap: 30px;
+    }
+
+    .ingredients-list li {
+        margin-bottom: 10px;
+        position: relative;
+        padding-left: 25px;
+    }
+
+    .ingredients-list li:before {
+        content: '•';
+        position: absolute;
+        left: 0;
+        color: #ffc107;
+        font-size: 20px;
+    }
+
+    .cooking-steps {
+        counter-reset: step-counter;
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .cooking-steps li {
+        margin-bottom: 25px;
+        padding-left: 50px;
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+
+    .cooking-steps li:hover {
+        transform: translateX(5px);
+    }
+
+    .cooking-steps li:before {
+        content: counter(step-counter);
+        counter-increment: step-counter;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: #ffc107;
+        color: white;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 35px;
+        font-weight: bold;
+        box-shadow: 0 3px 8px rgba(255, 193, 7, 0.4);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .cooking-steps li:hover:before {
+        transform: scale(1.1);
+        box-shadow: 0 5px 12px rgba(255, 193, 7, 0.6);
+    }
+
+    /* Tags Styling */
+    .blog-tags {
+        padding: 20px 60px;
+        background: #f8f9fa;
+        border-top: 1px solid #eee;
+    }
+
+    .tag {
+        display: inline-block;
+        padding: 6px 15px;
+        margin: 5px;
+        background: #e9ecef;
+        border-radius: 20px;
+        color: #555;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .tag:hover {
+        background: #ffc107;
+        color: #000;
+        transform: translateY(-3px);
+    }
+
+    /* Blog Actions */
+    .blog-actions {
+        padding: 30px;
+        text-align: center;
+        background: #f8f9fa;
+        border-radius: 0 0 16px 16px;
+    }
+
+    .btn {
+        padding: 10px 25px;
+        margin: 0 8px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background: rgba(255,255,255,0.2);
+        transition: width 0.3s ease;
+        z-index: -1;
+    }
+
+    .btn:hover:before {
+        width: 100%;
+    }
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn-primary {
+        background: #3498db;
+        border-color: #3498db;
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border-color: #6c757d;
+    }
+
+    /* Reading Progress Bar */
+    .reading-progress-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: transparent;
+        z-index: 9999;
+    }
+
+    .reading-progress-bar {
+        height: 100%;
+        background: #ffc107;
+        width: 0;
+        transition: width 0.3s;
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 992px) {
+        .hero-section {
+            height: 60vh;
+        }
+        
+        .blog-title {
+            font-size: 2.8rem;
+        }
+        
+        .content-wrapper {
+            padding: 40px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .hero-section {
+            height: 50vh;
+        }
+        
+        .blog-title {
+            font-size: 2.2rem;
+        }
+        
+        .image-overlay {
+            padding: 100px 30px 30px;
+        }
+        
+        .content-wrapper {
+            padding: 30px;
+        }
+        
+        .ingredients-list {
+            columns: 1;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .blog-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .hero-section {
+            height: 40vh;
+        }
+    }
+</style>
+
+<!-- Reading Progress Bar -->
+<div class="reading-progress-container">
+    <div class="reading-progress-bar" id="reading-progress-bar"></div>
+</div>
+
+<div class="blog-container">
+    <div class="blog-post">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="hero-section">
+                <img src="@Model.ImageUrl" class="blog-image" alt="@Model.Title">
+                <div class="image-overlay">
+                    <h1 class="blog-title">@Model.Title</h1>
+                    <div class="blog-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-user"></i>
+                            <span>@Model.Author</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>@Model.CreatedAt.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="category-badge">@Model.Category</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="blog-header p-5 text-center">
+                <h1 class="blog-title animate__animated animate__fadeIn">@Model.Title</h1>
+                <div class="blog-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-user"></i>
+                        <span>@Model.Author</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>@Model.CreatedAt.ToString("MMMM dd, yyyy")</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="category-badge">@Model.Category</span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="content-wrapper">
+            <div id="content-display">
+                @Html.Raw(Model.Content) <!-- Renders HTML content -->
+            </div>
+        </div>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("ADMIN") || User.IsInRole("admin"))
+        {
+            <div class="admin-controls p-4 bg-light">
+                <p><strong>Status:</strong> <span class="badge @(Model.IsPublished ? "bg-success" : "bg-warning")">@(Model.IsPublished ? "Published" : "Draft")</span></p>
+
+                <div class="text-center mt-3">
+                    <a href="@Url.Action("Edit", "BlogPost", new { id = Model.Id })" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit Post
+                    </a>
+                </div>
+            </div>
+        }
+
+        <div class="blog-actions">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to All Posts
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Reading Progress Bar
+    window.addEventListener('scroll', function() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("reading-progress-bar").style.width = scrolled + "%";
+    });
+
+    // Scroll Reveal Animation
+    document.addEventListener("DOMContentLoaded", function() {
+        const revealSections = document.querySelectorAll(".content-wrapper h2, .content-wrapper h3, .content-wrapper p, .recipe-section");
+        
+        revealSections.forEach(section => {
+            section.classList.add("reveal-section");
+        });
+
+        const revealOnScroll = function() {
+            revealSections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (sectionTop < windowHeight * 0.85) {
+                    section.classList.add("active");
+                }
+            });
+        };
+
+        window.addEventListener("scroll", revealOnScroll);
+        // Initial check to reveal visible elements
+        revealOnScroll();
+    });
+</script>

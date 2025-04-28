@@ -37,13 +37,24 @@ namespace SmartRecipGene.Controllers
             var users = _userManager.Users.ToList();
             return View(users);
         }
+
         public async Task<IActionResult> OrderManagement()
         {
             var orders = await _context.Orders
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
+            // Fetch user names for all user IDs in the orders
+            var userIds = orders.Select(o => o.UserId).Distinct().ToList();
+            var users = await _userManager.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.UserName);
+
+            ViewBag.UserNames = users;
+
             return View(orders);
         }
+
 
         // POST: Admin/UpdateOrderStatus
         [HttpPost]
@@ -78,12 +89,53 @@ namespace SmartRecipGene.Controllers
             return View(order);
         }
 
+        // ... existing code ...
 
         public async Task<IActionResult> Dashboard()
         {
+             // Example: Kits Sold per Recipe (for KitsSoldChart)
+    var kitsSold = await _context.Recipes
+        .Select(r => new
+        {
+            Title = r.Title,
+            Sold = _context.OrderItems.Where(oi => oi.RecipeId == r.Id).Sum(oi => (int?)oi.Servings) ?? 0
+        })
+        .ToListAsync();
+
+    var kitsSoldLabels = kitsSold.Select(k => k.Title).ToList();
+    var kitsSoldData = kitsSold.Select(k => k.Sold).ToList();
+
+    // Example: Top Rated Recipes (for TopRatedChart)
+    var topRated = await _context.Recipes
+        .Where(r => r.Reviews.Any())
+        .OrderByDescending(r => r.Reviews.Average(rv => rv.Rating))
+        .Take(5)
+        .Select(r => new
+        {
+            Title = r.Title,
+            AvgRating = r.Reviews.Average(rv => rv.Rating)
+        })
+        .ToListAsync();
+
+    var topRatedLabels = topRated.Select(t => t.Title).ToList();
+    var topRatedData = topRated.Select(t => t.AvgRating).ToList();
+
+    // Example: Most Saved Recipes (for MostSavedChart)
+    var mostSaved = await _context.Recipes
+        .Select(r => new
+        {
+            Title = r.Title,
+            Saves = _context.FavoriteRecipes.Count(rs => rs.RecipeId == r.Id)
+        })
+        .OrderByDescending(r => r.Saves)
+        .Take(5)
+        .ToListAsync();
+
+    var mostSavedLabels = mostSaved.Select(m => m.Title).ToList();
+    var mostSavedData = mostSaved.Select(m => m.Saves).ToList();
             var totalUsers = await _userManager.Users.CountAsync();
             var totalDatabaseRecipes = await _context.Recipes.CountAsync();
-            var totalRecipes = totalDatabaseRecipes; // 👈 Ignore API count
+            var totalRecipes = totalDatabaseRecipes;
 
             var topRatedDbRecipes = await _context.Recipes
                 .OrderByDescending(r => r.Reviews.Average(rv => rv.Rating))
@@ -105,16 +157,108 @@ namespace SmartRecipGene.Controllers
                 .Distinct()
                 .CountAsync();
 
+            // Calculate revenue and sales from orders
+            var pastOrders = await _context.Orders.ToListAsync();
+            decimal totalRevenue = 0.0m;
+            int totalSales = 0;
+            int totalUsersPurchased = 0;
+            int ordersShipped = 0, ordersProcessing = 0, ordersPending = 0, ordersDelivered = 0;
+
+            if (pastOrders != null)
+            {
+                totalRevenue = pastOrders.Sum(o => o.TotalAmount);
+                totalSales = pastOrders.Count();
+                totalUsersPurchased = pastOrders.Select(o => o.UserId).Distinct().Count();
+                ordersShipped = pastOrders.Count(o => o.Status == "Shipped");
+                ordersProcessing = pastOrders.Count(o => o.Status == "Processing");
+                ordersPending = pastOrders.Count(o => o.Status == "Pending");
+                ordersDelivered = pastOrders.Count(o => o.Status == "Delivered");
+            }
+
+            // Fetch all recipes for the dashboard table
+            var allRecipes = await _context.Recipes
+                .Select(r => new
+                {
+                    Title = r.Title,
+                    // If you have a category property, use it here. Otherwise, remove or replace.
+                     Category = r.CusineType,
+                    AvgRating = r.Reviews.Any() ? r.Reviews.Average(rv => rv.Rating) : 0,
+                    TimesOrdered = _context.OrderItems.Count(oi => oi.RecipeId == r.Id)
+                })
+                .ToListAsync();
+
+            // Fetch all users for the dashboard table
+            var allUsers = await _userManager.Users
+                .Select(u => new
+                {
+                    Name = u.UserName,
+                    Email = u.Email,
+                    OrdersPlaced = _context.Orders.Count(o => o.UserId == u.Id)
+                    // LastActive removed since it does not exist
+                })
+                .ToListAsync();
+
             var dashboardData = new
             {
                 TotalUsers = totalUsers,
-                TotalRecipes = totalRecipes, // ✅ Only using DB count
+                TotalRecipes = totalRecipes,
                 TopRatedRecipes = allTopRatedRecipes,
-                ShoppingListUsers = shoppingListUsers
+                ShoppingListUsers = shoppingListUsers,
+                PastOrders = pastOrders,
+                TotalRevenue = totalRevenue,
+                TotalSales = totalSales,
+                TotalUsersPurchased = totalUsersPurchased,
+                OrdersShipped = ordersShipped,
+                OrdersProcessing = ordersProcessing,
+                OrdersPending = ordersPending,
+                OrdersDelivered = ordersDelivered,
+                AllRecipes = allRecipes,
+                AllUsers = allUsers,
+                KitsSoldLabels = kitsSoldLabels,
+        KitsSoldData = kitsSoldData,
+        TopRatedLabels = topRatedLabels,
+        TopRatedData = topRatedData,
+        MostSavedLabels = mostSavedLabels,
+        MostSavedData = mostSavedData
             };
 
             return View(dashboardData);
-        }
+        }        // ... existing code ...        //public async Task<IActionResult> Dashboard()
+        //{
+        //    var totalUsers = await _userManager.Users.CountAsync();
+        //    var totalDatabaseRecipes = await _context.Recipes.CountAsync();
+        //    var totalRecipes = totalDatabaseRecipes; // 👈 Ignore API count
+
+        //    var topRatedDbRecipes = await _context.Recipes
+        //        .OrderByDescending(r => r.Reviews.Average(rv => rv.Rating))
+        //        .Take(5)
+        //        .Select(r => new { r.Title, AvgRating = r.Reviews.Average(rv => rv.Rating), SourceType = "database" })
+        //        .ToListAsync();
+
+        //    var topRatedApiRecipes = await _spoonacularService.GetTopRatedRecipes();
+
+        //    var allTopRatedRecipes = topRatedDbRecipes
+        //        .Concat(topRatedApiRecipes.Select(r => new { Title = r["title"].ToString(), AvgRating = 5.0, SourceType = "api" }))
+        //        .OrderByDescending(r => r.AvgRating)
+        //        .Take(10)
+        //        .ToList();
+
+        //    var shoppingListUsers = await _context.UserActivities
+        //        .Where(a => a.ActivityType == "Shopping List Added")
+        //        .Select(a => a.UserId)
+        //        .Distinct()
+        //        .CountAsync();
+
+        //    var dashboardData = new
+        //    {
+        //        TotalUsers = totalUsers,
+        //        TotalRecipes = totalRecipes, // ✅ Only using DB count
+        //        TopRatedRecipes = allTopRatedRecipes,
+        //        ShoppingListUsers = shoppingListUsers
+        //    };
+
+        //    return View(dashboardData);
+        //}
 
 
 
