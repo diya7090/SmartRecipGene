@@ -1083,10 +1083,9 @@ public IActionResult Address()
             // Redirect to OrderSummary with both addressId and orderId
             return RedirectToAction("OrderSummary", new { addressId = model.Id, orderId = order.Id });
         }
-
-
+      
         [Authorize]
-        public async Task<IActionResult> OrderSummary(int addressId, int orderId)
+        public async Task<IActionResult> OrderSummary(int addressId, int orderId, string couponCode = null)
         {
             var recipeDetails = new List<dynamic>();
 
@@ -1098,9 +1097,11 @@ public IActionResult Address()
             // Fetch the address for the given addressId
             var address = await _context.Addresses.FindAsync(addressId);
 
+            decimal totalOrderAmount = 0; // To store the total amount before discount
+
             foreach (var oi in orderItems)
             {
-                string recipeImg = "", recipeTitle  = "";
+                string recipeImg = "", recipeTitle = "";
                 decimal pricePerServing = oi.PricePerServings;
                 int defaultServings = oi.Servings;
 
@@ -1122,7 +1123,6 @@ public IActionResult Address()
                         var response = await _httpClient.GetStringAsync(apiUrl);
                         var recipe = JObject.Parse(response);
 
-
                         recipeImg = recipe["image"]?.ToString() ?? "";
                         recipeTitle = recipe["title"]?.ToString() ?? "";
                         pricePerServing = recipe["pricePerServing"]?.Value<decimal>() ?? 0;
@@ -1134,19 +1134,118 @@ public IActionResult Address()
                     }
                 }
 
+                decimal totalPrice = pricePerServing * oi.Servings;
+                totalOrderAmount += totalPrice;
+
                 recipeDetails.Add(new
-                {   
+                {
                     Img = recipeImg,
                     RecipeId = oi.RecipeId,
                     RecipeTitle = recipeTitle,
                     Servings = oi.Servings,
                     PricePerServing = pricePerServing,
-                    TotalPrice = pricePerServing * oi.Servings,
+                    TotalPrice = totalPrice,
                 });
             }
 
-            return View(Tuple.Create(recipeDetails, address));
+            // Apply range-based discount logic based on total order amount
+            decimal discountAmount = 0;
+            string discountDescription = string.Empty;
+
+            if (totalOrderAmount >= 1000 && totalOrderAmount < 2000)
+            {
+                // Apply 10% discount for orders between 1000 and 2000
+                discountAmount = totalOrderAmount * 0.10m;
+                discountDescription = "10% off on orders above 1000 INR";
+            }
+            else if (totalOrderAmount >= 2000 && totalOrderAmount < 5000)
+            {
+                // Apply 15% discount for orders between 2000 and 5000
+                discountAmount = totalOrderAmount * 0.15m;
+                discountDescription = "15% off on orders above 2000 INR";
+            }
+            else if (totalOrderAmount >= 5000)
+            {
+                // Apply 20% discount for orders above 5000
+                discountAmount = totalOrderAmount * 0.20m;
+                discountDescription = "20% off on orders above 5000 INR";
+            }
+
+            // Ensure discount doesn't exceed the total order amount
+            discountAmount = Math.Min(discountAmount, totalOrderAmount);
+            totalOrderAmount -= discountAmount;
+
+            // Store the discount information for use in the view
+            ViewBag.DiscountAmount = discountAmount;
+            ViewBag.DiscountDescription = discountDescription;
+            ViewBag.FinalTotal = totalOrderAmount;
+
+            // Return the view with order details, address, and the total amount (after discount)
+            return View("OrderSummary", Tuple.Create(recipeDetails, address));
         }
+
+        ////[Authorize]
+        //public async Task<IActionResult> OrderSummary(int addressId, int orderId)
+        //{
+        //    var recipeDetails = new List<dynamic>();
+
+        //    // Fetch order items for the given orderId
+        //    var orderItems = await _context.OrderItems
+        //        .Where(oi => oi.OrderId == orderId)
+        //        .ToListAsync();
+
+        //    // Fetch the address for the given addressId
+        //    var address = await _context.Addresses.FindAsync(addressId);
+
+        //    foreach (var oi in orderItems)
+        //    {
+        //        string recipeImg = "", recipeTitle  = "";
+        //        decimal pricePerServing = oi.PricePerServings;
+        //        int defaultServings = oi.Servings;
+
+        //        var dbRecipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == oi.RecipeId);
+
+        //        if (dbRecipe != null)
+        //        {
+        //            recipeImg = dbRecipe.ImageUrl;
+        //            recipeTitle = dbRecipe.Title;
+        //            pricePerServing = dbRecipe.PricePerServing;
+        //            defaultServings = dbRecipe.Servings;
+        //        }
+        //        else
+        //        {
+        //            try
+        //            {
+        //                var apiKey = _spoonacularSettings.ApiKey;
+        //                var apiUrl = $"https://api.spoonacular.com/recipes/{oi.RecipeId}/information?apiKey={apiKey}";
+        //                var response = await _httpClient.GetStringAsync(apiUrl);
+        //                var recipe = JObject.Parse(response);
+
+
+        //                recipeImg = recipe["image"]?.ToString() ?? "";
+        //                recipeTitle = recipe["title"]?.ToString() ?? "";
+        //                pricePerServing = recipe["pricePerServing"]?.Value<decimal>() ?? 0;
+        //                defaultServings = recipe["servings"]?.Value<int>() ?? 1;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                _logger.LogError(ex, $"Error fetching recipe {oi.RecipeId} from API");
+        //            }
+        //        }
+
+        //        recipeDetails.Add(new
+        //        {   
+        //            Img = recipeImg,
+        //            RecipeId = oi.RecipeId,
+        //            RecipeTitle = recipeTitle,
+        //            Servings = oi.Servings,
+        //            PricePerServing = pricePerServing,
+        //            TotalPrice = pricePerServing * oi.Servings,
+        //        });
+        //    }
+
+        //    return View(Tuple.Create(recipeDetails, address));
+        //}
 
         // ... existing code ...
         [HttpPost]
@@ -1266,7 +1365,42 @@ public async Task<IActionResult> CancelOrder(int orderId)
     await _context.SaveChangesAsync();
 
     return Json(new { success = true, message = "Order cancelled successfully." });
-}
+}// ... existing code ...
+
+//[HttpPost]
+//[Authorize]
+//public async Task<IActionResult> Checkout(int addressId, string couponCode)
+//{
+//    var coupons = new Dictionary<string, decimal>
+//    {
+//        { "SAVE10", 0.10m },
+//        { "WELCOME5", 0.05m },
+//        { "FESTIVE20", 0.20m },
+//        { "SUPER30", 0.30m },
+//        { "EXTRA50", 0.50m }
+//    };
+
+//    decimal discountPercent = 0;
+//    string couponMessage = null;
+//    if (!string.IsNullOrEmpty(couponCode) && coupons.TryGetValue(couponCode.ToUpper(), out var percent))
+//    {
+//        discountPercent = percent;
+//        couponMessage = $"Coupon '{couponCode}' applied: {percent * 100}% off!";
+//    }
+//    else if (!string.IsNullOrEmpty(couponCode))
+//    {
+//        couponMessage = "Invalid or expired coupon code.";
+//    }
+
+//    // Pass coupon info to OrderSummary using TempData
+//    TempData["CouponMessage"] = couponMessage;
+//    TempData["DiscountPercent"] = discountPercent;
+
+//    // You may need to determine the correct orderId here
+//    // For demonstration, assuming you have orderId available
+//    return RedirectToAction("OrderSummary", new { addressId = addressId /*, orderId = ... */ });
+//}
+// ... existing code ...
 
         public IActionResult Privacy()
         {

@@ -1,117 +1,5 @@
 @* 
 
-    @model Tuple<List<dynamic>, SmartRecipGene.Models.Address>
-
-
-
-@{
-    var recipeDetails = Model.Item1;
-    var address = Model.Item2;
-    var total = recipeDetails.Sum(r => (decimal)r.TotalPrice);
-}
-
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">Order Summary</h3>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Recipe</th>
-                                    <th>Servings</th>
-                                    <th>Price per serving</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in recipeDetails)
-                                {
-                                    <tr>
-                                        <td>Recipe #@item.RecipeId</td>
-                                        <td>@item.Servings</td>
-                                        <td>₹@item.PricePerServing.ToString("F2")</td>
-                                        <td>₹@item.TotalPrice.ToString("F2")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr class="table-active">
-                                    <td colspan="3" class="text-end"><strong>Total Amount:</strong></td>
-                                    <td><strong>₹@total.ToString("F2")</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow mb-4">
-                <div class="card-header bg-info text-white">
-                    <h3 class="mb-0">Delivery Address</h3>
-                </div>
-                <div class="card-body">
-                    <address>
-                        <strong>@address.StreetAddress</strong><br>
-                        @address.City, @address.State @address.PostalCode<br>
-                        <abbr title="Phone">P:</abbr> @address.PhoneNumber
-                    </address>
-                    @if (!string.IsNullOrEmpty(address.Notes))
-                    {
-                        <div class="mt-3">
-                            <strong>Additional Notes:</strong>
-                            <p class="mb-0">@address.Notes</p>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h3 class="mb-0">Payment Information</h3>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Payment" method="post">
-                        <div class="mb-3">
-                            <label class="form-label">Total Amount</label>
-                            <h4 class="text-success">₹@total.ToString("F2")</h4>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="fas fa-credit-card"></i> Proceed to Payment
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Styles {
-    <style>
-        .card {
-            border: none;
-            border-radius: 10px;
-        }
-        .card-header {
-            border-radius: 10px 10px 0 0 !important;
-        }
-        .table th {
-            background-color: #f8f9fa;
-        }
-        .table tfoot tr {
-            font-size: 1.1em;
-        }
-    </style>
-} *@
-
 @model Tuple<List<object>, SmartRecipGene.Models.Address>
 @{
     var recipeDetails = Model.Item1;
@@ -362,6 +250,403 @@
         var options = {
             "key": "rzp_test_6Wxdnw2HPXVKnn", // Replace with your Razorpay Key ID
             "amount": @((int)((Model.Item1.Sum(r => (decimal)((dynamic)r).TotalPrice) + 40 + (Model.Item1.Sum(r => (decimal)((dynamic)r).TotalPrice) * 0.05m)) * 100)), // Amount in paise
+            "currency": "INR",
+            "name": "ChefSync",
+            "description": "Order Payment",
+            "handler": function (response) {
+                // TODO: Send response.razorpay_payment_id to your server for verification and order placement
+                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                // Optionally, submit a hidden form or redirect to a success page
+            },
+            "prefill": {
+                "name": "",
+                "email": "",
+                "contact": ""
+            },
+            "theme": {
+                "color": "#e74c3c"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button1').onclick = function (e) {
+            rzp1.open();
+            e.preventDefault();
+        };
+    </script>
+} *@
+
+              
+                @model Tuple<List<object>, SmartRecipGene.Models.Address>
+@{
+    var recipeDetails = Model.Item1;
+    var address = Model.Item2;
+    decimal subtotal = recipeDetails.Sum(r => (decimal)((dynamic)r).TotalPrice);
+    decimal deliveryFee = 40m;
+    decimal tax = subtotal * 0.05m;
+
+    // Range-based discount logic
+    decimal discount = 0;
+    string discountMessage = null;
+    if (subtotal >= 1000 && subtotal < 2000)
+    {
+        discount = subtotal * 0.05m; // 5% discount for subtotal between 1000 and 2000
+        discountMessage = "You saved 5% on your order!";
+    }
+    else if (subtotal >= 2000 && subtotal < 5000)
+    {
+        discount = subtotal * 0.10m; // 10% discount for subtotal between 2000 and 5000
+        discountMessage = "You saved 10% on your order!";
+    }
+    else if (subtotal >= 5000)
+    {
+        discount = subtotal * 0.15m; // 15% discount for subtotal above 5000
+        discountMessage = "You saved 15% on your order!";
+    }
+
+    decimal total = subtotal + deliveryFee + tax - discount;
+}
+
+<div class="container-fluid py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-center fw-bold border-bottom pb-3 mb-4" style="color: #2c3e50;">Order Summary</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 rounded-3 mb-4">
+                    <div class="card-header bg-gradient" style="background-color: #3498db; color: white;">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-utensils fa-lg me-2"></i>
+                            <h4 class="mb-0">Recipe Details</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Recipe</th>
+                                        <th>Servings</th>
+                                        <th>Price per serving</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in recipeDetails)
+                                    {
+                                        var recipe = (dynamic)item;
+                                        <tr>
+                                            <td class="align-middle">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="recipe-image me-3">
+                                                        <img src="@recipe.Img" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" alt="Recipe image" />
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">@recipe.RecipeTitle</h6>
+                                                        <small class="text-muted">#@recipe.RecipeId</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                <span class="badge bg-info rounded-pill">@recipe.Servings</span>
+                                            </td>
+                                            <td class="align-middle">₹@recipe.PricePerServing.ToString("F2")</td>
+                                            <td class="align-middle fw-bold">₹@recipe.TotalPrice.ToString("F2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-dark">
+                                        <td colspan="3" class="text-end fw-bold">Total Order Value:</td>
+                                        <td class="fw-bold fs-5">₹@subtotal.ToString("F2")</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0 rounded-3 mb-4">
+                    <div class="card-header bg-gradient" style="background-color: #2ecc71; color: white;">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-map-marker-alt fa-lg me-2"></i>
+                            <h4 class="mb-0">Delivery Address</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="p-3 bg-white rounded shadow-sm">
+                            <address class="mb-3">
+                                <strong class="d-block mb-2 fs-5">@address.StreetAddress</strong>
+                                <span class="d-block">@address.City, @address.State @address.PostalCode</span>
+                                <div class="mt-3 d-flex align-items-center">
+                                    <i class="fas fa-phone-alt text-muted me-2"></i>
+                                    <span>@address.PhoneNumber</span>
+                                </div>
+                            </address>
+                            @if (!string.IsNullOrEmpty(address.Notes))
+                            {
+                                <div class="alert alert-info mt-3" style="background-color: #e8f4f8; border-color: #bce8f1;">
+                                    <div class="d-flex">
+                                        <i class="fas fa-info-circle text-info me-2 mt-1"></i>
+                                        <div>
+                                            <strong class="d-block mb-1">Delivery Notes:</strong>
+                                            <p class="mb-0">@address.Notes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="mt-3">
+                            <a asp-action="Address" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-edit me-2"></i> Edit Address
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 rounded-3">
+                    <div class="card-header bg-gradient" style="background-color: #e74c3c; color: white;">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-credit-card fa-lg me-2"></i>
+                            <h4 class="mb-0">Place Order</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (discount > 0)
+                        {
+                            <div class="alert alert-success">@discountMessage</div>
+                        }
+                        <div class="order-summary-box p-3 mb-3 rounded" style="background-color: #f8f9fa;">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span>₹@subtotal.ToString("F2")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Delivery Fee:</span>
+                                <span>₹@deliveryFee.ToString("F2")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Tax (5%):</span>
+                                <span>₹@tax.ToString("F2")</span>
+                            </div>
+                            @if (discount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-2 text-success">
+                                    <span>Automatic Discount:</span>
+                                    <span>-₹@discount.ToString("F2")</span>
+                                </div>
+                            }
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total:</span>
+                                <span class="fs-5">₹@total.ToString("F2")</span>
+                            </div>
+                        </div>
+
+                        <form asp-action="PlaceOrder" method="post">
+                            <input type="hidden" name="addressId" value="@address.Id" />
+                            <div class="payment-options mb-3">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cash" checked>
+                                    <label class="form-check-label" for="cashOnDelivery">
+                                        <i class="fas fa-money-bill-wave me-2"></i> Cash on Delivery
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="paymentMethod" id="onlinePayment" value="online">
+                                    <label class="form-check-label" for="onlinePayment">
+                                        <i class="fas fa-credit-card me-2"></i> Online Payment
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Razorpay Payment Button (hidden by default) -->
+                            <div id="razorpay-section" style="display:none;">
+                                <button type="button" id="rzp-button1" class="btn btn-primary btn-lg w-100 mb-2">
+                                    <i class="fas fa-credit-card me-2"></i> Pay with Razorpay
+                                </button>
+                            </div>
+
+                            <button type="submit" class="btn btn-lg w-100 text-white fw-bold" style="background-color: #e74c3c;">
+                                <i class="fas fa-check-circle me-2"></i> Confirm & Place Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+    .table {
+        width: 100%;
+        margin: 20px 0;
+    }
+
+        .table th, .table td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #3498db;
+            color: white;
+        }
+
+    .table-light {
+        background-color: #f9f9f9;
+    }
+
+    .btn {
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+    .alert {
+        border-radius: 5px;
+        padding: 15px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .recipe-image img {
+        border-radius: 5px;
+    }
+
+    .order-summary-box {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>@* @section Styles {
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .card {
+            transition: transform 0.3s;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
+
+        .card-header {
+            border-bottom: none;
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+        address {
+            line-height: 1.8;
+        }
+
+        .badge {
+            padding: 8px 12px;
+            font-weight: 500;
+        }
+
+        .order-summary-box {
+            border-radius: 10px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+    </style>
+}
+ *@
+@section Scripts {
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Show/hide Razorpay button based on payment method
+        $('input[name="paymentMethod"]').change(function () {
+            if ($('#onlinePayment').is(':checked')) {
+                $('#razorpay-section').show();
+            } else {
+                $('#razorpay-section').hide();
+            }
+        });
+
+        // Razorpay options
+        var options = {
+            "key": "rzp_test_6Wxdnw2HPXVKnn", // Replace with your Razorpay Key ID
+            "amount": @((int)((subtotal + deliveryFee + tax - discount) * 100)), // Amount in paise
             "currency": "INR",
             "name": "ChefSync",
             "description": "Order Payment",
