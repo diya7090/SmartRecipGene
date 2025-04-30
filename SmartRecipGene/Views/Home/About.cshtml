@@ -2,90 +2,6 @@
     ViewData["Title"] = "About Us";
 }
 
-@* <style>
-    .about-section {
-        max-width: 1200px;
-        margin: 40px auto;
-        padding: 0 20px;
-    }
-
-    .hero-banner {
-        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/cooking-banner.jpg');
-        background-size: cover;
-        background-position: center;
-        height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        text-align: center;
-        border-radius: 15px;
-        margin-bottom: 50px;
-    }
-
-    .hero-content h1 {
-        font-size: 3.5rem;
-        font-weight: 800;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .mission-section {
-        background: #fff;
-        padding: 40px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        margin-bottom: 40px;
-    }
-
-    .feature-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-        margin: 40px 0;
-    }
-
-    .feature-card {
-        background: #fff;
-        padding: 30px;
-        border-radius: 12px;
-        text-align: center;
-        transition: transform 0.3s ease;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .feature-icon {
-        font-size: 2.5rem;
-        color: #ffc107;
-        margin-bottom: 20px;
-    }
-
-    .team-section {
-        text-align: center;
-        margin: 60px 0;
-    }
-
-    .section-title {
-        font-size: 2.5rem;
-        color: #333;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    .highlight-text {
-        color: #ffc107;
-        font-weight: bold;
-    }
-
-    @@media (max-width: 768px) {
-        .feature-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style> *@
 
 <div class="about-section">
     <!-- Hero Section with Background Food Image -->
@@ -252,20 +168,34 @@ p {
   margin-bottom: 6rem;
 }
 
-.hero-banner::before {
+/* .hero-banner::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), 
-              url('/api/placeholder/1920/1080') no-repeat center center;
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('https://i.pinimg.com/736x/03/a3/70/03a370a93b429a30451122ab436f25a2.jpg') no-repeat center center;
   background-size: cover;
   z-index: -1;
   transform: scale(1.05);
   animation: zoom-background 20s infinite alternate ease-in-out;
+} */
+       .hero-banner {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(/images/about-1.jpg) no-repeat center center;
+    text-align: center;
+    color: var(--white);
+    overflow: hidden;
+    margin-bottom: 6rem;
 }
+
 
 @@keyframes zoom-background {
   0% {
@@ -779,59 +709,3 @@ p {
   }
 }
 </style>
-@* <div class="about-section">
-    <div class="hero-banner">
-        <div class="hero-content">
-            <h1>Welcome to ChefSync </h1>
-            <p class="lead">Discover the Art of Smart Cooking</p>
-        </div>
-    </div>
-
-    <div class="mission-section">
-        <h2 class="section-title">Our Mission</h2>
-        <p class="lead text-center">
-            At SmartRecipGene, we're passionate about making cooking accessible, enjoyable, and innovative for everyone. 
-            Our platform combines traditional recipes with modern technology to create a unique culinary experience.
-        </p>
-    </div>
-
-    <div class="feature-grid">
-        <div class="feature-card">
-            <i class="fas fa-utensils feature-icon"></i>
-            <h3>Smart Recipes</h3>
-            <p>Discover AI-powered recipe recommendations tailored to your preferences and dietary needs.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-users feature-icon"></i>
-            <h3>Community</h3>
-            <p>Join our growing community of food enthusiasts sharing recipes and cooking tips.</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-lightbulb feature-icon"></i>
-            <h3>Innovation</h3>
-            <p>Experience cutting-edge features that make meal planning and cooking easier than ever.</p>
-        </div>
-    </div>
-
-    <div class="team-section">
-        <h2 class="section-title">Why Choose Us?</h2>
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-                <p class="lead">
-                    We combine the power of artificial intelligence with traditional cooking wisdom to create 
-                    a unique platform that helps you discover, create, and share amazing recipes. Our smart 
-                    recipe generation system ensures that you always find the perfect dish for any occasion.
-                </p>
-                <div class="mt-4">
-                    <h4>Our Commitment</h4>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check-circle text-success"></i> Quality-tested recipes</li>
-                        <li><i class="fas fa-check-circle text-success"></i> Regular updates and new features</li>
-                        <li><i class="fas fa-check-circle text-success"></i> Community-driven improvements</li>
-                        <li><i class="fas fa-check-circle text-success"></i> 24/7 recipe accessibility</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> *@
