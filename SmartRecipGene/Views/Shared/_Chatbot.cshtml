@@ -1,0 +1,69 @@
+@* <div id="chatbot-container" style="position:fixed;bottom:20px;right:20px;width:300px;">
+    <div id="chatbot-messages" style="height:250px;overflow-y:auto;background:#f8f8f8;padding:10px;border:1px solid #ccc;"></div>
+    <input type="text" id="chatbot-input" class="form-control" placeholder="Type your message..." />
+    <button id="chatbot-send" class="btn btn-primary mt-2">Send</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chathub")
+        .build();
+
+    connection.on("ReceiveMessage", function (user, message) {
+        $('#chatbot-messages').append('<div><b>' + user + ':</b> ' + message + '</div>');
+    });
+
+    connection.start().catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    $('#chatbot-send').click(function() {
+        var msg = $('#chatbot-input').val();
+        if (!msg) return;
+        connection.invoke("SendMessage", msg);
+        $('#chatbot-messages').append('<div><b>You:</b> ' + msg + '</div>');
+        $('#chatbot-input').val('');
+    });
+</script> *@
+
+<div id="chatbot-container" style="position:fixed;bottom:20px;right:20px;width:300px;z-index:9999;">
+    <div id="chatbot-messages" style="height:250px;overflow-y:auto;background:#f8f8f8;padding:10px;border:1px solid #ccc;"></div>
+    <input type="text" id="chatbot-input" class="form-control" placeholder="Type your message..." />
+    <button id="chatbot-send" class="btn btn-primary mt-2" disabled>Send</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chathub")
+        .build();
+connection.on("ReceiveMessage", function (user, message) {
+        console.log("Received from bot:", user, message); // Debug: log all bot messages
+        $('#chatbot-messages').append('<div><b>' + user + ':</b> ' + message + '</div>');
+    });
+    // connection.on("ReceiveMessage", function (user, message) {
+    //     $('#chatbot-messages').append('<div><b>' + user + ':</b> ' + message + '</div>');
+    // });
+
+    connection.start().then(function () {
+        $('#chatbot-send').prop('disabled', false);
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    $('#chatbot-send').click(function () {
+        var msg = $('#chatbot-input').val();
+        if (!msg) return;
+        if (connection.state === signalR.HubConnectionState.Connected) {
+            connection.invoke("SendMessage", msg);
+            $('#chatbot-messages').append('<div><b>You:</b> ' + msg + '</div>');
+            $('#chatbot-input').val('');
+        } else {
+            alert("Chat connection is not ready. Please wait or refresh the page.");
+        }
+    });
+
+    connection.onclose(function () {
+        $('#chatbot-send').prop('disabled', true);
+        alert("Chat connection lost. Please refresh the page.");
+    });
+</script>
