@@ -255,11 +255,22 @@
             </div>
         </div>
     </footer>
-
     <script></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    @Html.Partial("_Chatbot")
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+   @*  <script></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    @Html.Partial("_Chatbot")
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
-</html>
+</html> *@

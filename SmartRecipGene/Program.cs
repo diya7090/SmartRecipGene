@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http; // Required for session access
 using SmartRecipGene.Data;
 using SmartRecipGene.Models;
-using Microsoft.AspNetCore.DataProtection; // Adjust namespace as per your project
+using Microsoft.AspNetCore.DataProtection;
+using SmartRecipGene.Hubs; // Adjust namespace as per your project
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,7 +50,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireAdminRole",
          policy => policy.RequireRole("Admin"));
 });
-builder.Services.AddRazorPages(); // Add this line
+builder.Services.AddRazorPages();
+builder.Services.AddHttpClient<HuggingFaceService>();
+builder.Services.AddSignalR(); // Register SignalR
+// Add this line
 builder.Services.Configure<SpoonacularSettings>(
 builder.Configuration.GetSection("SpoonacularSettings"));
 builder.Services.AddDistributedMemoryCache();
@@ -68,6 +72,7 @@ builder.Services.AddScoped<SpoonacularService>();
 builder.Services.AddScoped<CustomEmailConfirmationTokenProvider<ApplicationUser>>();
 builder.Services.Configure<CustomEmailConfirmationTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromDays(3));
+builder.Services.AddScoped<OpenAIService>();
 var app = builder.Build();
 
 // Ensure roles and admin user are created
@@ -107,8 +112,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+  
+    endpoints.MapHub<SmartRecipGene.Hubs.ChatHub>("/chathub");
+});
 app.UseAuthentication();
 app.UseAuthorization();
+//app.MapHub<ChatHub>("/chathub");
 
 app.MapControllerRoute(
     name: "default",
