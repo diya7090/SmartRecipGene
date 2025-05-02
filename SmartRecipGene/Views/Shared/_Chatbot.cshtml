@@ -1,37 +1,333 @@
-@* <div id="chatbot-container" style="position:fixed;bottom:20px;right:20px;width:300px;">
-    <div id="chatbot-messages" style="height:250px;overflow-y:auto;background:#f8f8f8;padding:10px;border:1px solid #ccc;"></div>
-    <input type="text" id="chatbot-input" class="form-control" placeholder="Type your message..." />
-    <button id="chatbot-send" class="btn btn-primary mt-2">Send</button>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-<script>
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chathub")
-        .build();
 
-    connection.on("ReceiveMessage", function (user, message) {
-        $('#chatbot-messages').append('<div><b>' + user + ':</b> ' + message + '</div>');
-    });
-
-    connection.start().catch(function (err) {
-        return console.error(err.toString());
-    });
-
-    $('#chatbot-send').click(function() {
-        var msg = $('#chatbot-input').val();
-        if (!msg) return;
-        connection.invoke("SendMessage", msg);
-        $('#chatbot-messages').append('<div><b>You:</b> ' + msg + '</div>');
-        $('#chatbot-input').val('');
-    });
-</script> *@
-
-<div id="chatbot-container" style="position:fixed;bottom:20px;right:20px;width:300px;z-index:9999;">
+@* <div id="chatbot-container" style="position:fixed;bottom:20px;right:20px;width:300px;z-index:9999;">
     <div id="chatbot-messages" style="height:250px;overflow-y:auto;background:#f8f8f8;padding:10px;border:1px solid #ccc;"></div>
     <input type="text" id="chatbot-input" class="form-control" placeholder="Type your message..." />
     <button id="chatbot-send" class="btn btn-primary mt-2" disabled>Send</button>
+</div> *@
+<button id="chatbot-toggle">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+</button>
+
+<!-- Chatbot Container -->
+<div id="chatbot-container">
+    <div id="chatbot-header">
+        <h3>Chat Assistant</h3>
+        <button id="chatbot-close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+    <div id="chatbot-messages">
+        <div class="message bot-message">Hi there! How can I help you today?</div>
+    </div>
+    <div id="chatbot-input-container">
+        <input type="text" id="chatbot-input" placeholder="Type your message..." />
+        <button id="chatbot-send">
+            <svg class="send-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // DOM Elements
+        const chatbotToggle = document.getElementById('chatbot-toggle');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const chatbotClose = document.getElementById('chatbot-close');
+        const chatbotMessages = document.getElementById('chatbot-messages');
+        const chatbotInput = document.getElementById('chatbot-input');
+        const chatbotSend = document.getElementById('chatbot-send');
+
+        // SignalR connection setup
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+
+        // Receive message event
+        connection.on("ReceiveMessage", function (user, message) {
+            console.log("Received from bot:", user, message); // Debug log
+            addMessage(user, message, false);
+            // Auto-scroll to bottom
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        });
+
+        // Start connection
+        connection.start().then(function () {
+            chatbotSend.disabled = false;
+            console.log("SignalR Connected");
+        }).catch(function (err) {
+            console.error(err.toString());
+            addMessage("System", "Connection error. Please try again later.", false);
+        });
+
+        // Handle connection closed
+        connection.onclose(function () {
+            chatbotSend.disabled = true;
+            addMessage("System", "Connection lost. Please refresh the page.", false);
+        });
+
+        // Toggle chatbot visibility
+        chatbotToggle.addEventListener('click', function () {
+            chatbotContainer.classList.toggle('active');
+            // Focus on input when opened
+            if (chatbotContainer.classList.contains('active')) {
+                chatbotInput.focus();
+            }
+        });
+
+        // Close chatbot
+        chatbotClose.addEventListener('click', function () {
+            chatbotContainer.classList.remove('active');
+        });
+
+        // Send message on button click
+        chatbotSend.addEventListener('click', sendMessage);
+
+        // Send message on Enter key
+        chatbotInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Function to send messages
+        function sendMessage() {
+            const msg = chatbotInput.value.trim();
+            if (!msg) return;
+
+            if (connection.state === signalR.HubConnectionState.Connected) {
+                // Add user message to chat
+                addMessage("You", msg, true);
+
+                // Send to server
+                connection.invoke("SendMessage", msg).catch(function (err) {
+                    console.error(err.toString());
+                    addMessage("System", "Failed to send message. Please try again.", false);
+                });
+
+                // Clear input
+                chatbotInput.value = '';
+
+                // Auto-scroll to bottom
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            } else {
+                addMessage("System", "Chat connection is not ready. Please wait or refresh the page.", false);
+            }
+        }
+
+        // Function to add messages to the chat
+        function addMessage(user, message, isUser) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+
+            if (isUser) {
+                messageElement.classList.add('user-message');
+                messageElement.textContent = message;
+            }
+            else {
+                messageElement.classList.add('bot-message');
+                if (user === "System") {
+                    messageElement.innerHTML = `<strong>System:</strong> ${message}`;
+                } 
+                else 
+                {
+                    messageElement.innerHTML = message;
+                }
+            }
+
+            chatbotMessages.appendChild(messageElement);
+        }
+    });
+</script>
+ <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        /* Chatbot toggle button */
+        #chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 9998;
+            transition: transform 0.3s ease;
+        }
+        
+        #chatbot-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Chatbot container */
+        #chatbot-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+        
+        #chatbot-container.active {
+            display: flex;
+        }
+        
+        /* Chatbot header */
+        #chatbot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #4a6cf7;
+            color: white;
+        }
+        
+        #chatbot-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        #chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Chatbot messages area */
+        #chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            line-height: 1.4;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        
+        .bot-message {
+            background-color: #e6f2ff;
+            border-top-left-radius: 4px;
+            margin-right: auto;
+        }
+        
+        .user-message {
+            background-color: #4a6cf7;
+            color: white;
+            border-top-right-radius: 4px;
+            margin-left: auto;
+        }
+        
+        /* Chatbot input area */
+        #chatbot-input-container {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #eaeaea;
+            background-color: white;
+        }
+        
+        #chatbot-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        #chatbot-input:focus {
+            border-color: #4a6cf7;
+        }
+        
+        #chatbot-send {
+            margin-left: 10px;
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        #chatbot-send:hover {
+            background-color: #3a5ce4;
+        }
+        
+        #chatbot-send:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        /* For the arrow icon in send button */
+        .send-icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+        
+        /* Animation for opening/closing the chatbot */
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #chatbot-container.active {
+            display: flex;
+            animation: fadeIn 0.3s ease forwards;
+        }
+    </style>
+@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chathub")
@@ -66,4 +362,4 @@ connection.on("ReceiveMessage", function (user, message) {
         $('#chatbot-send').prop('disabled', true);
         alert("Chat connection lost. Please refresh the page.");
     });
-</script>
+</script> *@

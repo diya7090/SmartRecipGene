@@ -112,13 +112,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
+
+app.UseAuthorization();
+
 app.UseEndpoints(endpoints =>
 {
-  
-    endpoints.MapHub<SmartRecipGene.Hubs.ChatHub>("/chathub");
+  endpoints.MapHub<SmartRecipGene.Hubs.ChatHub>("/chathub");
 });
-app.UseAuthentication();
-app.UseAuthorization();
 //app.MapHub<ChatHub>("/chathub");
 
 app.MapControllerRoute(
