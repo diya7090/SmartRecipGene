@@ -52,9 +52,13 @@
                     @if (Model.HasPreviousPage)
                     {
                         <li class="page-item">
-                            <a class="page-link" 
-                            asp-action="GetRecipes" 
+                            <a class="page-link"
+                            asp-action="@(ViewContext.RouteData.Values["action"])"
                             asp-route-page="@(Model.PageIndex - 1)"
+                            asp-route-query="@ViewBag.SearchQuery"
+                            asp-route-cuisine="@ViewBag.Cuisine"
+                            asp-route-mealType="@ViewBag.MealType"
+                            asp-route-diet="@ViewBag.Diet"
                             asp-route-ingredients="@ViewBag.Ingredients">Previous</a>
                         </li>
                     }
@@ -74,10 +78,14 @@
                     @if (Model.HasNextPage)
                     {
                         <li class="page-item">
-                            <a class="page-link" 
-                            asp-action="GetRecipes" 
+                            <a class="page-link"
+                            asp-action="@(ViewContext.RouteData.Values["action"])"
                             asp-route-page="@(Model.PageIndex + 1)"
-                            asp-route-ingredients="@ViewBag.Ingredients">Next</a>
+                            asp-route-ingredients="@ViewBag.Ingredients"
+                            asp-route-query="@ViewBag.SearchQuery"
+                            asp-route-cuisine="@ViewBag.Cuisine"
+                            asp-route-mealType="@ViewBag.MealType"
+                            asp-route-diet="@ViewBag.Diet">Next</a>
                         </li>
                     }
                     else
