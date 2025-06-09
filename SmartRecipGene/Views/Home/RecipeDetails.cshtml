@@ -264,6 +264,7 @@
         .star-rating {
             display: flex;
             gap: 5px;
+            direction: rtl; /* Right-to-left layout to show stars in correct order */
             margin-bottom: 10px;
         }
 
@@ -611,8 +612,8 @@
                                 <input type="hidden" name="RecipeId" value="@Model["id"]" />
                                 <div class="rating-group">
                                     <label>Your Rating</label>
-                                    <div class="star-rating">
-                                        @for (int i = 5; i >= 1; i--)
+                                    <div class="star-rating justify-content-end">
+                                        @for (int i = 1; i <= 5; i++)
                                         {
                                             <input type="radio" id="star@(i)" name="Rating" value="@i" required />
                                             <label for="star@(i)">★</label>
@@ -637,7 +638,7 @@
                                     <div class="review-header">
                                         <img src="https://ui-avatars.com/api/?name=@review.UserId&background=random" class="user-avatar" />
                                         <div class="user-info">
-                                            <h4 class="user-name">@review.UserId</h4>
+                                            <h4 class="user-name">@review.UserName</h4>
                                             <p class="review-date">@review.CreatedAt.ToString("MMMM dd, yyyy")</p>
                                         </div>
                                         <div class="rating-stars">

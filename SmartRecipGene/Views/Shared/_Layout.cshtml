@@ -29,6 +29,7 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden; /* Prevent horizontal scrolling */
+            background-color: #fff5f8;
         }
 
         /* Navbar Styling */
@@ -72,7 +73,7 @@
         /* Main Content */
         main {
             flex: 1;
-            padding: 1.5rem 0 3.5rem;
+            padding: 0 0 3.5rem 0;
             background-color: #fff5f8;
         }
 
@@ -146,9 +147,7 @@
                             <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="OrderManagement">Orders</a></li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="BlogPost" asp-action="Index">Blogs</a>
-                            </li>
-                           
-                        
+                            </li>                        
                     }
                     else {
                         <li class="nav-item">
@@ -255,22 +254,13 @@
             </div>
         </div>
     </footer>
-    <script></script>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     @Html.Partial("_Chatbot")
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
+
 </body>
+
 </html>
-
-   @*  <script></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-    @Html.Partial("_Chatbot")
-
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-
-</html> *@

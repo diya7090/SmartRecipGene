@@ -253,6 +253,20 @@ namespace SmartRecipGene.Controllers
                 // Get reviews from database
                 reviews = await _context.Reviews.Where(r => r.RecipeId == id).ToListAsync();
 
+                var userIds = reviews.Select(r => r.UserId).Distinct().ToList();
+                var users = await _context.Users
+                    .Where(u => userIds.Contains(u.Id))
+                    .ToDictionaryAsync(u => u.Id, u => u.UserName); // or use u.FullName if available
+
+                // Attach user name to each review (anonymous object)
+                var reviewsWithNames = reviews.Select(r => new {
+                    r.UserId,
+                    UserName = users.ContainsKey(r.UserId) ? users[r.UserId] : "Unknown",
+                    r.Rating,
+                    r.Comment,
+                    r.CreatedAt
+                }).ToList();
+
                 // First try to get recipe from database
                 var dbRecipe = await _context.Recipes.FirstOrDefaultAsync(r => r.Id == id);
 
@@ -308,7 +322,7 @@ namespace SmartRecipGene.Controllers
                 _logger.LogInformation($"Final recipe data isFavorite: {recipeData["isFavorite"]}");
                 var recipeUrl = $"http://localhost:7119/Home/RecipeDetails/{id}";
                 ViewBag.RecipeUrl = recipeUrl;
-                ViewBag.Reviews = reviews;
+                ViewBag.Reviews = reviewsWithNames;
                 return View(recipeData);
             }
             catch (Exception ex)
@@ -671,7 +685,7 @@ public async Task<IActionResult> ShoppingList()
 
                                     if (!string.IsNullOrEmpty(title))
                                     {
-                                        recipeDetails[review.RecipeId] = title;
+                                            recipeDetails[review.RecipeId] = title;
                                     }
                                     else
                                     {
@@ -696,6 +710,7 @@ public async Task<IActionResult> ShoppingList()
             ViewBag.RecipeDetails = recipeDetails;
             return View("~/Views/Admin/AllReviews.cshtml", reviews);
         }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> SubmitReview(int RecipeId, int Rating, string Comment)

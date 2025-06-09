@@ -290,6 +290,17 @@ namespace SmartRecipGene.Controllers
             return RedirectToAction("Index");
         }
 
+        public async Task<IActionResult> Unsuspend(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                user.LockoutEnd = null; // Remove lockout
+                await _userManager.UpdateAsync(user);
+            }
+            return RedirectToAction("Index");
+        }
+
         // 🟢 4. Assign a role to a user
         public async Task<IActionResult> AssignRole(string id, string role)
         {

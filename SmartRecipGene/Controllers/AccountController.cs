@@ -57,7 +57,15 @@ public class AccountController : Controller
             var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user != null && await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    return RedirectToAction("Dashboard", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");

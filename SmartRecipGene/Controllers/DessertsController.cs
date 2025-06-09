@@ -9,7 +9,7 @@ namespace SmartRecipGene.Controllers
     public class DessertsController : Controller
 {
     private readonly HttpClient _httpClient;
-    private readonly string apiKey = "4f23d090497a4cc6942f7f6e1f3ffca4";
+    private readonly string apiKey = "c70f25dffdda4764b04e7a7b67e43a67";
 
     public DessertsController(HttpClient httpClient)
     {

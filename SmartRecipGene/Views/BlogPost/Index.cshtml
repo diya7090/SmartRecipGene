@@ -90,6 +90,11 @@
                                     : Url.Content("~/images/" + blog.ImageUrl);
                             }
                             <img src="@imageUrl" alt="@blog.Title" onerror="this.src='/images/default-recipe.jpg';" />
+                                <div class="blog-overlay">
+                                    <a asp-action="Details" asp-route-id="@blog.Id" class="view-post-btn">
+                                        Read Article
+                                    </a>
+                                </div>
                         </div>
                         <div class="featured-content">
                             <span class="category">@blog.Category</span>
@@ -98,6 +103,17 @@
                                 <span><i class="fas fa-user"></i> @blog.Author</span>
                                 <span><i class="far fa-calendar"></i> @blog.CreatedAt.ToString("MMM dd, yyyy")</span>
                             </div>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="admin-controls">
+                                    <a asp-action="Edit" asp-route-id="@blog.Id" class="edit-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@blog.Id" class="delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            }
                             <a asp-action="Details" asp-route-id="@blog.Id" class="read-more">Read More</a>
                         </div>
                     </div>
@@ -231,6 +247,7 @@
 
     .featured-image {
         height: 250px;
+        position: relative;
     }
 
     .featured-image img {
@@ -241,6 +258,7 @@
 
     .featured-content {
         padding: 2rem;
+        position: relative;
     }
 
     .posts-grid {
@@ -286,6 +304,7 @@
         transition: opacity 0.3s;
     }
 
+    .featured-card:hover .blog-overlay,
     .blog-card:hover .blog-overlay {
         opacity: 1;
     }

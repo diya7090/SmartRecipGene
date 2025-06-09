@@ -20,23 +20,23 @@
             <div class="card bg-success text-white mb-4">
                 <div class="card-body">
                     <h5>Vegetarian</h5>
-                    <h2>@(Model?.Count(r => r.DietType?.Contains("Vegetarian") ?? false) ?? 0)</h2>
+                    <h2>@(Model?.Count(r => string.Equals(r.DietType, "Vegetarian", StringComparison.OrdinalIgnoreCase)) ?? 0)</h2>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="card bg-warning text-white mb-4">
                 <div class="card-body">
-                    <h5>Quick Recipes</h5>
-                    <h2>@(Model?.Count(r => r.CookingTime <= 30) ?? 0)</h2>
+                    <h5>Non Vegetarian</h5>
+                    <h2>@(Model?.Count(r => string.Equals(r.DietType, "Non-Vegetarian", StringComparison.OrdinalIgnoreCase)) ?? 0)</h2>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6">
             <div class="card bg-info text-white mb-4">
                 <div class="card-body">
-                    <h5>Cuisine Types</h5>
-                    <h2>@(Model?.Select(r => r.CusineType).Distinct().Count() ?? 0)</h2>
+                    <h5>Quick Recipes</h5>
+                    <h2>@(Model?.Count(r => r.CookingTime <= 30) ?? 0)</h2>
                 </div>
             </div>
         </div>

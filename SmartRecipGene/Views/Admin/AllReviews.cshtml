@@ -22,8 +22,8 @@
                         <td>
                             @{
                                 var recipeName = ViewBag.RecipeDetails.ContainsKey(review.RecipeId)
-                                ? ViewBag.RecipeDetails[review.RecipeId]
-                                : $"Recipe {review.RecipeId}";
+                                    ? ViewBag.RecipeDetails[review.RecipeId]
+                                    : $"Recipe {review.RecipeId}";
                             }
                             <a asp-controller="Home" asp-action="RecipeDetails" asp-route-id="@review.RecipeId">
                                 @recipeName
@@ -59,12 +59,6 @@
         --text-dark: #2C3E50;
         --text-medium: #34495E;
         --text-light: #ECF0F1;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
     }
 
     h2 {

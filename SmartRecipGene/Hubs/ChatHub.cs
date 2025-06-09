@@ -372,7 +372,7 @@ namespace SmartRecipGene.Hubs
 
         private async Task<List<string>> GetSpoonacularRecipesAsync(string query)
         {
-            var apiKey = "1744dc9a3003484da22b0564bc1c4b5d"; // Replace with your actual key
+            var apiKey = "c70f25dffdda4764b04e7a7b67e43a67"; // Replace with your actual key
             var url = $"https://api.spoonacular.com/recipes/complexSearch?query={System.Net.WebUtility.UrlEncode(query)}&number=5&addRecipeInformation=true&apiKey={apiKey}";
 
             using (var httpClient = new System.Net.Http.HttpClient())
